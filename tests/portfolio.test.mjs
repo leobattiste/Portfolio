@@ -50,7 +50,9 @@ test('published collection excludes missing pages and account dashboards',()=>{
 const out=new URL('../dist/',import.meta.url);
 async function htmlFiles(dir){const entries=await readdir(dir,{withFileTypes:true});const files=[];for(const entry of entries){const p=path.join(dir,entry.name);if(entry.isDirectory())files.push(...await htmlFiles(p));else if(entry.name.endsWith('.html'))files.push(p);}return files;}
 test('every generated page has a title, unique main heading, and canonical metadata',async()=>{
- const files=await htmlFiles(out.pathname);assert.ok(files.length>390);
+ const files=await htmlFiles(out.pathname);
+ const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
+ assert.equal(files.length,info.pages+1); // Includes the noindex 404 page.
  for(const file of files){const text=await readFile(file,'utf8');
   assert.equal((text.match(/<h1(?:\s|>)/g)||[]).length,1,file);
   assert.ok(/<title>.+?<\/title>/.test(text),file);assert.ok(text.includes('rel="canonical"'),file);
