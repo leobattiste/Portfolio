@@ -8,5 +8,5 @@
     "check": "npm run build && npm test",
     "check:links": "python3 scripts/check-links.py"
   },
-  "engines": { "node": ">=22" }
+  "engines": { "node": "22.x" }
 }

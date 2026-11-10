@@ -12,6 +12,12 @@ The GitHub Actions workflow always builds, tests, and uploads a preview artifact
 
 In repository Settings → Pages, choose GitHub Actions as the build source. In Settings → Secrets and variables → Actions → Variables, add `PAGES_ENABLED` with value `true`. Run the Portfolio checks and publishing workflow, or push to main. No deployment tokens are needed: GitHub's scoped Actions token and OIDC handle it.
 
+## Vercel
+
+Import the repository with its root directory left at the repository root. The tracked `vercel.json` selects the static-site configuration, runs `npm run build`, and serves `dist/`. Node.js is pinned to `22.x` in `package.json`, matching GitHub Actions. The site does not generate a `public/` directory.
+
+With Vercel's Git integration, pushing to `main` builds a production deployment; other branches receive preview deployments. Set `SITE_ORIGIN` to the final HTTPS portfolio origin for canonical URLs, social metadata, RSS, and the sitemap. Leave `BASE_PATH` unset for a Vercel root-domain deployment.
+
 ## Domain
 
 No domain was provided or purchased. To connect one, add it in the hosting provider's domain settings and configure its DNS. Update `SITE_ORIGIN` to the exact HTTPS origin and `BASE_PATH` to an empty string for a root domain. Update `content/site.json`'s origin for private-site builds if its URL changes. GitHub Pages custom domains also need a `CNAME` file in the build output; add that only after selecting and configuring the real domain. Do not use Pheelm.com for the portfolio: it hosts the project itself.
