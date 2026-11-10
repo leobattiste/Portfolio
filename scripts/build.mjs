@@ -1,89 +1,152 @@
-import { readFile, writeFile, mkdir, cp, rm, readdir } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { html as e, slug, markdown, parseArticle, readingTime, validateContent } from './lib.mjs';
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = async p => JSON.parse(await readFile(path.join(root,p),'utf8'));
-const site = await read('content/site.json');
-const origin = (process.env.SITE_ORIGIN || site.origin).replace(/\/$/,'');
-const base = (process.env.BASE_PATH || '').replace(/^\/?|\/$/g,'');
-const prefix = base ? `/${base}` : '';
-const u = p => `${prefix}${p}`;
-const absolute = p => origin + u(p);
-const projects = await Promise.all((await readdir(path.join(root,'content/projects'))).filter(f=>f.endsWith('.json')).map(f=>read('content/projects/'+f)));
-const articles = await Promise.all((await readdir(path.join(root,'content/journal'))).filter(f=>f.endsWith('.md')).map(async f=>parseArticle(await readFile(path.join(root,'content/journal',f),'utf8'))));
-const allResources = await read('content/resources.json');
-validateContent({...site,origin},projects,articles,allResources);
-const resources = allResources.filter(r=>r.linkStatus !== 'broken');
-const liveProjects = projects.filter(p=>p.published).sort((a,b)=>a.order-b.order);
-const liveArticles = articles.filter(p=>p.published).sort((a,b)=>b.date.localeCompare(a.date));
-const categories = [...new Set(resources.map(r=>r.category))].sort();
-const categoryCounts = Object.fromEntries(categories.map(c=>[c,resources.filter(r=>r.category===c).length]));
-const out = path.join(root,'dist');
-await rm(out,{recursive:true,force:true}); await mkdir(out,{recursive:true});
-await cp(path.join(root,'src/assets'),path.join(out,'assets'),{recursive:true});
-for (const name of ['style.css','app.js','resource-model.mjs']) await cp(path.join(root,'src',name),path.join(out,name));
-await writeFile(path.join(out,'resources.json'),JSON.stringify(resources));
-await writeFile(path.join(out,'.nojekyll'),'');
-const pages=[];
-const arrow = '<span aria-hidden="true">↗</span>';
-const date = value => new Date(value+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-const eyebrow = text => `<span class="eyebrow">${e(text)}</span>`;
-const button = (label,href,cls='button',external=false) => `<a class="${cls}" href="${e(href)}"${external?' target="_blank" rel="noopener noreferrer"':''}>${label} ${arrow}${external?'<span class="sr-only"> (opens in a new tab)</span>':''}</a>`;
-const brand = `<a class="brand" href="${u('/')}" aria-label="Leo Battiste, home">lb<span aria-hidden="true">✳</span></a>`;
-const navItems = [['About','/about/'],['Work','/work/'],['Journal','/journal/'],['Toolbox','/toolbox/']];
-function layout({title,description,route='/',body,active='',type='website',image='/assets/portrait.jpg',noindex=false,extraSchema=null}) {
- const canonical = absolute(route);
- const graph=[{'@type':'Person','@id':absolute('/#leo'),name:site.name,jobTitle:site.role,url:absolute('/'),image:absolute('/assets/portrait.jpg'),sameAs:[site.github]}, {'@type':type==='article'?'Article':'WebPage','@id':canonical,url:canonical,name:title,description,author:{'@id':absolute('/#leo')},...(extraSchema||{})}];
- return `<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${e(title)}${title===site.name?' — Product designer':' — '+e(site.name)}</title>
-<meta name="description" content="${e(description)}"><meta name="theme-color" content="#f8f8f4">
-<link rel="canonical" href="${e(canonical)}"><meta name="robots" content="${noindex?'noindex,follow':'index,follow'}">
-<meta property="og:type" content="${type}"><meta property="og:site_name" content="${e(site.name)}"><meta property="og:title" content="${e(title)}"><meta property="og:description" content="${e(description)}"><meta property="og:url" content="${e(canonical)}"><meta property="og:image" content="${e(absolute(image))}"><meta property="og:image:alt" content="${image.includes('pheelm')?'Pheelm — Discover films by Black directors':'Portrait of Leo Battiste'}"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/svg+xml" href="${u('/assets/favicon.svg')}"><link rel="alternate" type="application/rss+xml" title="Leo Battiste — Journal" href="${u('/feed.xml')}">
-<link rel="preload" href="${u('/assets/dm-sans.ttf')}" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="${u('/style.css')}">
-<script type="application/ld+json">${JSON.stringify({'@context':'https://schema.org','@graph':graph}).replace(/</g,'\\u003c')}</script>
-<script type="module" src="${u('/app.js')}"></script></head>
-<body data-base="${prefix}" data-page="${e(active)}"><a class="skip" href="#main">Skip to content</a>
-<header class="site-header">${brand}<button class="menu-toggle" aria-controls="main-nav" aria-expanded="false">Menu <span aria-hidden="true">☰</span></button><nav id="main-nav" aria-label="Main navigation">${navItems.map(([label,href])=>`<a href="${u(href)}"${active===label.toLowerCase()?' aria-current="page"':''}>${label}${label==='Toolbox'?' '+arrow:''}</a>`).join('')}</nav><a class="header-contact" href="${u('/contact/')}">Let’s talk ${arrow}</a></header>
-<main id="main" tabindex="-1">${body}</main>
-<footer class="site-footer"><div class="footer-top">${brand}<p>Thoughtful experiences.<br>A little personality.</p><a href="#main" class="back-top">Back to top ↑</a></div><div class="footer-bottom"><span>© ${site.updated.slice(0,4)} ${e(site.name)}</span><div><a href="${e(site.github)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="${u('/feed.xml')}">RSS</a><a href="${u('/privacy/')}">Privacy</a></div><span>DESIGNED WITH INTENTION.</span></div></footer>
-<div id="toast" class="toast" role="status" aria-live="polite"></div></body></html>`;
+import { readFile, writeFile, mkdir, cp, readdir } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { build } from "vite";
+import {
+  html as e,
+  markdown,
+  parseArticle,
+  readingTime,
+  validateContent,
+} from "./lib.mjs";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const read = async (p) =>
+  JSON.parse(await readFile(path.join(root, p), "utf8"));
+const site = await read("content/site.json");
+const origin = (
+  process.env.SITE_ORIGIN ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : site.origin)
+).replace(/\/$/, "");
+const prefix = (process.env.BASE_PATH || "").replace(/\/$/, "");
+const u = (p) => prefix + p,
+  absolute = (p) => origin + u(p);
+const allProjects = await Promise.all(
+  (await readdir(path.join(root, "content/projects")))
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => read("content/projects/" + f)),
+);
+const allArticles = await Promise.all(
+  (await readdir(path.join(root, "content/journal")))
+    .filter((f) => f.endsWith(".md"))
+    .map(async (f) =>
+      parseArticle(
+        await readFile(path.join(root, "content/journal", f), "utf8"),
+      ),
+    ),
+);
+const allResources = await read("content/resources.json");
+validateContent({ ...site, origin }, allProjects, allArticles, allResources);
+const resources = allResources.filter((r) => r.linkStatus !== "broken"),
+  projects = allProjects
+    .filter((p) => p.published)
+    .sort((a, b) => a.order - b.order),
+  articles = allArticles
+    .filter((a) => a.published)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((a) => ({
+      ...a,
+      html: markdown(a.body, u),
+      minutes: readingTime(a.body),
+    }));
+await mkdir(path.join(root, ".build"), { recursive: true });
+await writeFile(
+  path.join(root, ".build/content.json"),
+  JSON.stringify({ site, resources, projects, articles }),
+);
+execFileSync(path.join(root, "node_modules/.bin/tsc"), ["--noEmit"], {
+  cwd: root,
+  stdio: "inherit",
+});
+await build({ root });
+const manifest = JSON.parse(
+    await readFile(path.join(root, "dist/.vite/manifest.json"), "utf8"),
+  ),
+  entry = manifest["index.html"];
+await build({
+  root,
+  build: {
+    ssr: "src/entry-server.tsx",
+    outDir: ".build/server",
+    emptyOutDir: true,
+    manifest: false,
+    rollupOptions: { output: { entryFileNames: "entry-server.mjs" } },
+  },
+});
+const { render } = await import(
+  path.join(root, ".build/server/entry-server.mjs")
+);
+const out = path.join(root, "dist");
+await cp(path.join(root, "src/assets"), path.join(out, "assets"), {
+  recursive: true,
+});
+await cp(
+  path.join(root, "src/resource-model.mjs"),
+  path.join(out, "resource-model.mjs"),
+);
+await writeFile(path.join(out, "resources.json"), JSON.stringify(resources));
+await writeFile(path.join(out, ".nojekyll"), "");
+const routes = [
+  "/",
+  "/about/",
+  "/work/",
+  "/journal/",
+  "/toolbox/",
+  "/contact/",
+  "/privacy/",
+  ...projects.map((p) => "/work/" + p.slug + "/"),
+  ...articles.map((a) => "/journal/" + a.slug + "/"),
+  ...resources.map((r) => "/toolbox/" + r.id + "/"),
+];
+for (const route of [...routes, "/404.html"]) {
+  const { html, meta } = render(route),
+    canonical = absolute(route),
+    image = absolute(meta.image || "/assets/portrait.jpg");
+  const structured = {
+    "@context": "https://schema.org",
+    "@type": meta.type === "article" ? "Article" : "WebPage",
+    name: meta.title,
+    url: canonical,
+    description: meta.description,
+    author: { "@type": "Person", name: site.name, url: absolute("/") },
+  };
+  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="theme-color" content="#f9f9f7"/><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/><link rel="alternate" type="application/rss+xml" title="Leo Battiste — Journal" href="${u("/feed.xml")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
+  const file =
+    route === "/"
+      ? "index.html"
+      : route === "/404.html"
+        ? "404.html"
+        : route.slice(1) + "index.html";
+  await mkdir(path.dirname(path.join(out, file)), { recursive: true });
+  await writeFile(path.join(out, file), document);
 }
-async function page(route,opts) {
- const name = route==='/'?'index.html':route==='/404.html'?'404.html':route.slice(1)+'index.html';
- await mkdir(path.dirname(path.join(out,name)),{recursive:true});
- await writeFile(path.join(out,name),layout({...opts,route}));
- if (!opts.noindex) pages.push(route);
-}
-function sectionHead(label,title,aside='') {return `<div class="section-heading"><div>${eyebrow(label)}<h2>${title}</h2></div>${aside?`<div class="section-aside">${aside}</div>`:''}</div>`;}
-function projectCard(p) {return `<article class="project-card"><a class="project-image" href="${u('/work/'+p.slug+'/')}"><img src="${u('/assets/'+p.cover)}" alt="${e(p.coverAlt)}" width="1200" height="630" loading="lazy"><span class="project-overlay">Explore project ${arrow}</span></a><div class="project-caption"><div><h3><a href="${u('/work/'+p.slug+'/')}">${e(p.title)} <span>— ${e(p.subtitle)}</span></a></h3><p>${p.disciplines.map(e).join(' · ')}</p></div><span class="pill">${e(p.status)}</span></div></article>`;}
-function articleRow(a,i) {return `<article class="journal-row"><span class="row-number">${String(i+1).padStart(2,'0')}</span><a href="${u('/journal/'+a.slug+'/')}"><span class="eyebrow">${e(a.topic)} · ${readingTime(a.body)} MIN READ</span><h3>${e(a.title)}</h3><p>${e(a.description)}</p></a><time datetime="${a.date}">${date(a.date)}</time><a class="row-arrow" href="${u('/journal/'+a.slug+'/')}" aria-label="Read ${e(a.title)}">↗</a></article>`;}
-function resourceCard(r) {return `<article class="resource-card" data-resource-id="${r.id}"><div class="resource-top"><span class="resource-icon" aria-hidden="true">${e(r.title[0].toUpperCase())}</span><button class="save-button" data-save="${r.id}" data-title="${e(r.title)}" aria-label="Save ${e(r.title)}" aria-pressed="false"><span aria-hidden="true">♡</span></button></div><h3><a href="${u('/toolbox/'+r.id+'/')}">${e(r.title)}</a></h3><p>${e(r.description)}</p><div class="resource-bottom"><a href="${u('/toolbox/?category='+encodeURIComponent(r.category))}">${e(r.category)}</a><a href="${e(r.url)}" class="external-arrow" target="_blank" rel="noopener noreferrer" aria-label="Visit ${e(r.title)} (opens in a new tab)">↗</a></div></article>`;}
-const contactStrip = `<section class="contact-strip wrap">${eyebrow('HAVE SOMETHING IN MIND?')}<h2>Good work starts<br>with a <em>conversation.</em></h2><span class="contact-arrow" aria-hidden="true">↗</span>${button('Let’s connect',u('/contact/'))}</section>`;
-await page('/',{title:site.name,description:site.intro,body:`
-<section class="hero wrap"><div class="hero-label">${eyebrow('LEO BATTISTE / PRODUCT DESIGNER')}<span>CURIOUS BY DEFAULT <i class="dot"></i></span></div><h1>Making the complex<br>feel <em>effortless.</em></h1><span class="hero-star" aria-hidden="true">✳</span><div class="hero-bottom"><p>${e(site.intro)}</p><a class="round-link" href="#selected-work">Explore my work <span aria-hidden="true">↓</span></a></div><div class="hero-rule"><span>DESIGN, WITH PEOPLE IN MIND.</span><span>SCROLL TO EXPLORE ↓</span></div></section>
-<section id="selected-work" class="section wrap">${sectionHead('01 / SELECTED WORK','Thought through.<br>Made to matter.',button('All work',u('/work/'),'text-link'))}${liveProjects.map(projectCard).join('')}</section>
-<section class="section about-preview wrap"><div class="portrait"><img src="${u('/assets/portrait.jpg')}" width="1280" height="1280" alt="Leo Battiste" loading="lazy"><span>THE PERSON BEHIND THE PIXELS. ↗</span></div><div>${eyebrow('02 / A LITTLE ABOUT ME')}<h2>Brand to product.<br>Details to the whole.</h2><p>${e(site.bio)}</p><div class="tags"><span>Product design</span><span>Brand identity</span><span>Digital experiences</span></div>${button('A little more about me',u('/about/'),'text-link')}</div></section>
-<section class="section wrap">${sectionHead('03 / JOURNAL','Notes along the way.',button('All notes',u('/journal/'),'text-link'))}<div class="journal-list">${liveArticles.map(articleRow).join('')}</div></section>
-<section class="toolbox-preview section"><div class="wrap">${sectionHead('04 / THE TOOLBOX','Good finds.<br>Kept, not gatekept.',`<span class="collection-number">${resources.length}<span>↗</span></span><p>Tools, inspiration, and resources.<br>Collected over the years. Yours to explore.</p>`)}<div class="category-cloud">${categories.slice(0,8).map(c=>`<a href="${u('/toolbox/?category='+encodeURIComponent(c))}">${e(c)} <span>${categoryCounts[c]}</span></a>`).join('')}</div><div class="resource-grid">${resources.filter(r=>r.featured).slice(0,3).map(resourceCard).join('')}</div><div class="center">${button('Explore the collection',u('/toolbox/'),'button secondary')}</div></div></section>${contactStrip}`});
-await page('/about/',{title:'About',description:`Meet ${site.name}, a product designer working across brand identity and digital experiences.`,active:'about',body:`<section class="page-heading wrap">${eyebrow('A LITTLE ABOUT ME')}<h1>Intentional design.<br><em>Endless curiosity.</em></h1><p class="page-lede">I’m Leo Battiste, a product designer connecting brands, products, and the people who use them.</p></section><section class="about-full wrap"><div class="portrait"><img src="${u('/assets/portrait.jpg')}" width="1280" height="1280" alt="Portrait of Leo Battiste"><span>LEO BATTISTE / PRODUCT DESIGNER</span></div><div class="prose"><h2>A person behind the pixels.</h2><p>${e(site.bio)}</p><p>My work on Pheelm spans the name and logo through to the digital experience. It brings together the parts of design I care about: a clear idea, a considered identity, and a product people can explore.</p><p>This space is also home to my ongoing collection of tools and references. The Toolbox is a way to share useful things I’ve found along the way.</p>${site.location?`<p>Based in ${e(site.location)}.</p>`:''}${site.availability?`<p>${e(site.availability)}</p>`:''}<div class="inline-actions">${button('Explore Pheelm',u('/work/pheelm/'),'text-link')}${site.resume?button('Download résumé',u(site.resume),'text-link'):''}</div></div></section><section class="section wrap">${sectionHead('HOW I THINK ABOUT DESIGN','Consider the whole.<br>Care for the details.')}<div class="principles"><article><span>01</span><h3>Make room for clarity.</h3><p>Help people understand where they are, what matters, and what they can do next.</p></article><article><span>02</span><h3>Connect brand and product.</h3><p>Let the idea behind a product show up in its identity and in the experience of using it.</p></article><article><span>03</span><h3>Stay curious.</h3><p>Keep exploring tools, references, and different ways of approaching a design problem.</p></article></div></section>${contactStrip}`});
-await page('/work/',{title:'Work',description:'Selected product and brand work by Leo Battiste, beginning with Pheelm.',active:'work',body:`<section class="page-heading wrap">${eyebrow('SELECTED WORK')}<h1>Ideas, made<br><em>into experiences.</em></h1><p class="page-lede">A closer look at the products I’m shaping, from the first idea to the details that bring them to life.</p></section><section class="wrap work-list">${liveProjects.map(projectCard).join('')}<div class="coming-note"><span aria-hidden="true">✳</span><div><h2>More work is taking shape.</h2><p>A considered collection, growing one project at a time.</p></div>${button('Let’s connect',u('/contact/'),'text-link')}</div></section>${contactStrip}`});
-for (const p of liveProjects) await page('/work/'+p.slug+'/',{title:p.title+' — '+p.subtitle,description:p.description,active:'work',image:'/assets/'+p.cover,body:`<section class="page-heading project-heading wrap"><a class="breadcrumb" href="${u('/work/')}">← All work</a>${eyebrow('PROJECT 01 / '+p.status)}<h1>${e(p.title)}<span class="title-period">.</span></h1><p class="page-lede">${e(p.subtitle)}</p><div class="inline-actions">${p.liveUrl?button('Visit Pheelm',p.liveUrl,'button',true):''}${p.sourceUrl?button('View source',p.sourceUrl,'text-link',true):''}</div></section><figure class="case-cover wrap"><img src="${u('/assets/'+p.cover)}" width="1200" height="630" alt="${e(p.coverAlt)}"><figcaption>Pheelm · Brand artwork from the live product.</figcaption></figure><div class="project-facts wrap"><div><span class="eyebrow">MY ROLE</span><p>${e(p.role)}</p></div><div><span class="eyebrow">PLATFORM</span><p>${e(p.platform)}</p></div><div><span class="eyebrow">SCOPE</span><p>${p.disciplines.map(e).join(' · ')}</p></div></div><div class="case-layout wrap"><aside class="case-nav"><span class="eyebrow">IN THIS PROJECT</span>${p.sections.map((s,i)=>`<a href="#${e(s.id)}">0${i+1} ${e(s.id[0].toUpperCase()+s.id.slice(1))}</a>`).join('')}</aside><article class="prose case-body">${p.sections.map(s=>`<section id="${e(s.id)}"><h2>${e(s.title)}</h2><p>${e(s.body)}</p></section>`).join('')}<div class="editorial-note"><h3>A closer look, coming next.</h3><p>${e(p.closing)}</p></div><div class="inline-actions">${button('Explore the live product',p.liveUrl,'button',true)}</div></article></div>${contactStrip}`});
-await page('/journal/',{title:'Journal',description:'Notes on product design, useful resources, and ideas along the way.',active:'journal',body:`<section class="page-heading wrap">${eyebrow('JOURNAL')}<h1>Notes along<br><em>the way.</em></h1><p class="page-lede">A space for ideas, observations, and things worth paying attention to.</p><a class="text-link" href="${u('/feed.xml')}">Follow via RSS ${arrow}</a></section><section class="wrap journal-index"><div class="journal-filter" aria-label="Filter articles"><button class="chip" data-topic="all" aria-pressed="true">All notes</button>${[...new Set(liveArticles.map(a=>a.topic))].map(t=>`<button class="chip" data-topic="${e(t)}" aria-pressed="false">${e(t)}</button>`).join('')}</div><div class="journal-list">${liveArticles.map((a,i)=>`<div data-article-topic="${e(a.topic)}">${articleRow(a,i)}</div>`).join('')}</div><p class="quiet-note">More notes will find their way here as the work unfolds.</p></section>${contactStrip}`});
-for (const [i,a] of liveArticles.entries()) {
- const headings = [...a.body.matchAll(/^## (.+)$/gm)].map(m=>m[1]);
- await page('/journal/'+a.slug+'/',{title:a.title,description:a.description,active:'journal',type:'article',extraSchema:{headline:a.title,datePublished:a.date,dateModified:a.date},body:`<div class="reading-progress" aria-hidden="true"></div><section class="page-heading article-heading wrap"><a class="breadcrumb" href="${u('/journal/')}">← All notes</a>${eyebrow(a.topic+' / '+readingTime(a.body)+' MIN READ')}<h1>${e(a.title)}</h1><p class="page-lede">${e(a.description)}</p><div class="byline"><img src="${u('/assets/portrait.jpg')}" alt="" width="32" height="32"><span>${e(site.name)}</span><time datetime="${a.date}">${date(a.date)}</time></div></section><div class="case-layout wrap"><aside class="case-nav">${eyebrow('IN THIS NOTE')}${headings.map(h=>`<a href="#${slug(h)}">${e(h)}</a>`).join('')}<button class="text-link" data-share>Copy article link ↗</button></aside><article class="prose article-body">${markdown(a.body,u)}</article></div><section class="article-end wrap"><p>Thanks for reading.</p><div class="inline-actions">${button('Back to Journal',u('/journal/'),'text-link')}${button('Explore the Toolbox',u('/toolbox/'),'text-link')}</div></section>${contactStrip}`});
-}
-await page('/toolbox/',{title:'Toolbox',description:`Explore ${resources.length} saved design tools, inspiration, and resources, organized by category.`,active:'toolbox',body:`<section class="page-heading wrap toolbox-heading">${eyebrow('THE TOOLBOX / '+resources.length+' GOOD FINDS')}<h1>Kept, not<br><em>gatekept.</em></h1><div class="toolbox-intro"><p class="page-lede">Tools, inspiration, and resources I’ve saved over the years. A growing collection, yours to explore.</p><span class="big-asterisk" aria-hidden="true">✳</span></div></section><section class="toolbox-browser wrap" id="collection"><div class="toolbox-layout"><aside class="toolbox-sidebar"><h2>Explore the collection</h2><div class="category-list"><button class="category-button" data-category="all" aria-pressed="true"><span>All resources</span><span>${resources.length}</span></button>${categories.map(c=>`<button class="category-button" data-category="${e(c)}" aria-pressed="false"><span>${e(c)}</span><span>${categoryCounts[c]}</span></button>`).join('')}</div><div class="sidebar-note"><span aria-hidden="true">✳</span><p>A good find is even better when you share it.</p></div></aside><div class="toolbox-main"><form class="search" role="search" id="search-form"><label for="resource-search" class="sr-only">Search the Toolbox</label><span aria-hidden="true">⌕</span><input id="resource-search" name="q" type="search" placeholder="Find your next favorite resource…" autocomplete="off" maxlength="200"><kbd aria-hidden="true">/</kbd><button type="submit" class="sr-only">Search</button></form><div class="filter-bar"><div class="filter-pills"><button id="featured-filter" class="chip" aria-pressed="false">✳ Highlights</button><button id="saved-filter" class="chip" aria-pressed="false">♡ <span>Saved</span></button><button id="clear-filters" class="clear-filters" hidden>Clear filters</button></div><label class="sort-label">Sort <select id="resource-sort"><option value="curated">Curated order</option><option value="az">Name: A–Z</option><option value="za">Name: Z–A</option></select></label></div><label class="mobile-category-label">Category <select id="mobile-category"><option value="all">All resources</option>${categories.map(c=>`<option>${e(c)}</option>`).join('')}</select></label><p id="result-count" class="result-count" role="status" aria-live="polite">${resources.length} resources · All categories</p><div id="resource-grid" class="resource-grid">${resources.map(resourceCard).join('')}</div><div class="load-wrap"><button id="load-more" class="button secondary" hidden>Explore more resources ↓</button></div><div class="favorites-tools"><div><h3>Your favorites, wherever you work.</h3><p>Saved in this browser. Export a copy to take them with you.</p></div><div><button id="export-favorites" class="text-link">Export favorites ↓</button><label class="text-link import-label" for="import-favorites">Import favorites ↑</label><input class="sr-only" id="import-favorites" type="file" accept="application/json,.json"></div></div><noscript><p class="notice">All resources are listed above. Enable JavaScript for search, filters, and favorites.</p></noscript></div></div><p class="collection-note">Collected, not sponsored. Resource details and availability can change. Links open on their original websites.</p></section>${contactStrip}`});
-for (const r of resources) await page('/toolbox/'+r.id+'/',{title:r.title,description:r.description,active:'toolbox',body:`<section class="page-heading resource-heading wrap"><a class="breadcrumb" href="${u('/toolbox/')}">← Back to the Toolbox</a>${eyebrow(r.category)}<div class="resource-title"><span class="resource-icon large" aria-hidden="true">${e(r.title[0])}</span><h1>${e(r.title)}</h1></div><p class="page-lede">${e(r.description)}</p><div class="inline-actions">${button('Visit resource',r.url,'button',true)}<button class="button secondary detail-save" data-save="${r.id}" data-title="${e(r.title)}" aria-pressed="false"><span aria-hidden="true">♡</span> <span class="save-label">Save resource</span></button><button class="text-link" data-share>Copy link ↗</button></div><dl class="resource-facts"><div><dt>Website</dt><dd>${e(r.domain)}</dd></div><div><dt>Category</dt><dd><a href="${u('/toolbox/?category='+encodeURIComponent(r.category))}">${e(r.category)}</a></dd></div><div><dt>In the collection</dt><dd>${r.featured?'Collection highlight':'Saved reference'}</dd></div></dl><p class="quiet-note">This resource belongs to its original maker. Check the original website for current features, pricing, and terms.</p></section><section class="section wrap">${sectionHead('KEEP EXPLORING','A few related finds.',button('Browse '+e(r.category),u('/toolbox/?category='+encodeURIComponent(r.category)),'text-link'))}<div class="resource-grid">${resources.filter(x=>x.id!==r.id&&x.category===r.category).slice(0,3).map(resourceCard).join('')}</div></section>${contactStrip}`});
-await page('/contact/',{title:'Contact',description:'Connect with Leo Battiste about product design, brand identity, and digital experiences.',body:`<section class="page-heading contact-page wrap">${eyebrow('SAY HELLO')}<h1>Good work starts<br>with a <em>conversation.</em></h1><p class="page-lede">Have a project in mind, a useful resource to share, or just want to connect? Find me here.</p><div class="contact-options">${site.email?`<a href="mailto:${e(site.email)}"><span>Email</span><strong>${e(site.email)}</strong>${arrow}</a>`:''}<a href="${e(site.github)}" target="_blank" rel="noopener noreferrer"><span>GitHub</span><strong>@leobattiste</strong>${arrow}<span class="sr-only">Opens in a new tab</span></a><a href="https://www.pheelm.com/" target="_blank" rel="noopener noreferrer"><span>My latest project</span><strong>Pheelm</strong>${arrow}<span class="sr-only">Opens in a new tab</span></a></div></section>`});
-await page('/privacy/',{title:'Privacy',description:'How this portfolio handles favorites, storage, and external links.',body:`<section class="page-heading wrap">${eyebrow('THE SMALL PRINT')}<h1>A little clarity<br>about <em>privacy.</em></h1></section><article class="prose legal wrap"><h2>Your Toolbox favorites</h2><p>The Toolbox stores saved resource IDs in local storage in your browser. There is no portfolio account and favorites are not sent to a portfolio database. If storage is unavailable, favorites work for the current visit only. Clearing this site’s browser data removes them.</p><h2>Export and import</h2><p>Exporting favorites creates a JSON file on your device. Importing reads the file in your browser and saves matching resources locally. Imported files are not uploaded to a server.</p><h2>Fonts and links</h2><p>Fonts and images used in this portfolio are served with the site. It does not load analytics, advertising trackers, or external font services. External links lead to websites with their own privacy practices.</p><h2>Hosting</h2><p>The hosting service may process technical information needed to deliver the site, including network requests. ChatGPT Site access may require sign-in according to the site’s sharing settings.</p><h2>Get in touch</h2><p>You can find me on <a href="${e(site.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>.</p><p class="quiet-note">Updated ${date(site.updated)}.</p></article>`});
-await page('/404.html',{title:'Page not found',description:'This page could not be found. Explore Leo Battiste’s work, Journal, or Toolbox.',noindex:true,body:`<section class="page-heading wrap not-found">${eyebrow('404 / A LITTLE OFF TRACK')}<h1>Let’s find<br>your <em>way back.</em></h1><p class="page-lede">That page may have moved. There’s still plenty to explore.</p><div class="inline-actions">${button('Back home',u('/'))}${button('Explore the Toolbox',u('/toolbox/'),'text-link')}</div></section>`});
-await writeFile(path.join(out,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${pages.map(p=>`<url><loc>${e(absolute(p))}</loc><lastmod>${site.updated}</lastmod></url>`).join('')}</urlset>`);
-await writeFile(path.join(out,'robots.txt'),`User-agent: *\nAllow: /\nSitemap: ${absolute('/sitemap.xml')}\n`);
-await writeFile(path.join(out,'feed.xml'),`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Leo Battiste — Journal</title><link>${e(absolute('/journal/'))}</link><description>Notes on design, resources, and ideas along the way.</description><language>en</language>${liveArticles.map(a=>`<item><title>${e(a.title)}</title><link>${e(absolute('/journal/'+a.slug+'/'))}</link><guid>${e(absolute('/journal/'+a.slug+'/'))}</guid><pubDate>${new Date(a.date+'T12:00:00Z').toUTCString()}</pubDate><description>${e(a.description)}</description></item>`).join('')}</channel></rss>`);
-await writeFile(path.join(out,'build-info.json'),JSON.stringify({name:site.name,projects:liveProjects.length,articles:liveArticles.length,resources:resources.length,categories:categories.length,pages:pages.length,origin,basePath:prefix}));
-console.log(`Built ${pages.length} pages: ${liveProjects.length} project, ${liveArticles.length} article, ${resources.length} resources in ${categories.length} categories.`);
+await writeFile(
+  path.join(out, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map((p) => `<url><loc>${e(absolute(p))}</loc><lastmod>${site.updated}</lastmod></url>`).join("")}</urlset>`,
+);
+await writeFile(
+  path.join(out, "robots.txt"),
+  `User-agent: *\nAllow: /\nSitemap: ${absolute("/sitemap.xml")}\n`,
+);
+await writeFile(
+  path.join(out, "feed.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Leo Battiste — Journal</title><link>${e(absolute("/journal/"))}</link><description>Notes on design, resources, and ideas along the way.</description><language>en</language>${articles.map((a) => `<item><title>${e(a.title)}</title><link>${e(absolute("/journal/" + a.slug + "/"))}</link><guid>${e(absolute("/journal/" + a.slug + "/"))}</guid><pubDate>${new Date(a.date + "T12:00:00Z").toUTCString()}</pubDate><description>${e(a.description)}</description></item>`).join("")}</channel></rss>`,
+);
+await writeFile(
+  path.join(out, "build-info.json"),
+  JSON.stringify({
+    name: site.name,
+    projects: projects.length,
+    articles: articles.length,
+    resources: resources.length,
+    categories: new Set(resources.map((r) => r.category)).size,
+    pages: routes.length,
+    origin,
+    basePath: prefix,
+  }),
+);
+console.log(
+  `Built ${routes.length} pages with React + shadcn/ui: ${projects.length} project, ${articles.length} article, ${resources.length} resources.`,
+);

@@ -14,7 +14,7 @@ In repository Settings → Pages, choose GitHub Actions as the build source. In 
 
 ## Vercel
 
-Import the repository with its root directory left at the repository root. The tracked `vercel.json` selects the static-site configuration, runs `npm run build`, and serves `dist/`. Node.js is pinned to `22.x` in `package.json`, matching GitHub Actions. The site does not generate a `public/` directory.
+Import the repository with its root directory left at the repository root. The tracked `vercel.json` installs the locked pnpm dependencies, runs `pnpm run build`, and serves `dist/`. Node.js is pinned to `22.x` in `package.json`, matching GitHub Actions. The site does not generate a `public/` directory.
 
 With Vercel's Git integration, pushing to `main` builds a production deployment; other branches receive preview deployments. Set `SITE_ORIGIN` to the final HTTPS portfolio origin for canonical URLs, social metadata, RSS, and the sitemap. Leave `BASE_PATH` unset for a Vercel root-domain deployment.
 
@@ -32,6 +32,6 @@ No domain was provided or purchased. To connect one, add it in the hosting provi
 
 ## Verification
 
-`npm run check` tests search, URL state, sorting, favorite export/import compatibility, collection rules, draft exclusion, metadata, unique headings and IDs, image alt attributes, and internal route/asset resolution across the entire generated site. `python3 scripts/check-built.py` parses HTML and validates XML feeds. A second build using `/Portfolio-` verifies subdirectory hosting.
+`pnpm run check` tests search, URL state, sorting, favorite export/import compatibility, collection rules, draft exclusion, metadata, unique headings and IDs, image alt attributes, and internal route/asset resolution across the entire generated site. `python3 scripts/check-built.py` parses HTML and validates XML feeds. A second build using `/Portfolio-` verifies subdirectory hosting.
 
 Browser QA requires the managed preview/browser tools. If those are unavailable, desktop/mobile visual checks and screen-reader behavior remain unverified; static validation is not a substitute.

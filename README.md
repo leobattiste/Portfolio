@@ -1,31 +1,40 @@
 # Leo Battiste — Product designer
 
-A complete static portfolio with About, Work, Journal, Contact, and a searchable Toolbox. Pheelm is the first published project, covering naming, identity, product design, and development.
+A responsive portfolio built with React, TypeScript, Vite, Tailwind CSS v4, and shadcn/ui (Radix Nova). Every public page is rendered to static HTML and hydrated with React. Pheelm is the first featured project.
 
-## Build and check
+## Develop
 
-Requires Node.js 22+. No dependency installation is needed.
+Node.js 22 and pnpm 11.25.0:
 
 ```sh
-npm run check
-python3 scripts/check-built.py
-python3 -m http.server 8000 --directory dist
+pnpm install --frozen-lockfile
+pnpm run build
+pnpm dev
 ```
 
-## Content
+The initial build prepares structured content for the development server. After content changes, rebuild to refresh that content. CSS and React component changes update through Vite while developing.
 
-- `content/site.json`: profile and contact settings.
-- `content/projects/*.json`: project pages; unpublished templates stay hidden.
-- `content/journal/*.md`: Markdown stories with JSON frontmatter and draft control.
+## Build and test
+
+```sh
+pnpm run check
+python3 scripts/check-built.py
+```
+
+The output is `dist/`, including all project, article, and resource URLs, metadata, RSS, sitemap, and 404 page. Vercel is configured to install with pnpm and serve `dist`.
+
+## Content and source
+
+- `content/site.json`: profile and optional contact details.
+- `content/projects/*.json`: projects, with unpublished template support.
+- `content/journal/*.md`: stories with draft control.
 - `content/resources.json`: curated resources with stable IDs and link status.
-- `src/`: design system, progressive enhancement, search, filters, local favorites, import/export, and local assets.
-- `scripts/build.mjs`: static generator, metadata, RSS, sitemap, and resource permalinks.
-- `tests/`: behavior and generated-site checks.
+- `src/components/ui`: generated shadcn components.
+- `src/components`: site shell, page designs, and interactive Toolbox.
+- `src/lib`: content helpers, styles, and favorites state.
+- `scripts/build.mjs`: validation, React prerendering, feeds, and static output.
+- `.codex/config.toml`: requested shadcn MCP configuration.
 
-See [Content guide](docs/CONTENT.md) for editing and [Launch guide](docs/LAUNCH.md) for deployment and remaining personal details.
+See [Design system and MCP](docs/DESIGN-SYSTEM.md), [Content guide](docs/CONTENT.md), and [Hosting guide](docs/LAUNCH.md).
 
-## Deploy
-
-`dist/` works on static hosts. GitHub Actions builds and tests pushes and PRs, then uploads downloadable preview artifacts. Automatic GitHub Pages publishing is available through the `PAGES_ENABLED` repository variable. GitHub Pages builds support `/Portfolio-` as a base path. The private ChatGPT Site is published separately and its hosting manifest lives in `.openai/hosting.json`.
-
-Favorites stay in each visitor's browser. Export/import transfers them without accounts. Fonts and imagery are served locally; no analytics or advertising scripts are loaded.
+Favorites and appearance stay in the visitor's browser. Fonts and imagery are served locally. No analytics, advertising scripts, or portfolio accounts are required.

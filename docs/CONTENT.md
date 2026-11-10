@@ -29,10 +29,12 @@ The source contains 395 curated candidates; 22 confirmed 404/410 destinations ar
 ## Check and publish
 
 1. Edit content or assets.
-2. Run `npm run check` and `python3 scripts/check-built.py`.
+2. Run `pnpm run check` and `python3 scripts/check-built.py`.
 3. Push to a branch and open a pull request. GitHub Actions checks all pages and uploads a downloadable preview artifact.
 4. Merge to `main`. When Pages is enabled, checks and deployment run automatically.
 
 For a preview artifact, download and extract it, then run `python3 -m http.server 8000` in the extracted folder and open localhost:8000. This is a local preview, not a hosted PR deployment.
 
 The ChatGPT Site is a separate private publication. Update it through the Sites workflow using the same source commit and a freshly built archive.
+
+The redesigned build installs dependencies first (`pnpm install --frozen-lockfile`), validates content, compiles TypeScript, builds Vite assets, then renders React to every static route. Generated content and server bundles stay in ignored `.build/`.
