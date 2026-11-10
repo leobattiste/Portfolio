@@ -22,7 +22,7 @@ Supported Markdown: paragraphs, `##` headings, `###` headings, lists starting wi
 
 Edit `content/resources.json`. Each resource has a stable `id`, title, description, URL, domain, category, tags, featured flag, and order. Keep IDs stable because favorites and permalinks use them. `featured: true` adds a resource to Highlights. `linkStatus: broken` excludes a resource from the generated site without deleting its record.
 
-The source contains 413 curated candidates; 22 confirmed 404/410 destinations are excluded. 391 resources currently publish. The original export had 520 unique links: 103 account-specific, personal, unrelated, or review-needed entries were withheld, and four canonical duplicates merged. Original source data and detailed audit logs stay in ignored `.local/` files in the working checkout.
+The source contains 395 curated candidates; 22 confirmed 404/410 destinations are excluded. 373 resources currently publish. The original export had 520 unique links: 121 account-specific, personal, unrelated, or review-needed entries were withheld, and four canonical duplicates merged. Original source data and detailed audit logs stay in ignored `.local/` files in the working checkout.
 
 `python3 scripts/check-links.py` checks destinations and updates their status. It uses HEAD with GET confirmation for 404/410 results. Bot blocks, authentication requirements, timeouts, and server errors are marked unverified, not silently deleted. Run this intentionally when reviewing links; it is not part of every build.
 

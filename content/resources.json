@@ -414,21 +414,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "dashboard-d6594a",
-    "title": "Dashboard",
-    "description": "Dashboard | PhantomBuster. A saved reference for design tools.",
-    "url": "https://phantombuster.com/855890911569772/phantoms",
-    "domain": "phantombuster.com",
-    "category": "Design tools",
-    "tags": [
-      "Design tools"
-    ],
-    "featured": false,
-    "order": 27,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "universal-cheatsheet-how-to-start-in-ux-ui-r-uxd-1a7a8f",
     "title": "Universal cheatsheet how to start in UX/UI : r/UXDesign",
     "description": "Universal cheatsheet how to start in UX/UI : r/UXDesign. A saved reference for learning.",
@@ -475,8 +460,8 @@
   },
   {
     "id": "home-3df899",
-    "title": "Home",
-    "description": "Home | Laws of UX. A saved reference for learning.",
+    "title": "Laws of UX",
+    "description": "A collection of principles for understanding how people use interfaces.",
     "url": "https://lawsofux.com/",
     "domain": "lawsofux.com",
     "category": "Learning",
@@ -850,21 +835,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "squarespace-965d68",
-    "title": "Squarespace",
-    "description": "Squarespace — Account Dashboard. A saved reference for marketing & business.",
-    "url": "https://account.squarespace.com/",
-    "domain": "account.squarespace.com",
-    "category": "Marketing & business",
-    "tags": [
-      "Marketing & business"
-    ],
-    "featured": false,
-    "order": 56,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "beehiiv-434e8f",
     "title": "beehiiv",
     "description": "beehiiv — The newsletter platform built for growth. A saved reference for marketing & business.",
@@ -1135,21 +1105,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "monitor-competitor-blogs-workflow-fd9f42",
-    "title": "Monitor Competitor Blogs - Workflow",
-    "description": "Monitor Competitor Blogs - Workflow | Copy.ai. A saved reference for marketing & business.",
-    "url": "https://app.copy.ai/workflows/WCFG-f14abee4-fce2-4d7c-bf55-a8a1295aebcc?tab=solo&from=library&shareid=8a7147&teamspaceId=977536&nextInternalLocale=en&node=search",
-    "domain": "app.copy.ai",
-    "category": "Marketing & business",
-    "tags": [
-      "Marketing & business"
-    ],
-    "featured": false,
-    "order": 75,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "cookie-free-and-privacy-friendly-web-analytics-e302ba",
     "title": "Cookie-free and Privacy-friendly Web Analytics",
     "description": "Cookie-free and Privacy-friendly Web Analytics - Pirsch Analytics.",
@@ -1363,21 +1318,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "interview-questions-for-creatives-b30217",
-    "title": "Interview Questions for Creatives",
-    "description": "Interview Questions for Creatives - Copy.ai. A saved reference for design tools.",
-    "url": "https://app.copy.ai/teamspace/977536/projects/37195041?teamspaceId=977536&tool=chat&tab=results&sidebar=tools",
-    "domain": "app.copy.ai",
-    "category": "Design tools",
-    "tags": [
-      "Design tools"
-    ],
-    "featured": false,
-    "order": 90,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "seo-audit-tool-free-website-seo-analysis-tool-au-21bda9",
     "title": "SEO Audit Tool: Free Website SEO Analysis Tool & Audit Report",
     "description": "SEO Audit Tool: Free Website SEO Analysis Tool & Audit Report.",
@@ -1421,21 +1361,6 @@
     ],
     "featured": false,
     "order": 93,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "untitled-zap-866eb6",
-    "title": "Untitled Zap",
-    "description": "Untitled Zap | Zapier. A saved reference for design tools.",
-    "url": "https://zapier.com/editor/222593709/draft/222593709/fields",
-    "domain": "zapier.com",
-    "category": "Design tools",
-    "tags": [
-      "Design tools"
-    ],
-    "featured": false,
-    "order": 94,
     "linkStatus": "available",
     "checkedOn": "2026-11-10"
   },
@@ -1680,21 +1605,6 @@
     ],
     "featured": false,
     "order": 110,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "zapier-0ba7cc",
-    "title": "Zapier",
-    "description": "Zapier. A saved reference for design tools.",
-    "url": "https://zapier.com/editor/222593709/draft",
-    "domain": "zapier.com",
-    "category": "Design tools",
-    "tags": [
-      "Design tools"
-    ],
-    "featured": false,
-    "order": 111,
     "linkStatus": "available",
     "checkedOn": "2026-11-10"
   },
@@ -2100,8 +2010,8 @@
   },
   {
     "id": "home-f68380",
-    "title": "Home",
-    "description": "Home - Velvetyne. A saved reference for typography.",
+    "title": "Velvetyne",
+    "description": "A saved typography resource for exploring typefaces.",
     "url": "https://velvetyne.fr/",
     "domain": "velvetyne.fr",
     "category": "Typography",
@@ -2402,8 +2312,8 @@
   },
   {
     "id": "work-0e31c5",
-    "title": "Work",
-    "description": "Work — Mouthwash Studio. A saved reference for inspiration.",
+    "title": "MOUTHWASH Studio",
+    "description": "A studio work reference from the inspiration collection.",
     "url": "https://mouthwash.studio/work",
     "domain": "mouthwash.studio",
     "category": "Inspiration",
@@ -3302,7 +3212,7 @@
   },
   {
     "id": "web-d3abc9",
-    "title": "web",
+    "title": "Web references on Are.na",
     "description": "web | Are.na. A saved reference for inspiration.",
     "url": "https://www.are.na/jonas-pelzer/web-1524558860",
     "domain": "are.na",
@@ -3689,22 +3599,6 @@
     "featured": false,
     "order": 243,
     "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "answerthepublic-that-free-visual-keyword-researc-d0792c",
-    "title": "AnswerThePublic: that free visual keyword research & content ideas tool",
-    "description": "AnswerThePublic: that free visual keyword research & content ideas tool.",
-    "url": "https://answerthepublic.com/users/sign_up?user%5Bfree%5D=1",
-    "domain": "answerthepublic.com",
-    "category": "Marketing & business",
-    "tags": [
-      "Marketing & business",
-      "Free resources"
-    ],
-    "featured": false,
-    "order": 244,
-    "linkStatus": "unverified",
     "checkedOn": "2026-11-10"
   },
   {
@@ -4315,36 +4209,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "log-in-35b5da",
-    "title": "Log in",
-    "description": "Log in | Typeform. A saved reference for design tools.",
-    "url": "https://admin.typeform.com/login?tid=d0c70fe3-aeca-4665-b6d3-0338e68ec409",
-    "domain": "admin.typeform.com",
-    "category": "Design tools",
-    "tags": [
-      "Design tools"
-    ],
-    "featured": false,
-    "order": 285,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "asana-de842a",
-    "title": "● Asana",
-    "description": "● Asana. A saved reference for design tools.",
-    "url": "https://app.asana.com/0/1206568496489130/list",
-    "domain": "app.asana.com",
-    "category": "Design tools",
-    "tags": [
-      "Design tools"
-    ],
-    "featured": false,
-    "order": 286,
-    "linkStatus": "unverified",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "google-forms-a-guide-for-how-to-create-google-fo-23e258",
     "title": "Google Forms: A guide for how to create Google Form surveys | Zapier",
     "description": "Google Forms: A guide for how to create Google Form surveys | Zapier.",
@@ -4689,21 +4553,6 @@
     ],
     "featured": false,
     "order": 309,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "dashboard-530b2d",
-    "title": "Dashboard",
-    "description": "Dashboard — Community Box. A saved reference for ui & development.",
-    "url": "https://dashboard.communitybox.co/",
-    "domain": "dashboard.communitybox.co",
-    "category": "UI & development",
-    "tags": [
-      "UI & development"
-    ],
-    "featured": false,
-    "order": 310,
     "linkStatus": "available",
     "checkedOn": "2026-11-10"
   },
@@ -5345,21 +5194,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "untitled-65ca9d",
-    "title": "Untitled",
-    "description": "Untitled - September 16, 2026 at 13.56.38. A saved reference for ui & development.",
-    "url": "https://new.express.adobe.com/id/urn:aaid:sc:US:879a4dce-dbec-4c49-aec3-e8c26264eb5b?pageId=46f3325f-9ebe-4303-9877-2f4fdca4f49b&category=text",
-    "domain": "new.express.adobe.com",
-    "category": "UI & development",
-    "tags": [
-      "UI & development"
-    ],
-    "featured": false,
-    "order": 353,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "ai-video-generator-image-generator-by-higgsfield-9bc37e",
     "title": "AI Video Generator & Image Generator by Higgsfield",
     "description": "AI Video Generator & Image Generator by Higgsfield. A saved reference for motion & video.",
@@ -5768,36 +5602,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "teamcamp-e380fb",
-    "title": "Teamcamp",
-    "description": "Teamcamp. A saved reference for inspiration.",
-    "url": "https://dash.teamcamp.app/projects/details/P4sqfj_zsrw7xUNvM4X3k/messages",
-    "domain": "dash.teamcamp.app",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 381,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "leo-projects-2be5d2",
-    "title": "Leo › Projects",
-    "description": "Leo › Projects. A saved reference for inspiration.",
-    "url": "https://linear.app/leojh/team/LEO/projects/all",
-    "domain": "linear.app",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 382,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "your-optimal-day-planned-with-ai-851a4b",
     "title": "Your Optimal Day, Planned with AI",
     "description": "Your Optimal Day, Planned with AI. A saved reference for inspiration.",
@@ -5809,51 +5613,6 @@
     ],
     "featured": false,
     "order": 383,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "mine-f1e38d",
-    "title": "Mine",
-    "description": "Mine - Work items. A saved reference for inspiration.",
-    "url": "https://app.plane.so/mine564/projects/23fce234-839b-4b5a-89c1-17ba925f90b2/issues/",
-    "domain": "app.plane.so",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 384,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "settings-26a0d3",
-    "title": "Settings",
-    "description": "Settings | cardboards. A saved reference for inspiration.",
-    "url": "https://www.mycardboards.com/p/sgyvuax2tl22m5vvirom3e4h/settings",
-    "domain": "mycardboards.com",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 385,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "tasks-website-98752f",
-    "title": "Tasks - Website",
-    "description": "Tasks - Website | Bordio. A saved reference for inspiration.",
-    "url": "https://app.bordio.com/workspace/686fe2c0d3475f066e2feb58/project/686fe3046646ef876730834d/tasks?view=TableView",
-    "domain": "app.bordio.com",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 386,
     "linkStatus": "available",
     "checkedOn": "2026-11-10"
   },
@@ -5873,21 +5632,6 @@
     "checkedOn": "2026-11-10"
   },
   {
-    "id": "honeybook-notes-88a33b",
-    "title": "HoneyBook: Notes",
-    "description": "HoneyBook: Notes. A saved reference for inspiration.",
-    "url": "https://www.honeybook.com/app/event/6875a152006a9600262acad2/workspace/6875a152006a9600262acad4/notes",
-    "domain": "honeybook.com",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 388,
-    "linkStatus": "available",
-    "checkedOn": "2026-11-10"
-  },
-  {
     "id": "height-help-center-77ad4d",
     "title": "Height Help Center",
     "description": "Height Help Center. A saved reference for inspiration.",
@@ -5900,21 +5644,6 @@
     "featured": false,
     "order": 389,
     "linkStatus": "unverified",
-    "checkedOn": "2026-11-10"
-  },
-  {
-    "id": "ora-f85018",
-    "title": "Ora",
-    "description": "Ora. A saved reference for inspiration.",
-    "url": "https://app.ora.pm/projects",
-    "domain": "app.ora.pm",
-    "category": "Inspiration",
-    "tags": [
-      "Inspiration"
-    ],
-    "featured": false,
-    "order": 390,
-    "linkStatus": "available",
     "checkedOn": "2026-11-10"
   },
   {
