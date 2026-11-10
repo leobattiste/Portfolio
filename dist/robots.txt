@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://design-notes-studio-portfolio.beaminggoat2.chatgpt.site/sitemap.xml

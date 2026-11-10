@@ -1,0 +1,20 @@
+{
+  "slug": "your-next-project",
+  "title": "Project title",
+  "subtitle": "One line describing the project.",
+  "description": "What the product is and who it helps.",
+  "published": false,
+  "featured": false,
+  "order": 2,
+  "liveUrl": "",
+  "sourceUrl": "",
+  "cover": "",
+  "coverAlt": "",
+  "disciplines": ["Product design"],
+  "role": "Your specific contribution",
+  "platform": "Web or mobile",
+  "status": "Draft",
+  "sections": [{"id": "overview", "title": "The overview", "body": "Describe the context, your contribution, and the decisions you made. Add only verified results."}],
+  "closing": "",
+  "sources": []
+}

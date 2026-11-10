@@ -1,10 +1,165 @@
-const $=s=>document.querySelector(s);let bookmarks=[],visible=12,savedOnly=false;let saved;try{saved=new Set(JSON.parse(localStorage.getItem('design-practice-saved')||'[]'))}catch{saved=new Set()}
-const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function notify(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2200)}
-function render(){const query=$('#search').value.trim().toLowerCase(),category=$('#category').value;const results=bookmarks.filter(x=>(category==='all'||x.category===category)&&(!savedOnly||saved.has(x.url))&&(`${x.title} ${x.url} ${x.folder}`.toLowerCase().includes(query)));$('#result-count').textContent=`${results.length} resource${results.length===1?'':'s'}${savedOnly?' saved':''} · ${category==='all'?'All categories':category}`;$('#resources').innerHTML=results.length?results.slice(0,visible).map(x=>{const domain=new URL(x.url).hostname.replace(/^www\./,'');return `<article class="resource"><div class="resource-top"><span class="resource-icon" aria-hidden="true">${escapeHTML(x.title.charAt(0).toUpperCase())}</span><button class="save" data-url="${escapeHTML(x.url)}" aria-label="${saved.has(x.url)?'Unsave':'Save'} ${escapeHTML(x.title)}" aria-pressed="${saved.has(x.url)}">${saved.has(x.url)?'♥':'♡'}</button></div><h3><a href="${escapeHTML(x.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(x.title)}</a></h3><div class="resource-footer"><span>${escapeHTML(x.category)}</span><span>${escapeHTML(domain)}</span></div></article>`}).join(''):'<p class="empty">No resources found. Try another search or category.</p>';$('#load-more').hidden=results.length<=visible;$('#saved-filter span').textContent=`Saved${saved.size?' ('+saved.size+')':''}`}
-fetch('bookmarks.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{bookmarks=data;$('.collection-number').innerHTML=`${data.length}<span>↗</span>`;const categories=[...new Set(data.map(x=>x.category))].sort((a,b)=>a.localeCompare(b));categories.forEach(c=>{const opt=document.createElement('option');opt.value=c;opt.textContent=c;$('#category').append(opt)});render()}).catch(()=>{$('#resources').innerHTML='<p class="empty">The collection could not load. Please refresh to try again.</p>';$('#result-count').textContent='Collection unavailable';$('#load-more').hidden=true});
-$('#search').addEventListener('input',()=>{visible=12;render()});$('#category').addEventListener('change',()=>{visible=12;render()});$('#saved-filter').addEventListener('click',()=>{savedOnly=!savedOnly;visible=12;$('#saved-filter').setAttribute('aria-pressed',savedOnly);render()});$('#load-more').addEventListener('click',()=>{visible+=12;render()});$('#resources').addEventListener('click',e=>{const b=e.target.closest('.save');if(!b)return;const url=b.dataset.url;saved.has(url)?saved.delete(url):saved.add(url);try{localStorage.setItem('design-practice-saved',JSON.stringify([...saved]))}catch{notify('Saved for this visit only');render();return}notify(saved.has(url)?'Resource saved to your collection':'Resource removed from saved');render()});
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!$('#story-dialog').open){e.preventDefault();$('#search').focus();$('#toolbox').scrollIntoView({behavior:'smooth'})}});
-const stories={flow:{type:'CONCEPT PROJECT · PRODUCT DESIGN',title:'Flow — Find your focus',body:'<p>An illustrative workspace concept exploring a calmer relationship with productivity. The interface brings active work, progress, and priorities into one considered view.</p><h3>The design question</h3><p>How might a workspace help people understand what matters without adding another layer of noise?</p><h3>The approach</h3><p>A restrained palette, clear type hierarchy, and a short path to daily tasks put focus ahead of feature density. Progress is visible at a glance, while secondary navigation stays quiet.</p><p>This is a sample case study for the portfolio design. Replace it with your real project context, research, process, and outcomes.</p>'},form:{type:'CONCEPT PROJECT · MOBILE EXPERIENCE',title:'Form — A little better, every day',body:'<p>An illustrative habit app concept built around small, repeatable actions. A simple daily view makes progress visible without overwhelming the person using it.</p><h3>The design question</h3><p>What would habit tracking feel like if it encouraged consistency without demanding perfection?</p><h3>The approach</h3><p>Warm neutrals and soft green progress indicators create a gentle rhythm. A compact list helps someone check in with their day and take the next small step.</p><p>This is a sample case study for the portfolio design. Replace it with your real project context, research, process, and outcomes.</p>'},details:{type:'JOURNAL · SAMPLE ESSAY',title:'The small details are the big things.',body:'<p>An interface is made of moments. A label that answers a question before it is asked. A button that explains what happens next. A loading state that makes a wait understandable.</p><h3>Clarity is a detail</h3><p>It is easy to think of polish as something that happens after the important work. But small decisions often carry the largest share of someone’s experience. A useful error message can matter more than an elaborate animation.</p><p>Look at the places where someone hesitates. Is the language familiar? Is the next step obvious? Can they recover when something goes wrong? These questions make details practical.</p><h3>Make room for care</h3><p>Pick one interaction and follow it all the way through. Consider its empty, loading, success, and failure states. That attention is how an interface begins to feel considered.</p><p>This sample essay demonstrates the Journal reading experience.</p>'},collect:{type:'JOURNAL · SAMPLE ESSAY',title:'Collect less. Notice more.',body:'<p>A bookmark is a small promise to come back. Over time, those promises become a map of what catches our attention.</p><h3>Give a collection a purpose</h3><p>Rather than saving an entire interface because it looks good, ask what is useful about it. Is it the way information is grouped? A clear explanation? A thoughtful transition between states?</p><p>A collection becomes more useful when it answers a question. Keep resources close to the problems they help solve, and revisit them when a real design decision calls for them.</p><h3>Make the useful things easy to find</h3><p>The Toolbox on this site makes a personal bookmark archive searchable. The value is in returning to a useful idea at the right time, and sharing it so someone else can do the same.</p><p>This sample essay demonstrates the Journal reading experience.</p>'},simple:{type:'JOURNAL · SAMPLE ESSAY',title:'Simple is a process, not a starting point.',body:'<p>A simple interface can hide a great deal of careful thinking. Before something feels effortless, someone needs to understand the complexity underneath.</p><h3>Begin with the problem</h3><p>Map what people are trying to do. Understand the decisions they need to make and the information those decisions depend on. Removing things too early can make a screen look calm while making the task harder.</p><h3>Reduce with intention</h3><p>Once the structure is clear, start questioning it. Which choices can wait? Which labels do people already understand? Which steps exist because of the system rather than the person using it?</p><p>Simplicity arrives through those questions. It is a result of understanding, iteration, and care.</p><p>This sample essay demonstrates the Journal reading experience.</p>'}};
-document.querySelectorAll('[data-story]').forEach(b=>b.addEventListener('click',()=>{const s=stories[b.dataset.story];$('#story-content').innerHTML=`<span class="eyebrow">${s.type}</span><h2>${s.title}</h2>${s.body}`;$('#story-dialog').showModal();$('#story-dialog').scrollTop=0}));$('#close-dialog').addEventListener('click',()=>$('#story-dialog').close());$('#story-dialog').addEventListener('click',e=>{if(e.target===$('#story-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close()}});
-const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}})},{rootMargin:'-20% 0px -60% 0px'});document.querySelectorAll('main>section[id]').forEach(s=>observer.observe(s));
+import { PAGE_SIZE, filterResources, parseState, serializeState, importFavorites, migrateFavorites } from './resource-model.mjs';
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
+const base = document.body.dataset.base || '';
+const html = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastTimer;
+function notify(message) {
+  const toast = $('#toast');
+  toast.textContent = message; toast.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>toast.classList.remove('show'),3500);
+}
+const menu = $('.menu-toggle');
+if (menu) document.querySelector('.site-header').classList.add('menu-ready');
+menu?.addEventListener('click',()=>{
+  const open = menu.getAttribute('aria-expanded') !== 'true';
+  menu.setAttribute('aria-expanded',String(open));
+  document.querySelector('.site-header').classList.toggle('menu-open',open);
+});
+document.addEventListener('keydown',event=>{
+  if (event.key==='Escape' && menu?.getAttribute('aria-expanded')==='true') {
+    menu.click(); menu.focus();
+  }
+});
+$$('[data-share]').forEach(button=>button.addEventListener('click',async()=>{
+  try { await navigator.clipboard.writeText(location.href); notify('Link copied.'); }
+  catch { notify('Copy the page address from your browser to share it.'); }
+}));
+$$('[data-topic]').forEach(button=>button.addEventListener('click',()=>{
+  $$('[data-topic]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+  $$('[data-article-topic]').forEach(article=>{article.hidden = button.dataset.topic!=='all' && article.dataset.articleTopic!==button.dataset.topic;});
+}));
+const progress = $('.reading-progress');
+if (progress) {
+  let scheduled = false;
+  const update = ()=>{
+    const article = $('.article-body');
+    const start = article.offsetTop-window.innerHeight*.35;
+    const distance = article.offsetHeight-window.innerHeight*.3;
+    progress.style.transform = `scaleX(${Math.max(0,Math.min(1,(window.scrollY-start)/Math.max(1,distance)))})`;
+    scheduled = false;
+  };
+  addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(update);}},{passive:true});
+  addEventListener('resize',update); update();
+}
+if ($('[data-save]') || $('#resource-grid')) initResources();
+async function initResources() {
+  let resources;
+  try {
+    const response = await fetch(`${base}/resources.json`);
+    if (!response.ok) throw new Error('Collection unavailable');
+    resources = await response.json();
+  } catch {
+    if ($('#result-count')) $('#result-count').textContent='Search is temporarily unavailable. All resources are listed below.';
+    $$('[data-save],#featured-filter,#saved-filter,#export-favorites,#import-favorites,.category-button,#resource-sort,#mobile-category').forEach(el=>{el.disabled=true;});
+    if ($('#resource-search')) $('#resource-search').disabled=true;
+    return;
+  }
+  const key = 'leo-toolbox-favorites-v1';
+  let saved = new Set(), storageAvailable = true;
+  try {
+    const current = localStorage.getItem(key);
+    const raw = JSON.parse(current ?? localStorage.getItem('design-practice-saved') ?? '[]');
+    saved = migrateFavorites(raw,resources);
+    localStorage.setItem(key,JSON.stringify([...saved]));
+  } catch { storageAvailable = false; }
+  const categories = [...new Set(resources.map(r=>r.category))];
+  let state = parseState(location.search,categories), limit = PAGE_SIZE;
+  const grid = $('#resource-grid');
+  function syncSaveButtons() {
+    $$('[data-save]').forEach(button=>{
+      const on = saved.has(button.dataset.save);
+      button.setAttribute('aria-pressed',String(on));
+      button.setAttribute('aria-label',`${on?'Unsave':'Save'} ${button.dataset.title}`);
+      const icon = button.querySelector('[aria-hidden]'); if (icon) icon.textContent=on?'♥':'♡';
+      const label = button.querySelector('.save-label'); if (label) label.textContent=on?'Saved resource':'Save resource';
+    });
+    const label = $('#saved-filter span'); if (label) label.textContent=`Saved${saved.size?' ('+saved.size+')':''}`;
+  }
+  function persist() {
+    try { localStorage.setItem(key,JSON.stringify([...saved])); storageAvailable=true; }
+    catch { storageAvailable=false; }
+  }
+  function card(r) {
+    return `<article class="resource-card" data-resource-id="${r.id}"><div class="resource-top"><span class="resource-icon" aria-hidden="true">${html(r.title[0].toUpperCase())}</span><button class="save-button" data-save="${r.id}" data-title="${html(r.title)}" aria-label="Save ${html(r.title)}" aria-pressed="false"><span aria-hidden="true">♡</span></button></div><h3><a href="${base}/toolbox/${r.id}/">${html(r.title)}</a></h3><p>${html(r.description)}</p><div class="resource-bottom"><a href="${base}/toolbox/?category=${encodeURIComponent(r.category)}">${html(r.category)}</a><a href="${html(r.url)}" class="external-arrow" target="_blank" rel="noopener noreferrer" aria-label="Visit ${html(r.title)} (opens in a new tab)">↗</a></div></article>`;
+  }
+  function syncControls() {
+    if (!grid) return;
+    $('#resource-search').value=state.q;
+    $('#resource-sort').value=state.sort;
+    $('#mobile-category').value=state.category;
+    $('#saved-filter').setAttribute('aria-pressed',String(state.saved));
+    $('#featured-filter').setAttribute('aria-pressed',String(state.featured));
+    $$('.category-button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category===state.category)));
+    $('#clear-filters').hidden=!(state.q||state.category!=='all'||state.saved||state.featured||state.sort!=='curated');
+  }
+  function render({updateUrl=false}={}) {
+    if (!grid) {syncSaveButtons();return;}
+    const results = filterResources(resources,state,saved);
+    grid.innerHTML=results.length?results.slice(0,limit).map(card).join(''):`<div class="empty-state"><span aria-hidden="true">⌕</span><h2>${state.saved?'Your next favorite is out there.':'No matches, yet.'}</h2><p>${state.saved&&!saved.size?'Tap the heart on a resource to keep it here.':'Try a different search or clear the filters.'}</p><button class="button secondary" data-reset>Explore all resources</button></div>`;
+    $('#result-count').textContent=`${results.length} resource${results.length===1?'':'s'} · ${state.category==='all'?'All categories':state.category}${state.saved?' · Saved':''}${state.featured?' · Highlights':''}`;
+    $('#load-more').hidden=results.length<=limit;
+    if(results.length>limit) $('#load-more').textContent=`Explore more resources (${results.length-limit} more) ↓`;
+    syncControls(); syncSaveButtons();
+    if (updateUrl) {
+      const query = serializeState(state);
+      history.replaceState(null,'',`${location.pathname}${query?'?'+query:''}${location.hash}`);
+    }
+  }
+  function setState(patch) {state={...state,...patch};limit=PAGE_SIZE;render({updateUrl:true});}
+  document.addEventListener('click',event=>{
+    const button = event.target.closest('[data-save]');
+    if (!button || button.disabled) return;
+    const id = button.dataset.save, on = !saved.has(id);
+    on?saved.add(id):saved.delete(id); persist();
+    if (grid && state.saved) {
+      const previous = [...grid.querySelectorAll('[data-save]')].indexOf(button);
+      render();
+      const next = grid.querySelectorAll('[data-save]')[Math.max(0,previous-1)];
+      (next||$('#saved-filter')).focus();
+    } else syncSaveButtons();
+    notify(storageAvailable?(on?'Resource saved.':'Removed from favorites.'):'Saved for this visit only. Export a copy to keep your favorites.');
+  });
+  if (grid) {
+    let searchTimer;
+    $('#search-form').addEventListener('submit',event=>{event.preventDefault();clearTimeout(searchTimer);setState({q:$('#resource-search').value.trim()});});
+    $('#resource-search').addEventListener('input',event=>{const value=event.target.value;clearTimeout(searchTimer);searchTimer=setTimeout(()=>setState({q:value}),180);});
+    $$('.category-button').forEach(button=>button.addEventListener('click',()=>setState({category:button.dataset.category})));
+    $('#mobile-category').addEventListener('change',event=>setState({category:event.target.value}));
+    $('#resource-sort').addEventListener('change',event=>setState({sort:event.target.value}));
+    $('#saved-filter').addEventListener('click',()=>setState({saved:!state.saved}));
+    $('#featured-filter').addEventListener('click',()=>setState({featured:!state.featured}));
+    const reset=()=>setState({q:'',category:'all',saved:false,featured:false,sort:'curated'});
+    $('#clear-filters').addEventListener('click',reset);
+    grid.addEventListener('click',event=>{if(event.target.closest('[data-reset]')){reset();$('#resource-search').focus();}});
+    $('#load-more').addEventListener('click',()=>{
+      const previous=limit;limit+=PAGE_SIZE;render();
+      grid.querySelectorAll('.resource-card h3 a')[previous]?.focus({preventScroll:true});
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!event.target.closest('input,textarea,select,[contenteditable]')){event.preventDefault();$('#resource-search').focus();}
+    });
+    addEventListener('popstate',()=>{state=parseState(location.search,categories);limit=PAGE_SIZE;render();});
+    $('#export-favorites').addEventListener('click',()=>{
+      if(!saved.size){notify('Save a resource first, then export your favorites.');return;}
+      const data={version:1,collection:'Leo Battiste — Toolbox',favorites:resources.filter(r=>saved.has(r.id)).map(r=>({id:r.id,title:r.title,url:r.url}))};
+      const link=document.createElement('a');const objectUrl=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+      link.href=objectUrl;link.download='leo-toolbox-favorites.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);notify('Favorites exported.');
+    });
+    $('#import-favorites').addEventListener('change',async event=>{
+      const file=event.target.files[0];if(!file)return;
+      try {
+        if(file.size>1024*1024)throw new Error('Choose a favorites file smaller than 1 MB.');
+        const ids=importFavorites(JSON.parse(await file.text()),resources);
+        const before=saved.size;ids.forEach(id=>saved.add(id));persist();render();
+        notify(ids.length?`${saved.size-before} new favorites imported.${storageAvailable?'':' Saved for this visit only.'}`:'No matching resources found in that file.');
+      } catch(error){notify(error instanceof SyntaxError?'That file is not valid JSON. Choose a Toolbox favorites export.':error.message);}
+      finally {event.target.value='';}
+    });
+    render();
+  } else syncSaveButtons();
+  addEventListener('storage',event=>{
+    if(event.key!==key&&event.key!==null)return;
+    try{saved=migrateFavorites(JSON.parse(event.newValue||'[]'),resources);render();}catch{/* Keep the current valid favorites. */}
+  });
+}

@@ -1,27 +1,31 @@
-# Design & practice
+# Leo Battiste — Product designer
 
-A minimal, responsive product design portfolio with About, Work, Journal, and Toolbox sections.
+A complete static portfolio with About, Work, Journal, Contact, and a searchable Toolbox. Pheelm is the first published project, covering naming, identity, product design, and development.
 
-## Run locally
+## Build and check
 
-No build or dependencies required. Serve `dist` with any static web server:
+Requires Node.js 22+. No dependency installation is needed.
 
 ```sh
+npm run check
+python3 scripts/check-built.py
 python3 -m http.server 8000 --directory dist
 ```
 
-## Edit
+## Content
 
-- `dist/index.html`: portfolio copy and layout, concept project previews, portrait, contact link.
-- `dist/style.css`: responsive design and reduced-motion support.
-- `dist/app.js`: searchable collection, category filters, local favorites, article and project dialogs.
-- `dist/bookmarks.json`: 520 unique HTTP(S) bookmarks imported from the supplied export. Original categories and folder paths are preserved. Export icon data and non-web bookmark URLs are excluded.
-- `dist/assets/portrait.jpg`: supplied portrait.
+- `content/site.json`: profile and contact settings.
+- `content/projects/*.json`: project pages; unpublished templates stay hidden.
+- `content/journal/*.md`: Markdown stories with JSON frontmatter and draft control.
+- `content/resources.json`: curated resources with stable IDs and link status.
+- `src/`: design system, progressive enhancement, search, filters, local favorites, import/export, and local assets.
+- `scripts/build.mjs`: static generator, metadata, RSS, sitemap, and resource permalinks.
+- `tests/`: behavior and generated-site checks.
 
-Work concepts and Journal essays are clearly labeled samples. Replace them with actual projects and writing before presenting the site as a professional record. The contact button uses the verified GitHub profile; update it to your preferred contact method.
+See [Content guide](docs/CONTENT.md) for editing and [Launch guide](docs/LAUNCH.md) for deployment and remaining personal details.
 
-Favorites are stored in the visitor's browser. Google Fonts is optional; system fonts provide fallback. External resources open in a new tab.
+## Deploy
 
-## Hosting
+`dist/` works on static hosts. GitHub Actions builds and tests pushes and PRs, then uploads downloadable preview artifacts. Automatic GitHub Pages publishing is available through the `PAGES_ENABLED` repository variable. GitHub Pages builds support `/Portfolio-` as a base path. The private ChatGPT Site is published separately and its hosting manifest lives in `.openai/hosting.json`.
 
-The `dist` directory is ready for static hosting, including GitHub Pages. `.openai/hosting.json` connects this checkout to its private ChatGPT Site. Publication of the Site is managed separately from GitHub; pushing to GitHub does not automatically update the ChatGPT Site.
+Favorites stay in each visitor's browser. Export/import transfers them without accounts. Fonts and imagery are served locally; no analytics or advertising scripts are loaded.

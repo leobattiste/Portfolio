@@ -1,0 +1,58 @@
+name: Portfolio checks and publishing
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portfolio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check
+      - run: python3 scripts/check-built.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-preview-${{ github.sha }}
+          path: dist
+          include-hidden-files: true
+          retention-days: 14
+  build-pages:
+    if: github.event_name != 'pull_request' && vars.PAGES_ENABLED == 'true'
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run build
+        env:
+          SITE_ORIGIN: https://leobattiste.github.io
+          BASE_PATH: /Portfolio-
+      - run: npm test
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy-pages:
+    if: github.event_name != 'pull_request' && vars.PAGES_ENABLED == 'true'
+    needs: build-pages
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4

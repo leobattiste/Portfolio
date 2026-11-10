@@ -1,0 +1,12 @@
+{
+  "name": "leo-battiste-portfolio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run build && npm test",
+    "check:links": "python3 scripts/check-links.py"
+  },
+  "engines": { "node": ">=22" }
+}
