@@ -600,5 +600,80 @@
     "featured": true,
     "order": 42,
     "linkStatus": "available"
+  },
+  {
+    "id": "album-pray-for-paris",
+    "title": "Pray for Paris",
+    "description": "Westside Gunn combines gritty rhymes, rich samples, and art-world references.",
+    "url": "https://open.spotify.com/album/6nfJMRoIjyRwk3ZTHNm0PY",
+    "domain": "open.spotify.com",
+    "category": "Playlist",
+    "tags": [
+      "Album",
+      "Westside Gunn"
+    ],
+    "featured": false,
+    "order": 43,
+    "linkStatus": "available"
+  },
+  {
+    "id": "album-alone-at-prom-deluxe",
+    "title": "Alone at Prom (Deluxe)",
+    "description": "Tory Lanez brings retro synths and late-night R&B to this expanded album.",
+    "url": "https://open.spotify.com/album/3ZMpNkV6dz01h0U1WeiB8f",
+    "domain": "open.spotify.com",
+    "category": "Playlist",
+    "tags": [
+      "Album",
+      "Tory Lanez"
+    ],
+    "featured": false,
+    "order": 44,
+    "linkStatus": "available"
+  },
+  {
+    "id": "album-the-low-end-theory",
+    "title": "The Low End Theory",
+    "description": "A Tribe Called Quest blends jazz-inspired beats with clever, laid-back rap.",
+    "url": "https://open.spotify.com/album/1p12OAWwudgMqfMzjMvl2a",
+    "domain": "open.spotify.com",
+    "category": "Playlist",
+    "tags": [
+      "Album",
+      "A Tribe Called Quest"
+    ],
+    "featured": false,
+    "order": 45,
+    "linkStatus": "available"
+  },
+  {
+    "id": "album-my-beautiful-dark-twisted-fantasy",
+    "title": "My Beautiful Dark Twisted Fantasy",
+    "description": "Kanye West's ambitious album is full of layered production and memorable collaborations.",
+    "url": "https://open.spotify.com/album/20r762YmB5HeofjMCiPMLv",
+    "domain": "open.spotify.com",
+    "category": "Playlist",
+    "tags": [
+      "Album",
+      "Kanye West"
+    ],
+    "featured": false,
+    "order": 46,
+    "linkStatus": "available"
+  },
+  {
+    "id": "album-love-deluxe",
+    "title": "Love Deluxe",
+    "description": "Sade's smooth vocals and atmospheric sound make this an easy album to revisit.",
+    "url": "https://open.spotify.com/album/6Y8lHGQqTmbE6Hhj1mMCkX",
+    "domain": "open.spotify.com",
+    "category": "Playlist",
+    "tags": [
+      "Album",
+      "Sade"
+    ],
+    "featured": false,
+    "order": 47,
+    "linkStatus": "available"
   }
 ]
