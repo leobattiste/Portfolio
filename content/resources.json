@@ -434,34 +434,6 @@
     "linkStatus": "available"
   },
   {
-    "id": "obsidian",
-    "title": "Obsidian",
-    "description": "Keep notes and link ideas together in a local-first personal knowledge base.",
-    "url": "https://obsidian.md/",
-    "domain": "obsidian.md",
-    "category": "Tools & Productivity",
-    "tags": [
-      "App"
-    ],
-    "featured": false,
-    "order": 31,
-    "linkStatus": "available"
-  },
-  {
-    "id": "raindrop-io",
-    "title": "Raindrop.io",
-    "description": "Save links and organize interesting finds into searchable collections.",
-    "url": "https://raindrop.io/",
-    "domain": "raindrop.io",
-    "category": "Tools & Productivity",
-    "tags": [
-      "App"
-    ],
-    "featured": false,
-    "order": 32,
-    "linkStatus": "available"
-  },
-  {
     "id": "unsplash",
     "title": "Unsplash",
     "description": "A large collection of photography for inspiration and creative projects.",
