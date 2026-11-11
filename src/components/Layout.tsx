@@ -60,7 +60,14 @@ function ThemeToggle() {
 }
 
 export function Layout({ path, children }: { path: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
   useEffect(() => recordView(path), [path]);
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, [open]);
   return (
     <div className="page">
       <a className="skip" href="#main">
@@ -70,18 +77,37 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
         <a className="site-name" href={href("/")}>
           {site.name}
         </a>
-        <nav className="site-nav" aria-label="Main">
-          {navigation.map((n) => (
-            <a
-              key={n.path}
-              href={href(n.path)}
-              aria-current={path.startsWith(n.path) ? "page" : undefined}
-            >
-              {n.label}
-            </a>
-          ))}
+        <div className="site-bar">
+          <nav
+            id="site-nav"
+            className="site-nav"
+            aria-label="Main"
+            data-open={open ? "" : undefined}
+          >
+            {navigation.map((n) => (
+              <a
+                key={n.path}
+                href={href(n.path)}
+                aria-current={path.startsWith(n.path) ? "page" : undefined}
+              >
+                {n.label}
+              </a>
+            ))}
+          </nav>
           <ThemeToggle />
-        </nav>
+          <button
+            type="button"
+            className="menu-button"
+            aria-expanded={open}
+            aria-controls="site-nav"
+            onClick={() => setOpen(!open)}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M2 5.5h12M2 10.5h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            {open ? "Close" : "Menu"}
+          </button>
+        </div>
       </header>
       <main id="main">{children}</main>
       <footer className="site-footer row">

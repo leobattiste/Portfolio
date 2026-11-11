@@ -183,10 +183,14 @@ main {
   font-weight: 600;
   letter-spacing: -0.01em;
 }
+.site-bar,
 .site-nav {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+}
+.menu-button {
+  display: none;
 }
 .site-nav a {
   color: var(--graphite);
@@ -775,11 +779,51 @@ a.line:hover {
     row-gap: 1rem;
   }
   .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.25rem;
     padding-block: 1.25rem;
-    row-gap: 0.75rem;
+  }
+  .site-name {
+    margin-right: auto;
+  }
+  .site-bar {
+    display: contents;
+  }
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-right: -0.6rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 99px;
+  }
+  .menu-button path {
+    transition: d 0.25s var(--ease);
+  }
+  .menu-button[aria-expanded="true"] path {
+    d: path("M3 3l10 10M3 13L13 3");
   }
   .site-nav {
-    gap: 1.1rem;
+    order: 4;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: 1rem 0.5rem;
+  }
+  .site-nav a {
+    padding-block: 0.55rem;
+    border-top: 1px solid var(--mist);
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  /* The menu only collapses once scripts run, so links are never unreachable. */
+  :root[data-theme] .site-nav:not([data-open]) {
+    display: none;
   }
   .label {
     position: static;
