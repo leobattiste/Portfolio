@@ -131,6 +131,21 @@ export function getPage(path: string, content: Content = initial) {
       description:
         "Explore 20 iconic album covers across genres in an interactive 3D record collection.",
     },
+    "/playground/aspect-ratio/": {
+      title: `Aspect ratio | ${site.name}`,
+      description:
+        "One shot framed six ways, from 4:3 to Ultra Panavision. Drag to see what each ratio leaves out.",
+    },
+    "/playground/variable-type/": {
+      title: `Variable type | ${site.name}`,
+      description:
+        "Type a word and watch each letter get heavier the closer your pointer gets.",
+    },
+    "/playground/morphing-button/": {
+      title: `Morphing button | ${site.name}`,
+      description:
+        "One button that moves through four states on a spring you can tune.",
+    },
     "/toolbox/": {
       title: `Toolbox | ${site.name}`,
       description: `${content.resources.length} design and development links saved over the years, searchable and sorted by category.`,

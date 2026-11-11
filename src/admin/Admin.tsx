@@ -1019,6 +1019,11 @@ function Insights() {
         "/about/": "About",
         "/contact/": "Contact",
         "/privacy/": "Privacy",
+        "/playground/": "Playground",
+        "/playground/album-covers/": "Album covers",
+        "/playground/aspect-ratio/": "Aspect ratio",
+        "/playground/variable-type/": "Variable type",
+        "/playground/morphing-button/": "Morphing button",
       };
       for (const p of projects.data || []) map[`/work/${p.slug}/`] = p.title;
       for (const a of articles.data || []) map[`/journal/${a.slug}/`] = a.title;

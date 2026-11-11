@@ -1,8 +1,50 @@
-import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import { Intro, Section } from "./Layout";
 import { asset, href } from "@/lib/site";
 import albums from "../../content/albums.json";
 import "./playground.css";
+import {
+  AspectRatioArt,
+  VariableTypeArt,
+  MorphingButtonArt,
+} from "./Experiments";
+
+function ExperimentCard({
+  path,
+  title,
+  blurb,
+  label,
+  art,
+}: {
+  path: string;
+  title: string;
+  blurb: string;
+  label: string;
+  art: ReactNode;
+}) {
+  return (
+    <a className="experiment" href={href(path)}>
+      <div className="experiment-art" aria-hidden="true">
+        {art}
+      </div>
+      <div className="experiment-caption">
+        <div>
+          <h2>
+            {title} <span aria-hidden="true">↗</span>
+          </h2>
+          <p>{blurb}</p>
+        </div>
+        <span className="label">{label}</span>
+      </div>
+    </a>
+  );
+}
 
 export function Playground() {
   return (
@@ -15,10 +57,14 @@ export function Playground() {
           Things made just to see what happens.
         </p>
       </Intro>
-      <Section label="Experiments" count={1}>
-        <a className="experiment" href={href("/playground/album-covers/")}>
-          <div className="experiment-art" aria-hidden="true">
-            {[albums[17], albums[0], albums[15]].map((a, i) => (
+      <Section label="Experiments" count={4}>
+        <div className="experiments">
+          <ExperimentCard
+            path="/playground/album-covers/"
+            title="Album covers"
+            blurb="20 iconic records. A collection you can get your hands on."
+            label="001 · Interactive"
+            art={[albums[17], albums[0], albums[15]].map((a, i) => (
               <img
                 key={a.id}
                 src={asset(`albums/${a.id}.jpg`)}
@@ -26,17 +72,29 @@ export function Playground() {
                 style={{ "--i": i } as CSSProperties}
               />
             ))}
-          </div>
-          <div className="experiment-caption">
-            <div>
-              <h2>
-                Album covers <span aria-hidden="true">↗</span>
-              </h2>
-              <p>20 iconic records. A collection you can get your hands on.</p>
-            </div>
-            <span className="label">001 · Interactive</span>
-          </div>
-        </a>
+          />
+          <ExperimentCard
+            path="/playground/aspect-ratio/"
+            title="Aspect ratio"
+            blurb="Six ways to frame the same shot. Drag to see what each one hides."
+            label="002 · Film"
+            art={<AspectRatioArt />}
+          />
+          <ExperimentCard
+            path="/playground/variable-type/"
+            title="Variable type"
+            blurb="Letters that get heavier the closer you get."
+            label="003 · Type"
+            art={<VariableTypeArt />}
+          />
+          <ExperimentCard
+            path="/playground/morphing-button/"
+            title="Morphing button"
+            blurb="One button, four states, tuned with real springs."
+            label="004 · Motion"
+            art={<MorphingButtonArt />}
+          />
+        </div>
       </Section>
     </>
   );

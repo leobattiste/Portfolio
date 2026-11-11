@@ -13,6 +13,11 @@ import {
   NotFound,
 } from "@/components/Pages";
 import { Playground, AlbumCovers } from "@/components/Playground";
+import {
+  AspectRatio,
+  VariableType,
+  MorphingButton,
+} from "@/components/Experiments";
 import Toolbox from "@/components/Toolbox";
 import { Privacy, Terms } from "@/components/Legal";
 
@@ -31,6 +36,9 @@ function Site({ path }: { path: string }) {
   else if (path === "/journal/") page = <Journal />;
   else if (path === "/playground/") page = <Playground />;
   else if (path === "/playground/album-covers/") page = <AlbumCovers />;
+  else if (path === "/playground/aspect-ratio/") page = <AspectRatio />;
+  else if (path === "/playground/variable-type/") page = <VariableType />;
+  else if (path === "/playground/morphing-button/") page = <MorphingButton />;
   else if (path === "/toolbox/") page = <Toolbox />;
   else if (path === "/contact/") page = <Contact />;
   else if (path === "/privacy/") page = <Privacy />;

@@ -166,6 +166,27 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
     await click(document.querySelector(".album-grid button"));
     assert.ok(document.querySelector(".record-stage"));
     assert.equal(document.querySelector(".record-information h2").textContent, "The Dark Side of the Moon");
+
+    await render("/playground/aspect-ratio/");
+    const frame = () => document.querySelector(".ratio-frame");
+    await click(buttonNamed("Standard"));
+    assert.equal(document.querySelector("[data-ratio]").textContent, "1.33 : 1");
+    assert.equal(frame().style.getPropertyValue("--letter"), "0%", "4:3 uses side bars, not top and bottom");
+    assert.ok(parseFloat(frame().style.getPropertyValue("--pillar")) > 12);
+    await key(frame(), { key: "End" });
+    assert.equal(document.querySelector("[data-ratio]").textContent, "2.76 : 1");
+    assert.equal(document.querySelector(".ratio-readout span").textContent, "Ultra Panavision");
+
+    await render("/playground/variable-type/");
+    await type(document.querySelector(".lab-field input"), "Hi you");
+    assert.equal(document.querySelectorAll("[data-letter]").length, 5, "spaces aren't weighted letters");
+
+    await render("/playground/morphing-button/");
+    const morph = () => document.querySelector(".lab-stage > .morph");
+    await click(morph());
+    assert.equal(morph().dataset.state, "loading");
+    assert.equal(morph().getAttribute("aria-disabled"), "true");
+    assert.equal(document.querySelector(".morph-stage [role=status]").textContent, "Publishing");
   } finally {
     await React.act(async () => root.unmount());
     win.close();

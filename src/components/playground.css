@@ -1,3 +1,7 @@
+.experiments {
+  display: grid;
+  gap: 56px;
+}
 .experiment {
   display: block;
   text-decoration: none;
