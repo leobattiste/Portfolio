@@ -102,6 +102,16 @@ test('legal pages and article dates are visible',async()=>{
  assert.ok(article.includes('class="article-date"'));
  assert.ok(!resources.some(r=>r.category==='Playlist'));
 });
+test('work and journal detail pages have accessible breadcrumbs',async()=>{
+ const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
+ const article=await readFile(new URL('journal/inside-the-toolbox/index.html',out),'utf8');
+ for (const [html,section] of [[project,'work'],[article,'journal']]) {
+  assert.ok(html.includes('aria-label="Breadcrumb"'), section+' has labeled breadcrumbs');
+  assert.ok(html.includes('href="/"'), section+' links home');
+  assert.ok(html.includes('href="/'+section+'/"'), section+' links to its index');
+  assert.ok(html.includes('aria-current="page"'), section+' identifies the current page');
+ }
+});
 test('content keeps its shape between the database and the site',()=>{
  const row={slug:'x',title:'X',subtitle:'s',description:'d',published:true,cover:'c.png',cover_alt:'alt',disciplines:['A'],role:'r',platform:'p',status:'Live',live_url:'https://x.test/',source_url:'',content:'<p>Hi</p>',sort:3};
  assert.deepEqual(fromProject(toProject(row)),row);
