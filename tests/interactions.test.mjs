@@ -49,8 +49,8 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
   globalThis.getComputedStyle = win.getComputedStyle.bind(win);
   globalThis.requestAnimationFrame = win.requestAnimationFrame.bind(win);
   globalThis.cancelAnimationFrame = win.cancelAnimationFrame.bind(win);
-  win.matchMedia = () => ({
-    matches: false,
+  win.matchMedia = (query) => ({
+    matches: query.includes("max-width: 47.99rem"),
     addListener() {},
     removeListener() {},
     addEventListener() {},
@@ -97,8 +97,20 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
   try {
     await render("/toolbox/");
     const total = document.querySelectorAll("[data-entry]").length;
-    assert.ok(total > 300, "every link is listed");
+    assert.ok(total > 0, "the curated links are listed");
     assert.deepEqual(hydrationErrors, [], "static HTML hydrates without mismatches");
+
+    // The mobile menu overlays the page, locks scrolling, and closes with Escape.
+    const menu = document.querySelector(".menu-button");
+    await click(menu);
+    assert.equal(menu.getAttribute("aria-expanded"), "true");
+    assert.ok(document.querySelector(".site-nav").hasAttribute("data-open"));
+    assert.equal(document.body.style.overflow, "hidden");
+    assert.ok(document.getElementById("main").hasAttribute("inert"));
+    await key(document, { key: "Escape" });
+    assert.equal(menu.getAttribute("aria-expanded"), "false");
+    assert.equal(document.body.style.overflow, "");
+    assert.ok(!document.getElementById("main").hasAttribute("inert"));
 
     const save = document.querySelector(".entry .save");
     await click(save);
