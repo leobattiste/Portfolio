@@ -88,8 +88,19 @@ test('draft stories and sample concepts are not published',async()=>{
 test('sitemap includes real pages and excludes drafts',async()=>{
  const sitemap=await readFile(new URL('sitemap.xml',out),'utf8');
  assert.ok(sitemap.includes('/work/pheelm/'));assert.ok(!sitemap.includes('designing-pheelm'));
- assert.ok(sitemap.includes('inside-the-toolbox'));assert.ok(sitemap.includes('/contact/'));
+ assert.ok(sitemap.includes('inside-the-toolbox'));assert.ok(sitemap.includes('/contact/'));assert.ok(sitemap.includes('/terms/'));
  await assert.rejects(()=>readFile(new URL('feed.xml',out)));
+});
+test('legal pages and article dates are visible',async()=>{
+ const privacy=await readFile(new URL('privacy/index.html',out),'utf8');
+ const terms=await readFile(new URL('terms/index.html',out),'utf8');
+ assert.ok(privacy.includes('Contact messages') || privacy.includes('Saved links and appearance'));
+ assert.ok(terms.includes('Toolbox and external services'));
+ const journal=await readFile(new URL('journal/index.html',out),'utf8');
+ assert.ok(journal.includes('class="article-list-date"'));
+ const article=await readFile(new URL('journal/inside-the-toolbox/index.html',out),'utf8');
+ assert.ok(article.includes('class="article-date"'));
+ assert.ok(!resources.some(r=>r.category==='Playlist'));
 });
 test('content keeps its shape between the database and the site',()=>{
  const row={slug:'x',title:'X',subtitle:'s',description:'d',published:true,cover:'c.png',cover_alt:'alt',disciplines:['A'],role:'r',platform:'p',status:'Live',live_url:'https://x.test/',source_url:'',content:'<p>Hi</p>',sort:3};
