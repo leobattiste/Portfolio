@@ -30,10 +30,15 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
     fetchContent(backend)
-      .then((live: (Omit<Content, "about"> & { about: About | null }) | null) => {
-        if (active && live)
-          setContent({ ...live, about: { ...initial.about, ...(live.about || {}) } });
-      })
+      .then(
+        (live: (Omit<Content, "about"> & { about: About | null }) | null) => {
+          if (active && live)
+            setContent({
+              ...live,
+              about: { ...initial.about, ...(live.about || {}) },
+            });
+        },
+      )
       .catch(() => {})
       .finally(() => active && setSettled(true));
     return () => {
@@ -89,7 +94,9 @@ export function getPage(path: string, content: Content = initial) {
     return {
       title: `${project.title}: ${project.subtitle}`,
       description: project.description,
-      image: /^https?:/.test(project.cover) ? undefined : "/assets/" + project.cover,
+      image: /^https?:/.test(project.cover)
+        ? undefined
+        : "/assets/" + project.cover,
     };
   if (article)
     return {
@@ -101,7 +108,10 @@ export function getPage(path: string, content: Content = initial) {
     string,
     { title: string; description: string; noindex?: boolean }
   > = {
-    "/": { title: `${site.name}, ${site.role.toLowerCase()}`, description: site.intro },
+    "/": {
+      title: `${site.name}, ${site.role.toLowerCase()}`,
+      description: site.intro,
+    },
     "/about/": { title: `About | ${site.name}`, description: site.bio },
     "/work/": {
       title: `Work | ${site.name}`,
@@ -110,6 +120,16 @@ export function getPage(path: string, content: Content = initial) {
     "/journal/": {
       title: `Journal | ${site.name}`,
       description: "Notes on what I’m making and what I’m learning from it.",
+    },
+    "/playground/": {
+      title: `Playground | ${site.name}`,
+      description:
+        "Small experiments, loose ideas, and things made just to see what happens.",
+    },
+    "/playground/album-covers/": {
+      title: `Album covers | ${site.name}`,
+      description:
+        "Explore 20 iconic album covers across genres in an interactive 3D record collection.",
     },
     "/toolbox/": {
       title: `Toolbox | ${site.name}`,
@@ -121,11 +141,13 @@ export function getPage(path: string, content: Content = initial) {
     },
     "/privacy/": {
       title: `Privacy | ${site.name}`,
-      description: "How this portfolio handles messages, visits, and browser preferences.",
+      description:
+        "How this portfolio handles messages, visits, and browser preferences.",
     },
     "/terms/": {
       title: `Terms | ${site.name}`,
-      description: "Terms for using this portfolio, its writing, and external resources.",
+      description:
+        "Terms for using this portfolio, its writing, and external resources.",
     },
     "/admin/": {
       title: `Admin | ${site.name}`,

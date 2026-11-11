@@ -119,6 +119,8 @@ const routes = [
   "/work/",
   "/journal/",
   "/toolbox/",
+  "/playground/",
+  "/playground/album-covers/",
   "/contact/",
   "/privacy/",
   "/terms/",

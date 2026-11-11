@@ -4,6 +4,7 @@ import { recordView } from "@/lib/backend";
 
 const navigation = [
   { label: "Work", path: "/work/" },
+  { label: "Playground", path: "/playground/" },
   { label: "Journal", path: "/journal/" },
   { label: "Toolbox", path: "/toolbox/" },
   { label: "About", path: "/about/" },
@@ -31,7 +32,9 @@ function ThemeToggle() {
   function toggle(event: React.MouseEvent<HTMLButtonElement>) {
     const next = theme === "dark" ? "light" : "dark";
     const root = document.documentElement;
-    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const still = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (!document.startViewTransition || still) return apply(next);
     // The new theme opens as a circle from the button that was pressed.
     const box = event.currentTarget.getBoundingClientRect();
@@ -52,14 +55,27 @@ function ThemeToggle() {
       title={`Switch to ${next} theme`}
     >
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-        <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <circle
+          cx="8"
+          cy="8"
+          r="6.25"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
         <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor" />
       </svg>
     </button>
   );
 }
 
-export function Layout({ path, children }: { path: string; children: ReactNode }) {
+export function Layout({
+  path,
+  children,
+}: {
+  path: string;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLButtonElement>(null);
@@ -85,9 +101,12 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
       }
       if (event.key !== "Tab") return;
       const links = Array.from(
-        document.querySelectorAll<HTMLElement>(".site-header a, .site-header button"),
+        document.querySelectorAll<HTMLElement>(
+          ".site-header a, .site-header button",
+        ),
       );
-      const first = links[0], last = links[links.length - 1];
+      const first = links[0],
+        last = links[links.length - 1];
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last?.focus();
@@ -146,13 +165,20 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
             onClick={() => setOpen(!open)}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M2 5.5h12M2 10.5h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path
+                d="M2 5.5h12M2 10.5h12"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
             </svg>
             {open ? "Close" : "Menu"}
           </button>
         </div>
       </header>
-      <main id="main" inert={open}>{children}</main>
+      <main id="main" inert={open}>
+        {children}
+      </main>
       <footer className="site-footer row" inert={open}>
         <span>© {site.updated.slice(0, 4)}</span>
         <nav aria-label="Footer">

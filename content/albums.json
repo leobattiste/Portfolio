@@ -1,0 +1,202 @@
+[
+  {
+    "id": "01",
+    "title": "The Dark Side of the Moon",
+    "artist": "Pink Floyd",
+    "year": 1973,
+    "genre": "Rock",
+    "color": "#8c7bba",
+    "note": "A prism, a spectrum, and one of music’s most recognizable visual identities.",
+    "source": "https://music.apple.com/us/album/the-dark-side-of-the-moon/1065973699?uo=4"
+  },
+  {
+    "id": "02",
+    "title": "Abbey Road",
+    "artist": "The Beatles",
+    "year": 1969,
+    "genre": "Rock",
+    "color": "#9ca57b",
+    "note": "A crosswalk turned into a cultural landmark. Four figures, one perfectly ordinary street.",
+    "source": "https://music.apple.com/us/album/abbey-road-2019-mix/1474815798?uo=4"
+  },
+  {
+    "id": "03",
+    "title": "Rumours",
+    "artist": "Fleetwood Mac",
+    "year": 1977,
+    "genre": "Rock",
+    "color": "#b6a28d",
+    "note": "The theatrical pairing of Stevie Nicks and Mick Fleetwood, photographed by Herbert Worthington.",
+    "source": "https://music.apple.com/us/album/rumours/594061854?uo=4"
+  },
+  {
+    "id": "04",
+    "title": "Unknown Pleasures",
+    "artist": "Joy Division",
+    "year": 1979,
+    "genre": "Alternative",
+    "color": "#91929b",
+    "note": "Peter Saville’s pulsar waves give scientific data an unexpectedly emotional presence.",
+    "source": "https://music.apple.com/us/album/unknown-pleasures-2019-digital-master/1476702180?uo=4"
+  },
+  {
+    "id": "05",
+    "title": "OK Computer",
+    "artist": "Radiohead",
+    "year": 1997,
+    "genre": "Alternative",
+    "color": "#a7cbd0",
+    "note": "Stanley Donwood and Thom Yorke’s fractured landscape of technology and unease.",
+    "source": "https://music.apple.com/us/album/ok-computer/1097861387?uo=4"
+  },
+  {
+    "id": "06",
+    "title": "Nevermind",
+    "artist": "Nirvana",
+    "year": 1991,
+    "genre": "Rock",
+    "color": "#509bc0",
+    "note": "An underwater photograph that became the defining image of a generation of guitar music.",
+    "source": "https://music.apple.com/us/album/nevermind/1440783617?uo=4"
+  },
+  {
+    "id": "07",
+    "title": "Aladdin Sane",
+    "artist": "David Bowie",
+    "year": 1973,
+    "genre": "Rock",
+    "color": "#da8578",
+    "note": "Brian Duffy’s portrait turns a lightning bolt into a lasting symbol of reinvention.",
+    "source": "https://music.apple.com/us/album/aladdin-sane-2013-remaster/1039655668?uo=4"
+  },
+  {
+    "id": "08",
+    "title": "Purple Rain",
+    "artist": "Prince",
+    "year": 1984,
+    "genre": "Pop",
+    "color": "#9c73b6",
+    "note": "Purple light, a motorcycle, and a world built around Prince’s unmistakable presence.",
+    "source": "https://music.apple.com/us/album/purple-rain/1746833068?uo=4"
+  },
+  {
+    "id": "09",
+    "title": "Thriller",
+    "artist": "Michael Jackson",
+    "year": 1982,
+    "genre": "Pop",
+    "color": "#b4aa97",
+    "note": "A white suit and a relaxed portrait by Dick Zimmerman: spare, confident, instantly familiar.",
+    "source": "https://music.apple.com/us/album/thriller/269572838?uo=4"
+  },
+  {
+    "id": "10",
+    "title": "Hounds of Love",
+    "artist": "Kate Bush",
+    "year": 1985,
+    "genre": "Pop",
+    "color": "#b397b8",
+    "note": "A dreamlike portrait with two hounds, photographed by John Carder Bush.",
+    "source": "https://music.apple.com/us/album/hounds-of-love-2018-remaster/1675560565?uo=4"
+  },
+  {
+    "id": "11",
+    "title": "Blue",
+    "artist": "Joni Mitchell",
+    "year": 1971,
+    "genre": "Folk",
+    "color": "#587bc0",
+    "note": "A close-cropped blue portrait that feels as intimate as the songs inside.",
+    "source": "https://music.apple.com/us/album/blue/1492263092?uo=4"
+  },
+  {
+    "id": "12",
+    "title": "Kind of Blue",
+    "artist": "Miles Davis",
+    "year": 1959,
+    "genre": "Jazz",
+    "color": "#5d82a0",
+    "note": "A performance portrait by Jay Maisel captures the quiet intensity of Miles Davis.",
+    "source": "https://music.apple.com/us/album/kind-of-blue/268443092?uo=4"
+  },
+  {
+    "id": "13",
+    "title": "A Love Supreme",
+    "artist": "John Coltrane",
+    "year": 1965,
+    "genre": "Jazz",
+    "color": "#b39a7b",
+    "note": "Chuck Stewart’s contemplative portrait gives this spiritual landmark a human center.",
+    "source": "https://music.apple.com/us/album/a-love-supreme/1440713018?uo=4"
+  },
+  {
+    "id": "14",
+    "title": "What’s Going On",
+    "artist": "Marvin Gaye",
+    "year": 1971,
+    "genre": "Soul",
+    "color": "#8b957a",
+    "note": "Rain, a raised collar, and a gaze that looks beyond the frame.",
+    "source": "https://music.apple.com/us/album/whats-going-on/1538081586?uo=4"
+  },
+  {
+    "id": "15",
+    "title": "Songs in the Key of Life",
+    "artist": "Stevie Wonder",
+    "year": 1976,
+    "genre": "Soul",
+    "color": "#c1844e",
+    "note": "A warm, concentric portal into Stevie Wonder’s expansive musical world.",
+    "source": "https://music.apple.com/us/album/songs-in-the-key-of-life/1440788438?uo=4"
+  },
+  {
+    "id": "16",
+    "title": "Discovery",
+    "artist": "Daft Punk",
+    "year": 2001,
+    "genre": "Electronic",
+    "color": "#a598c0",
+    "note": "A liquid-metal wordmark with a rainbow edge, as playful and futuristic as the record.",
+    "source": "https://music.apple.com/us/album/discovery/697194953?uo=4"
+  },
+  {
+    "id": "17",
+    "title": "Selected Ambient Works 85-92",
+    "artist": "Aphex Twin",
+    "year": 1992,
+    "genre": "Electronic",
+    "color": "#929c99",
+    "note": "A stark emblem suspended in negative space. Electronic music reduced to a symbol.",
+    "source": "https://music.apple.com/us/album/selected-ambient-works-85-92/1668862636?uo=4"
+  },
+  {
+    "id": "18",
+    "title": "Illmatic",
+    "artist": "Nas",
+    "year": 1994,
+    "genre": "Rap",
+    "color": "#b98c68",
+    "note": "A childhood portrait layered over Queensbridge connects memory, place, and storytelling.",
+    "source": "https://music.apple.com/us/album/illmatic/856131729?uo=4"
+  },
+  {
+    "id": "19",
+    "title": "The Low End Theory",
+    "artist": "A Tribe Called Quest",
+    "year": 1991,
+    "genre": "Rap",
+    "color": "#a07b77",
+    "note": "Red and green contours turn a painted figure into an unmistakable graphic rhythm.",
+    "source": "https://music.apple.com/us/album/the-low-end-theory/278911460?uo=4"
+  },
+  {
+    "id": "20",
+    "title": "To Pimp a Butterfly",
+    "artist": "Kendrick Lamar",
+    "year": 2015,
+    "genre": "Rap",
+    "color": "#96958c",
+    "note": "A dense black-and-white group portrait that invites a closer reading of every face.",
+    "source": "https://music.apple.com/us/album/to-pimp-a-butterfly/1440871877?uo=4"
+  }
+]
