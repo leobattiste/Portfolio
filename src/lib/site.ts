@@ -121,7 +121,11 @@ export function getPage(path: string, content: Content = initial) {
     },
     "/privacy/": {
       title: `Privacy | ${site.name}`,
-      description: "What this site stores in your browser, and what it counts.",
+      description: "How this portfolio handles messages, visits, and browser preferences.",
+    },
+    "/terms/": {
+      title: `Terms | ${site.name}`,
+      description: "Terms for using this portfolio, its writing, and external resources.",
     },
     "/admin/": {
       title: `Admin | ${site.name}`,
