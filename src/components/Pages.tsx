@@ -22,6 +22,19 @@ function follow(event: PointerEvent<HTMLElement>) {
   event.currentTarget.style.setProperty("--y", `${event.clientY - box.top}px`);
 }
 
+function Breadcrumbs({ section, title }: { section: "Work" | "Journal"; title: string }) {
+  const sectionPath = section === "Work" ? "/work/" : "/journal/";
+  return (
+    <nav className="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href={href("/")}>Home</a></li>
+        <li><a href={href(sectionPath)}>{section}</a></li>
+        <li aria-current="page">{title}</li>
+      </ol>
+    </nav>
+  );
+}
+
 function ProjectLink({ project: p }: { project: Project }) {
   return (
     <a className="project" href={href(`/work/${p.slug}/`)}>
@@ -244,13 +257,8 @@ export function ProjectPage({ project: p }: { project: Project }) {
   ].filter(([, value]) => value);
   return (
     <article>
-      <Intro
-        rail={
-          <a className="back" href={href("/work/")}>
-            All work
-          </a>
-        }
-      >
+      <Intro>
+        <Breadcrumbs section="Work" title={p.title} />
         <h1 className="statement">{p.title}</h1>
         <p className="statement">{p.description}</p>
       </Intro>
@@ -319,13 +327,8 @@ export function Journal() {
 export function ArticlePage({ article: a }: { article: Article }) {
   return (
     <article>
-      <Intro
-        rail={
-          <a className="back" href={href("/journal/")}>
-            All entries
-          </a>
-        }
-      >
+      <Intro>
+        <Breadcrumbs section="Journal" title={a.title} />
         <h1 className="statement">{a.title}</h1>
         <time className="article-date" dateTime={a.date}>
           {prettyDate(a.date)}
