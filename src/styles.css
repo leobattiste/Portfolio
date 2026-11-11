@@ -250,7 +250,7 @@ main {
   line-height: 1.6;
   font-weight: 400;
   letter-spacing: normal;
-  color: var(--graphite);
+  color: var(--ink);
 }
 .back {
   font-size: 0.9375rem;
