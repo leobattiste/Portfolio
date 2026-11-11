@@ -163,6 +163,7 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
             </a>
           ) : null}
           <a href={href("/privacy/")}>Privacy</a>
+          <a href={href("/terms/")}>Terms</a>
         </nav>
       </footer>
     </div>
