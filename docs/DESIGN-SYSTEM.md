@@ -1,36 +1,42 @@
-# Studio workspace redesign
+# Design system
 
-The portfolio uses React, TypeScript, Vite, Tailwind CSS v4, and generated shadcn/ui components (Radix Nova). The visual language uses warm neutral surfaces, blue accents, Geist Variable served locally, and restrained motion. All primary pages and resource detail pages are rendered to static HTML before deployment; React hydrates them for interactions.
+The whole design lives in `src/styles.css`. There is no CSS framework and no component library. Every page is rendered to static HTML at build time and hydrated with React for the interactions.
 
-## shadcn MCP for Codex
+## Tokens
 
-The requested setup command was run:
+| Token | Light | Dark | Used for |
+| --- | --- | --- | --- |
+| `--paper` | `#fafafb` | `#131417` | Page background |
+| `--ink` | `#17181c` | `#ecedef` | Text, focus rings |
+| `--graphite` | `#62656e` | `#9a9da6` | Secondary text, labels |
+| `--mist` | `#e4e5e9` | `#2a2c32` | Hairlines |
+| `--wash` | `#f0f1f4` | `#1d1e23` | Hover fills, inputs |
+| `--marigold` | `#ffc233` | `#ffc233` | The highlighter: keyboard position, saved state, selection |
 
-```sh
-pnpm dlx shadcn@latest mcp init --client codex
-```
+Marigold is the only accent. It marks where the reader is or what they kept, and is never decoration.
 
-The configuration is included in `.codex/config.toml` and installed in this workspace's Codex user configuration:
+## Type
 
-```toml
-[mcp_servers.shadcn]
-command = "npx"
-args = ["shadcn@latest", "mcp"]
-```
+One family, Schibsted Grotesk Variable, served with the site.
 
-Restart Codex to load the server as native chat tools. During this build, the server was used over its standard stdio protocol to list its tools, retrieve Command Dialog and Sheet examples, and run the audit checklist. `components.json` connects the source to the shadcn registry.
+- Statement: `clamp(1.5rem, 1.05rem + 1.9vw, 2.125rem)`, weight 500, tracking -0.022em. Each page opens with one; the first paragraph is the `h1` in ink, the second continues in graphite.
+- Body: 1rem / 1.55. Long-form prose: 1.0625rem / 1.6, 38rem measure.
+- Labels and metadata: 0.9375rem in graphite, sentence case. No capitals, no letter-spacing.
 
-Add components with `pnpm exec shadcn add <component>`. Generated components live in `src/components/ui`; the portfolio layouts and composition live beside them in `src/components`.
+## Layout
 
-## Main interactions
+Every block is a `.row`: an 11rem rail on the left for the label, and a content column beside it. The header, each section, the Toolbox categories and the footer all sit on the same two columns. Below 48rem the rail stacks above the content. Use `<Section label="…">` and `<Intro>` from `src/components/Layout.tsx` rather than new wrappers.
 
-- Ctrl/Cmd + K opens global search; Escape closes it.
-- On Toolbox, `/` focuses resource search.
-- Radix Tabs, Select, Dropdown Menu, and Sheet provide keyboard-accessible filters, sorting, collection actions, and mobile navigation.
-- Hearts preserve the existing `leo-toolbox-favorites-v1` storage format. JSON exports remain compatible with the previous portfolio.
-- Appearance uses `leo-appearance` browser storage. No account or server is needed.
-- Resource filters are reflected in the URL and respond to browser back/forward.
+## Interaction
 
-## Verification
+- **Page transitions.** `@view-transition { navigation: auto }` cross-fades between pages. A project cover carries the same `view-transition-name` on the home page, Work and its case study, so it moves into place.
+- **Theme.** The toggle opens the new theme as a circle from the button. The choice is stored under `leo-appearance`; first visits follow the system setting.
+- **Peeks.** Links inside the home statement show a small preview on hover or keyboard focus.
+- **Cover chip.** A label follows the pointer over a project cover.
+- **Toolbox.** `/` focuses the filter, arrow keys or J and K move through the list, S saves, Enter opens. The focused row is filled with marigold. Filters are kept in the URL.
 
-`pnpm run check` builds the complete site and runs both data/route tests and DOM interaction tests against the actual React components. The DOM suite hydrates the actual prerendered Toolbox without mismatches, then exercises categories, search, favorites persistence, list view, appearance, and the command palette. DOM tests do not verify browser layout or replace visual QA.
+All motion answers an action. `prefers-reduced-motion` turns transitions off.
+
+## Checks
+
+`pnpm run check` builds the site and runs content, route and DOM interaction tests. The DOM suite hydrates the prerendered Toolbox and exercises filtering, saving, keyboard navigation and the theme. It does not replace looking at the pages in a browser.

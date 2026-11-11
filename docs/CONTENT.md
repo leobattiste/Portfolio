@@ -8,7 +8,7 @@ Edit `content/site.json` for your name, introduction, bio, GitHub URL, and optio
 
 ## Projects
 
-Copy `content/projects/_template.json` to a new filename. Set a unique lowercase `slug`, title, description, order, and `published: true` when ready. Add a cover to `src/assets` with descriptive `coverAlt`. Add sections with unique IDs, titles, and body text. Only published projects appear in Work; every published project gets `/work/slug/`.
+Copy `content/projects/_template.json` to a new filename. Set a unique lowercase `slug`, title, description, order, and `published: true` when ready. Add a cover to `src/assets` with descriptive `coverAlt`. Add sections with unique IDs, titles, and body text. Only published projects appear in Work; every published project gets `/work/slug/`. Each section's `id` is shown as its label in the left rail, so keep it to one plain word.
 
 Pheelm is the first published project. Its copy is based on Leo's confirmed ownership, the public product, and the repository. Add research, iterations, screenshots, and verified outcomes as they become available. The `sources` field is editorial provenance and is not rendered.
 
@@ -20,7 +20,7 @@ Supported Markdown: paragraphs, `##` headings, `###` headings, lists starting wi
 
 ## Toolbox
 
-Edit `content/resources.json`. Each resource has a stable `id`, title, description, URL, domain, category, tags, featured flag, and order. Keep IDs stable because favorites and permalinks use them. `featured: true` adds a resource to Highlights. `linkStatus: broken` excludes a resource from the generated site without deleting its record.
+Edit `content/resources.json`. Each resource has a stable `id`, title, description, URL, domain, category, tags, featured flag, and order. Keep IDs stable because saved links and `/toolbox/#id` anchors use them. `featured: true` lists a resource on the home page. A description that only repeats the title is hidden, so write one only when it adds something. `linkStatus: broken` excludes a resource from the generated site without deleting its record.
 
 The source contains 395 curated candidates; 22 confirmed 404/410 destinations are excluded. 373 resources currently publish. The original export had 520 unique links: 121 account-specific, personal, unrelated, or review-needed entries were withheld, and four canonical duplicates merged. Original source data and detailed audit logs stay in ignored `.local/` files in the working checkout.
 

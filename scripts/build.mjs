@@ -94,11 +94,9 @@ const routes = [
   "/work/",
   "/journal/",
   "/toolbox/",
-  "/contact/",
   "/privacy/",
   ...projects.map((p) => "/work/" + p.slug + "/"),
   ...articles.map((a) => "/journal/" + a.slug + "/"),
-  ...resources.map((r) => "/toolbox/" + r.id + "/"),
 ];
 for (const route of [...routes, "/404.html"]) {
   const { html, meta } = render(route),
@@ -112,7 +110,7 @@ for (const route of [...routes, "/404.html"]) {
     description: meta.description,
     author: { "@type": "Person", name: site.name, url: absolute("/") },
   };
-  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="theme-color" content="#f9f9f7"/><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/><link rel="alternate" type="application/rss+xml" title="Leo Battiste — Journal" href="${u("/feed.xml")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/><link rel="alternate" type="application/rss+xml" title="Leo Battiste — Journal" href="${u("/feed.xml")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
   const file =
     route === "/"
       ? "index.html"
@@ -148,5 +146,5 @@ await writeFile(
   }),
 );
 console.log(
-  `Built ${routes.length} pages with React + shadcn/ui: ${projects.length} project, ${articles.length} article, ${resources.length} resources.`,
+  `Built ${routes.length} pages: ${projects.length} project, ${articles.length} article, ${resources.length} resources.`,
 );

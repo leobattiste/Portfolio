@@ -78,6 +78,8 @@ test('draft stories and sample concepts are not published',async()=>{
  await assert.rejects(()=>readFile(new URL('journal/designing-pheelm/index.html',out)));
  const home=await readFile(new URL('index.html',out),'utf8');
  assert.ok(home.includes('Leo Battiste'));assert.ok(home.includes('Pheelm'));assert.ok(!home.includes('CONCEPT PROJECT'));
+ const toolbox=await readFile(new URL('toolbox/index.html',out),'utf8');
+ for(const r of resources)assert.ok(toolbox.includes(`id="${r.id}"`),'toolbox lists '+r.id);
  const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
  assert.ok(project.includes('https://www.pheelm.com/'));assert.ok(project.includes('naming, logo, brand identity'));
 });

@@ -1,35 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Search,
-  ArrowDown,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  LayoutGrid,
-  List,
-  Heart,
-  SlidersHorizontal,
-  RotateCcw,
-  Shapes,
-} from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { PageHeading, ResourceCard } from "./Cards";
-import { categories, resources } from "@/lib/site";
+import { resources, categories, host, blurb } from "@/lib/site";
 import { useFavorites } from "@/lib/favorites";
 import type { Resource } from "@/types";
 import {
@@ -37,303 +7,269 @@ import {
   parseState,
   serializeState,
   importFavorites,
-  PAGE_SIZE,
 } from "../resource-model.mjs";
-const initial = {
-  q: "",
-  category: "all",
-  sort: "curated",
-  saved: false,
-  featured: false,
-};
+import { Intro } from "./Layout";
+
+const counts = new Map(
+  categories.map((c) => [c, resources.filter((r) => r.category === c).length]),
+);
+const typing = (target: EventTarget | null) =>
+  target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+
+function Entry({ resource: r }: { resource: Resource }) {
+  const { saved, toggle } = useFavorites();
+  const on = saved.has(r.id);
+  const note = blurb(r);
+  return (
+    <li className="entry">
+      <a
+        className="entry-link"
+        id={r.id}
+        data-entry={r.id}
+        href={r.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="entry-main">
+          <span className="entry-title">{r.title}</span>
+          {note ? <span className="entry-blurb">{note}</span> : null}
+        </span>
+        <span className="entry-domain">{host(r.url)}</span>
+      </a>
+      <button
+        type="button"
+        className="save"
+        aria-pressed={on}
+        aria-label={`${on ? "Remove" : "Save"} ${r.title}`}
+        onClick={() => toggle(r.id)}
+      >
+        <svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true">
+          <path
+            d="M2 1.75h10v12.5l-5-3.6-5 3.6z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+    </li>
+  );
+}
+
 export default function Toolbox() {
-  const [state, setState] = useState(initial),
-    [limit, setLimit] = useState(PAGE_SIZE),
-    [view, setView] = useState("grid"),
-    [ready, setReady] = useState(false);
-  const { saved, merge } = useFavorites();
-  const input = useRef<HTMLInputElement>(null),
-    file = useRef<HTMLInputElement>(null);
+  const { saved, notice, say, toggle, merge } = useFavorites();
+  const [state, setState] = useState({ q: "", category: "all", saved: false });
+  const [ready, setReady] = useState(false);
+  const search = useRef<HTMLInputElement>(null);
+  const file = useRef<HTMLInputElement>(null);
+
+  // Filters live in the URL, so a filtered view can be shared or bookmarked.
   useEffect(() => {
-    setState(parseState(location.search, categories) as typeof initial);
+    const { q, category, saved } = parseState(location.search, categories);
+    setState({ q, category: category ?? "all", saved });
     setReady(true);
-    const pop = () => {
-      setState(parseState(location.search, categories) as typeof initial);
-      setLimit(PAGE_SIZE);
-    };
-    const key = (e: KeyboardEvent) => {
-      if (
-        e.key === "/" &&
-        !e.metaKey &&
-        !e.ctrlKey &&
-        !(e.target as HTMLElement).closest(
-          "input,textarea,[contenteditable],select",
-        )
-      ) {
-        e.preventDefault();
-        input.current?.focus();
-      }
-    };
-    window.addEventListener("popstate", pop);
-    document.addEventListener("keydown", key);
-    return () => {
-      window.removeEventListener("popstate", pop);
-      document.removeEventListener("keydown", key);
-    };
   }, []);
   useEffect(() => {
-    if (ready) {
-      const query = serializeState(state);
-      history.replaceState(
-        null,
-        "",
-        location.pathname + (query ? "?" + query : "") + location.hash,
-      );
-    }
+    if (!ready) return;
+    const query = serializeState(state);
+    history.replaceState(null, "", location.pathname + (query ? "?" + query : ""));
   }, [state, ready]);
-  const results = useMemo<Resource[]>(
-    () => filterResources(resources, state, saved),
+
+  const results = useMemo(
+    () => filterResources(resources, state, saved) as Resource[],
     [state, saved],
   );
-  const update = (patch: Partial<typeof initial>) => {
-    setState((s) => ({ ...s, ...patch }));
-    setLimit(PAGE_SIZE);
-  };
-  function exportSaved() {
-    if (!saved.size) {
-      toast.info("Save a resource first to export your favorites.");
-      return;
+  const groups = useMemo(
+    () =>
+      categories
+        .map((c) => ({ name: c, items: results.filter((r) => r.category === c) }))
+        .filter((g) => g.items.length),
+    [results],
+  );
+  const filtered = state.q || state.saved || state.category !== "all";
+  const reset = () => setState({ q: "", category: "all", saved: false });
+
+  // Keyboard: / to filter, arrows or J K to move, S to save, Enter opens.
+  useEffect(() => {
+    function keydown(event: KeyboardEvent) {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const inField = typing(event.target);
+      const active = document.activeElement as HTMLElement | null;
+      const key = event.key;
+      if (key === "/" && !inField) {
+        event.preventDefault();
+        search.current?.focus();
+        search.current?.select();
+        return;
+      }
+      const down = key === "ArrowDown" || (key === "j" && !inField);
+      const up = key === "ArrowUp" || (key === "k" && !inField);
+      if (down || up) {
+        const entries = [
+          ...document.querySelectorAll<HTMLElement>("[data-entry]"),
+        ];
+        if (inField && active !== search.current) return;
+        const at = active ? entries.indexOf(active) : -1;
+        event.preventDefault();
+        if (up && at <= 0) search.current?.focus();
+        else entries[down ? Math.min(at + 1, entries.length - 1) : at - 1]?.focus();
+        return;
+      }
+      if (key === "s" && !inField && active?.dataset.entry) {
+        event.preventDefault();
+        toggle(active.dataset.entry);
+        return;
+      }
+      if (key === "Enter" && active === search.current) {
+        document.querySelector<HTMLElement>("[data-entry]")?.focus();
+        return;
+      }
+      if (key === "Escape" && active === search.current) {
+        if (state.q) setState((s) => ({ ...s, q: "" }));
+        else search.current?.blur();
+      }
     }
+    document.addEventListener("keydown", keydown);
+    return () => document.removeEventListener("keydown", keydown);
+  }, [toggle, state.q]);
+
+  function exportSaved() {
     const blob = new Blob(
-      [
-        JSON.stringify(
-          {
-            version: 1,
-            collection: "Leo Battiste — Toolbox",
-            favorites: resources
-              .filter((r) => saved.has(r.id))
-              .map((r) => ({ id: r.id, title: r.title, url: r.url })),
-          },
-          null,
-          2,
-        ),
-      ],
+      [JSON.stringify({ version: 1, favorites: [...saved] }, null, 2)],
       { type: "application/json" },
     );
-    const url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-    a.href = url;
-    a.download = "leo-toolbox-favorites.json";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast.success("Favorites exported");
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "toolbox-saved-links.json";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    say(`Exported ${saved.size} saved ${saved.size === 1 ? "link" : "links"}`);
   }
   async function importSaved(event: React.ChangeEvent<HTMLInputElement>) {
-    const f = event.target.files?.[0];
-    if (!f) return;
+    const chosen = event.target.files?.[0];
+    event.target.value = "";
+    if (!chosen) return;
     try {
-      if (f.size > 1024 * 1024)
-        throw new Error("Please choose a file smaller than 1 MB.");
-      const ids = importFavorites(JSON.parse(await f.text()), resources);
-      if (!ids.length) toast.info("No matching resources in that export.");
-      else merge(ids);
-    } catch (error) {
-      toast.error(
-        error instanceof SyntaxError
-          ? "That file is not valid JSON."
-          : (error as Error).message,
-      );
-    } finally {
-      event.target.value = "";
+      const ids = importFavorites(JSON.parse(await chosen.text()), resources);
+      if (ids.length) merge(ids);
+      else say("That file has no links from this collection.");
+    } catch {
+      say("That file isn’t a Toolbox export. Choose a file exported from this page.");
     }
   }
-  const mode = state.saved ? "saved" : state.featured ? "highlights" : "all";
+
   return (
     <>
-      <PageHeading
-        eyebrow="THE TOOLBOX"
-        title="Good finds. No gatekeeping."
-        description="A collection of tools, inspiration, and resources I’ve saved over the years. Find something useful. Make something great."
-      >
-        <div className="collection-summary">
-          <span className="summary-dot" />
-          {resources.length} resources<span>/</span>
-          {categories.length} categories<span>/</span>Always growing
-        </div>
-      </PageHeading>
-      <section className="toolbox-surface">
-        <div className="toolbox-toolbar">
-          <Tabs
-            value={mode}
-            onValueChange={(v) =>
-              update({ saved: v === "saved", featured: v === "highlights" })
-            }
-          >
-            <TabsList>
-              <TabsTrigger value="all">All resources</TabsTrigger>
-              <TabsTrigger value="highlights">Highlights</TabsTrigger>
-              <TabsTrigger value="saved">
-                <Heart size={13} />
-                Saved{saved.size ? " " + saved.size : ""}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                Your collection
-                <SlidersHorizontal size={14} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={exportSaved}>
-                <ArrowDownToLine />
-                Export favorites
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => file.current?.click()}>
-                <ArrowUpFromLine />
-                Import favorites
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+      <Intro>
+        <h1 className="statement">Toolbox</h1>
+        <p className="statement">
+          {resources.length} tools and references I’ve saved over the years.
+          They belong to their makers. I only keep the list.
+        </p>
+        <div className="filter" role="search">
           <input
-            ref={file}
-            type="file"
-            accept=".json,application/json"
-            hidden
-            aria-label="Import favorites"
-            onChange={importSaved}
+            ref={search}
+            id="filter"
+            type="search"
+            value={state.q}
+            onChange={(e) => setState((s) => ({ ...s, q: e.target.value }))}
+            placeholder={`Filter ${resources.length} links`}
+            aria-label={`Filter ${resources.length} links`}
+            autoComplete="off"
+            spellCheck={false}
           />
+          <kbd aria-hidden="true">/</kbd>
         </div>
-        <div className="toolbox-search-row">
-          <div className="toolbox-search">
-            <Search size={17} />
-            <Input
-              ref={input}
-              id="resource-search"
-              aria-label="Search resources"
-              placeholder="Find your next favorite resource…"
-              value={state.q}
-              onChange={(e) => update({ q: e.target.value })}
-            />
-            <kbd>/</kbd>
-          </div>
-          <Select value={state.sort} onValueChange={(sort) => update({ sort })}>
-            <SelectTrigger aria-label="Sort resources" className="sort-select">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="curated">Curated order</SelectItem>
-              <SelectItem value="az">Name: A–Z</SelectItem>
-              <SelectItem value="za">Name: Z–A</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="category-pills" aria-label="Filter by category">
-          {["all", ...categories].map((c) => (
+        <div className="cats" role="group" aria-label="Categories">
+          <button
+            type="button"
+            aria-pressed={state.category === "all" && !state.saved}
+            onClick={() => setState((s) => ({ ...s, category: "all", saved: false }))}
+          >
+            All<i>{resources.length}</i>
+          </button>
+          {categories.map((c) => (
             <button
               key={c}
-              className={state.category === c ? "selected" : ""}
-              onClick={() => update({ category: c })}
+              type="button"
               aria-pressed={state.category === c}
+              onClick={() =>
+                setState((s) => ({
+                  ...s,
+                  category: s.category === c ? "all" : c,
+                }))
+              }
             >
-              {c === "all" ? "All categories" : c}
-              <span>
-                {c === "all"
-                  ? resources.length
-                  : resources.filter((r) => r.category === c).length}
-              </span>
+              {c}
+              <i>{counts.get(c)}</i>
             </button>
           ))}
-        </div>
-        <div className="results-toolbar">
-          <p role="status" aria-live="polite">
-            Showing {Math.min(limit, results.length)} of {results.length}{" "}
-            resources{state.category !== "all" ? ` in ${state.category}` : ""}
-          </p>
-          <div className="view-toggles">
-            <Button
-              variant={view === "grid" ? "secondary" : "ghost"}
-              size="icon-sm"
-              aria-label="Grid view"
-              aria-pressed={view === "grid"}
-              onClick={() => setView("grid")}
-            >
-              <LayoutGrid size={14} />
-            </Button>
-            <Button
-              variant={view === "list" ? "secondary" : "ghost"}
-              size="icon-sm"
-              aria-label="List view"
-              aria-pressed={view === "list"}
-              onClick={() => setView("list")}
-            >
-              <List size={15} />
-            </Button>
-          </div>
-        </div>
-        {results.length ? (
-          <div
-            className={`resource-grid ${view === "list" ? "list-view" : ""}`}
+          <button
+            type="button"
+            aria-pressed={state.saved}
+            onClick={() => setState((s) => ({ ...s, saved: !s.saved }))}
           >
-            {results.slice(0, limit).map((r) => (
-              <ResourceCard key={r.id} resource={r} list={view === "list"} />
+            Saved<i>{saved.size}</i>
+          </button>
+        </div>
+        <div className="status">
+          <span aria-live="polite">
+            {filtered
+              ? `${results.length} ${results.length === 1 ? "link" : "links"}`
+              : ""}
+          </span>
+          {filtered ? (
+            <button type="button" className="link" onClick={reset}>
+              Clear filters
+            </button>
+          ) : null}
+          {state.saved ? (
+            <>
+              <button type="button" className="link" onClick={exportSaved} disabled={!saved.size}>
+                Export
+              </button>
+              <button type="button" className="link" onClick={() => file.current?.click()}>
+                Import
+              </button>
+              <input
+                ref={file}
+                type="file"
+                accept="application/json,.json"
+                hidden
+                onChange={importSaved}
+                aria-label="Import saved links"
+              />
+            </>
+          ) : null}
+          <span role="status">{notice}</span>
+          <span className="keys" aria-hidden="true">
+            <kbd>↑</kbd> <kbd>↓</kbd> move, <kbd>S</kbd> save
+          </span>
+        </div>
+      </Intro>
+      {groups.map((g) => (
+        <section className="row group" key={g.name}>
+          <h2 className="label">
+            {g.name}
+            <span>{g.items.length}</span>
+          </h2>
+          <ul>
+            {g.items.map((r) => (
+              <Entry key={r.id} resource={r} />
             ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <Shapes size={30} />
-            <h2>
-              {state.saved && !saved.size
-                ? "Your next favorite is out there."
-                : "No finds this time."}
-            </h2>
-            <p>
-              {state.saved && !saved.size
-                ? "Tap the heart on a resource to keep it in your collection."
-                : "Try another search or clear your filters."}
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setState(initial);
-                input.current?.focus();
-              }}
-            >
-              <RotateCcw size={14} />
-              Reset filters
-            </Button>
-          </div>
-        )}
-        {results.length > limit ? (
-          <div className="load-more">
-            <Button
-              variant="outline"
-              onClick={() => setLimit((n) => n + PAGE_SIZE)}
-            >
-              More good finds
-              <ArrowDown size={14} />
-            </Button>
-          </div>
-        ) : null}
-        <div className="toolbox-bottom-note">
-          <Heart size={14} />
-          <p>
-            Your favorites stay in this browser. Export them to take them with
-            you.
+          </ul>
+        </section>
+      ))}
+      {groups.length ? null : (
+        <div className="row empty">
+          <div className="rail-empty" />
+          <p className="muted">
+            {state.saved && !state.q && state.category === "all"
+              ? "Nothing saved yet. Use the bookmark on any link, or press S while it’s highlighted."
+              : "No links match these filters. Try a shorter search, or clear the filters."}
           </p>
         </div>
-        <noscript>
-          <p>
-            Search and favorites need JavaScript. Individual resource pages
-            remain available in the sitemap.
-          </p>
-        </noscript>
-      </section>
-      <div className="collection-disclaimer">
-        Collected, not sponsored. Tools belong to their makers. Details and
-        availability can change.
-      </div>
+      )}
     </>
   );
 }

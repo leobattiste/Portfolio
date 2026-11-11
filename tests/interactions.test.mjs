@@ -4,7 +4,7 @@ import { JSDOM } from "jsdom";
 import { readFile } from "node:fs/promises";
 
 // Exercise the actual React components in a DOM, without replacing the browser QA requirement.
-test("Toolbox search, favorites persistence, views, command palette, and theme work together", async () => {
+test("Toolbox filter, saving, keyboard navigation, and theme work together", async () => {
   const dom = new JSDOM(
     await readFile(new URL("../dist/toolbox/index.html", import.meta.url), "utf8"),
     { url: "https://portfolio.test/toolbox/", pretendToBeVisual: true },
@@ -81,73 +81,57 @@ test("Toolbox search, favorites persistence, views, command palette, and theme w
       await new Promise((r) => setTimeout(r, 20));
     });
   };
-  try {
-    await render("/toolbox/");
-    assert.equal(document.querySelectorAll(".resource-card").length, 18);
-    assert.deepEqual(hydrationErrors, [], "static HTML hydrates without mismatches");
-    const save = document.querySelector(".resource-card button[aria-pressed]");
-    await click(save);
-    assert.equal(save.getAttribute("aria-pressed"), "true");
-    const stored = JSON.parse(localStorage.getItem("leo-toolbox-favorites-v1"));
-    assert.equal(stored.length, 1);
-    await click(document.querySelector('[aria-label="List view"]'));
-    assert.ok(document.querySelector(".resource-grid.list-view"));
-    const category = [
-      ...document.querySelectorAll(".category-pills button"),
-    ].find((b) => b.textContent.startsWith("Typography"));
-    await click(category);
-    assert.equal(category.getAttribute("aria-pressed"), "true");
-    assert.ok(location.search.includes("Typography"));
-    assert.ok(
-      [...document.querySelectorAll(".resource-foot>a:first-child")].every(
-        (a) => a.textContent === "Typography",
-      ),
-    );
-    const input = document.getElementById("resource-search");
-    await React.act(async () => {
-      Object.getOwnPropertyDescriptor(
-        win.HTMLInputElement.prototype,
-        "value",
-      ).set.call(input, "no-match-xyz-8675309");
+  const key = async (target, init) =>
+    React.act(async () => {
+      target.dispatchEvent(new win.KeyboardEvent("keydown", { bubbles: true, ...init }));
+      await new Promise((r) => setTimeout(r, 20));
+    });
+  const type = async (input, value) =>
+    React.act(async () => {
+      Object.getOwnPropertyDescriptor(win.HTMLInputElement.prototype, "value").set.call(input, value);
       input.dispatchEvent(new win.Event("input", { bubbles: true }));
       await new Promise((r) => setTimeout(r, 30));
     });
-    assert.ok(
-      document.querySelector(".empty-state"),
-      "search renders an empty result state",
+  try {
+    await render("/toolbox/");
+    const total = document.querySelectorAll("[data-entry]").length;
+    assert.ok(total > 300, "every link is listed");
+    assert.deepEqual(hydrationErrors, [], "static HTML hydrates without mismatches");
+
+    const save = document.querySelector(".entry .save");
+    await click(save);
+    assert.equal(save.getAttribute("aria-pressed"), "true");
+    assert.equal(JSON.parse(localStorage.getItem("leo-toolbox-favorites-v1")).length, 1);
+
+    const category = [...document.querySelectorAll(".cats button")].find((b) =>
+      b.textContent.startsWith("Typography"),
     );
-    await click(
-      [...document.querySelectorAll("button")].find((b) =>
-        b.textContent.includes("Reset filters"),
-      ),
-    );
-    assert.equal(document.querySelectorAll(".resource-card").length, 18);
-    await click(document.querySelector('[aria-label="Switch color theme"]'));
-    assert.ok(document.documentElement.classList.contains("dark"));
-    await React.act(async () => {
-      document.dispatchEvent(
-        new win.KeyboardEvent("keydown", {
-          key: "k",
-          ctrlKey: true,
-          bubbles: true,
-        }),
-      );
-      await new Promise((r) => setTimeout(r, 30));
-    });
-    assert.ok(
-      document.querySelector('[role="dialog"]'),
-      "Ctrl+K opens the shadcn command dialog",
-    );
-    assert.ok(document.querySelector("[cmdk-input]"));
-    await React.act(async () => {
-      document
-        .querySelector("[cmdk-input]")
-        .dispatchEvent(
-          new win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
-        );
-      await new Promise((r) => setTimeout(r, 30));
-    });
-    assert.equal(document.querySelector('[role="dialog"]'), null);
+    await click(category);
+    assert.equal(category.getAttribute("aria-pressed"), "true");
+    assert.ok(location.search.includes("Typography"));
+    const groups = [...document.querySelectorAll(".group .label")];
+    assert.equal(groups.length, 1);
+    assert.ok(groups[0].textContent.startsWith("Typography"));
+
+    const input = document.getElementById("filter");
+    await type(input, "no-match-xyz-8675309");
+    assert.ok(document.querySelector(".empty"), "an empty result explains itself");
+    await click([...document.querySelectorAll("button")].find((b) => b.textContent === "Clear filters"));
+    assert.equal(document.querySelectorAll("[data-entry]").length, total);
+
+    await key(document.body, { key: "/" });
+    assert.equal(document.activeElement, input, "/ focuses the filter");
+    await key(input, { key: "ArrowDown" });
+    const first = document.querySelector("[data-entry]");
+    assert.equal(document.activeElement, first, "arrow keys move into the list");
+    await key(first, { key: "j" });
+    assert.equal(document.activeElement, document.querySelectorAll("[data-entry]")[1]);
+    await key(document.activeElement, { key: "s" });
+    assert.equal(JSON.parse(localStorage.getItem("leo-toolbox-favorites-v1")).length, 2, "S saves the highlighted link");
+
+    await click(document.querySelector(".theme-toggle"));
+    assert.equal(document.documentElement.dataset.theme, "dark");
+    assert.equal(localStorage.getItem("leo-appearance"), "dark");
   } finally {
     await React.act(async () => root.unmount());
     win.close();

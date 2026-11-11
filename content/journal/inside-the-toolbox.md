@@ -12,15 +12,15 @@ Over the years, I’ve saved tools, references, and resources that caught my att
 
 ## A few different ways in
 
-You can browse by category, search for a name or topic, or begin with the collection highlights. Typography, icons, UI components, visual inspiration, and learning resources each have their own place.
+You can browse by category or filter by a name or topic. Typography, icons, UI components, visual inspiration, and learning resources each have their own place.
 
 The categories are a starting point rather than a rigid system. A reference might help with a specific screen today and a completely different design problem tomorrow.
 
 ## Keep what is useful to you
 
-Use the heart on a resource to save it. Favorites stay in the browser you’re using, so there is no account to create. You can export that list as a file and import it again on another browser.
+Use the bookmark on a link to save it, or press S while it’s highlighted. Saved links stay in the browser you’re using, so there is no account to create. You can export that list as a file and import it again on another browser.
 
-Every resource has its own page with a short description and a link to its original home. The tools belong to their makers; this is a collection of pointers, not a replacement for their work.
+Every link goes straight to its original home. The tools belong to their makers; this is a collection of pointers, not a replacement for their work.
 
 ## A collection that can change
 
