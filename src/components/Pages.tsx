@@ -280,7 +280,7 @@ export function ProjectPage({ project: p }: { project: Project }) {
           ))}
           {p.liveUrl || p.sourceUrl ? (
             <div>
-              <dt>Links</dt>
+              <dt>Link</dt>
               <dd>
                 {p.liveUrl ? (
                   <a className="link" href={p.liveUrl} {...external}>
