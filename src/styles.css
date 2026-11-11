@@ -253,6 +253,39 @@ main {
   color: var(--ink);
 }
 
+/* Breadcrumb trail on individual projects and journal articles. */
+.breadcrumbs {
+  font-size: 0.9375rem;
+  color: var(--graphite);
+  margin-bottom: 1.25rem;
+}
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.breadcrumbs li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.breadcrumbs li + li::before {
+  content: "/";
+  padding-inline: 0.6rem;
+  opacity: 0.6;
+}
+.breadcrumbs a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.breadcrumbs [aria-current="page"] {
+  color: var(--ink);
+}
+
 /* Peek: a preview that appears over a link in the statement ---------- */
 .peek-link {
   position: relative;
