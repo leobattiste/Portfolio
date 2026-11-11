@@ -121,6 +121,7 @@ const routes = [
   "/toolbox/",
   "/contact/",
   "/privacy/",
+  "/terms/",
   ...projects.map((p) => "/work/" + p.slug + "/"),
   ...articles.map((a) => "/journal/" + a.slug + "/"),
 ];
