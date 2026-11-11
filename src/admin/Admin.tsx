@@ -146,14 +146,14 @@ function SignIn({ recovering }: { recovering: boolean }) {
       <div className="admin-head">
         <h1 className="statement">{title}</h1>
         {mode === "create" ? (
-          <p className="statement">Only {site.email} can manage this site.</p>
+          <p className="statement">Use the email address set as this site’s admin.</p>
         ) : null}
       </div>
       <form className="form" onSubmit={submit}>
         {recovering ? null : (
           <label>
             <span>Email</span>
-            <input name="email" type="email" required autoComplete="username" defaultValue={site.email} />
+            <input name="email" type="email" required autoComplete="username" />
           </label>
         )}
         {mode === "reset" && !recovering ? null : (
@@ -1212,7 +1212,7 @@ export default function Admin() {
         <div className="admin-head">
           <h1 className="statement">This account can’t manage the site.</h1>
           <p className="statement">
-            You’re signed in as {session.user.email}. Only {site.email} has access.
+            You’re signed in as {session.user.email}, which isn’t this site’s admin address.
           </p>
           <button type="button" className="button" onClick={() => db.auth.signOut()}>
             Sign out

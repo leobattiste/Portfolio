@@ -5,7 +5,7 @@ The admin lives at `/admin/`. It is a separate bundle that only loads on that pa
 ## First sign-in
 
 1. In Supabase, open the `portfolio` project, then Authentication, URL Configuration. Set **Site URL** to the live site address and add `https://your-domain/admin/` to **Redirect URLs**. Confirmation and password-reset emails link back there.
-2. Open `/admin/`, choose "First time? Create account", and sign up as `hey@leobattiste.com`.
+2. Open `/admin/`, choose "First time? Create account", and sign up with the admin email address. The address is kept in the database (`private.admin_emails`), not in this repository; it is separate from the public contact address.
 3. Open the confirmation email, then sign in.
 4. Press "Import content" once. This copies the project, journal entry and links the site was built with into the database. From then on the database is the source of the site's content.
 
