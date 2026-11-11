@@ -340,6 +340,28 @@ a.line:hover {
   white-space: nowrap;
   font-size: 0.9375rem;
 }
+.article-line {
+  align-items: flex-start;
+}
+.article-list-heading {
+  display: grid;
+  gap: 0.15rem;
+}
+.article-list-date {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--graphite);
+}
+.article-date {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: 0.9375rem;
+  color: var(--graphite);
+}
+.article-date + .statement {
+  margin-top: 0.65rem;
+  color: var(--graphite);
+}
 .more {
   display: inline-block;
   margin-top: 1.25rem;
