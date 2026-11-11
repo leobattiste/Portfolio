@@ -260,7 +260,7 @@ export function ProjectPage({ project: p }: { project: Project }) {
       <Intro>
         <Breadcrumbs section="Work" title={p.title} />
         <h1 className="statement">{p.title}</h1>
-        <p className="statement">{p.description}</p>
+        <p className="project-description">{p.description}</p>
       </Intro>
       {p.cover ? (
         <div className="row cover-block">
