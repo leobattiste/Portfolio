@@ -146,6 +146,26 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
     await click(document.querySelector(".theme-toggle"));
     assert.equal(document.documentElement.dataset.theme, "dark");
     assert.equal(localStorage.getItem("leo-appearance"), "dark");
+    await render("/playground/album-covers/");
+    const buttonNamed = (name) => [...document.querySelectorAll("button")].find(b => b.textContent.trim() === name);
+    assert.equal(document.querySelectorAll(".record-strip button").length, 20);
+    await click(buttonNamed("Rap"));
+    assert.equal(document.querySelectorAll(".record-strip button").length, 3);
+    assert.equal(document.querySelector(".record-information h2").textContent, "Illmatic");
+    await key(document.querySelector(".record-stage"), { key: "ArrowLeft" });
+    assert.equal(document.querySelector(".record-information h2").textContent, "To Pimp a Butterfly", "navigation wraps within the genre");
+    await click(buttonNamed("Pull out vinyl ↗"));
+    assert.equal(document.querySelector(".record-object").dataset.vinyl, "true");
+    await click(buttonNamed("Read sleeve notes ↻"));
+    assert.equal(document.querySelector(".record-object").dataset.flipped, "true");
+    assert.equal(document.querySelector(".record-object").dataset.vinyl, "false");
+    await click(buttonNamed("Grid"));
+    assert.equal(document.querySelectorAll(".album-grid button").length, 3);
+    await click(buttonNamed("All"));
+    assert.equal(document.querySelectorAll(".album-grid button").length, 20);
+    await click(document.querySelector(".album-grid button"));
+    assert.ok(document.querySelector(".record-stage"));
+    assert.equal(document.querySelector(".record-information h2").textContent, "The Dark Side of the Moon");
   } finally {
     await React.act(async () => root.unmount());
     win.close();

@@ -12,6 +12,7 @@ import {
   Contact,
   NotFound,
 } from "@/components/Pages";
+import { Playground, AlbumCovers } from "@/components/Playground";
 import Toolbox from "@/components/Toolbox";
 import { Privacy, Terms } from "@/components/Legal";
 
@@ -28,6 +29,8 @@ function Site({ path }: { path: string }) {
   else if (path === "/about/") page = <About />;
   else if (path === "/work/") page = <Work />;
   else if (path === "/journal/") page = <Journal />;
+  else if (path === "/playground/") page = <Playground />;
+  else if (path === "/playground/album-covers/") page = <AlbumCovers />;
   else if (path === "/toolbox/") page = <Toolbox />;
   else if (path === "/contact/") page = <Contact />;
   else if (path === "/privacy/") page = <Privacy />;
