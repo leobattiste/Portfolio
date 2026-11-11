@@ -837,9 +837,19 @@ a.line:hover {
     letter-spacing: -0.02em;
     color: var(--ink);
   }
-  /* The menu only collapses once scripts run, so links are never unreachable. */
+  /* Hide the overlay after scripts initialize, while keeping navigation usable without JS. */
   :root[data-theme] .site-nav:not([data-open]) {
     display: none;
+  }
+  :root:not([data-theme]) .site-header {
+    flex-wrap: wrap;
+  }
+  :root:not([data-theme]) .site-nav {
+    position: static;
+    flex-basis: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 1rem 0;
   }
   .label {
     position: static;
