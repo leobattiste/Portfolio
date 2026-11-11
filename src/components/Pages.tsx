@@ -270,8 +270,10 @@ export function ProjectPage({ project: p }: { project: Project }) {
           </figure>
         </div>
       ) : null}
-      <Section label="Details">
-        <dl className="facts">
+      <section className="row section" aria-label="Project information">
+        <div className="rail-empty" />
+        <div>
+          <dl className="facts">
           {facts.map(([name, value]) => (
             <div key={name}>
               <dt>{name}</dt>
@@ -295,8 +297,9 @@ export function ProjectPage({ project: p }: { project: Project }) {
               </dd>
             </div>
           ) : null}
-        </dl>
-      </Section>
+          </dl>
+        </div>
+      </section>
       {p.html ? (
         <Section label="Case study">
           <div className="prose" dangerouslySetInnerHTML={{ __html: p.html }} />
