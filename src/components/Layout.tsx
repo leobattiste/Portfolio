@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { site, href } from "@/lib/site";
 import { recordView } from "@/lib/backend";
 
@@ -61,16 +61,56 @@ function ThemeToggle() {
 
 export function Layout({ path, children }: { path: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLButtonElement>(null);
   useEffect(() => recordView(path), [path]);
   useEffect(() => {
     if (!open) return;
-    const close = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", close);
-    return () => document.removeEventListener("keydown", close);
+
+    const mobile = window.matchMedia("(max-width: 47.99rem)");
+    if (!mobile.matches) {
+      setOpen(false);
+      return;
+    }
+
+    const oldOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    navRef.current?.querySelector("a")?.focus();
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+        menuRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const links = Array.from(
+        document.querySelectorAll<HTMLElement>(".site-header a, .site-header button"),
+      );
+      const first = links[0], last = links[links.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    }
+    function onScreenChange() {
+      if (!mobile.matches) setOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    mobile.addEventListener("change", onScreenChange);
+
+    return () => {
+      document.body.style.overflow = oldOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      mobile.removeEventListener("change", onScreenChange);
+    };
   }, [open]);
   return (
     <div className="page">
-      <a className="skip" href="#main">
+      <a className="skip" href="#main" tabIndex={open ? -1 : undefined}>
         Skip to content
       </a>
       <header className="site-header row">
@@ -79,6 +119,7 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
         </a>
         <div className="site-bar">
           <nav
+            ref={navRef}
             id="site-nav"
             className="site-nav"
             aria-label="Main"
@@ -88,6 +129,7 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
               <a
                 key={n.path}
                 href={href(n.path)}
+                onClick={() => setOpen(false)}
                 aria-current={path.startsWith(n.path) ? "page" : undefined}
               >
                 {n.label}
@@ -96,6 +138,7 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
           </nav>
           <ThemeToggle />
           <button
+            ref={menuRef}
             type="button"
             className="menu-button"
             aria-expanded={open}
@@ -109,8 +152,8 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
           </button>
         </div>
       </header>
-      <main id="main">{children}</main>
-      <footer className="site-footer row">
+      <main id="main" inert={open}>{children}</main>
+      <footer className="site-footer row" inert={open}>
         <span>© {site.updated.slice(0, 4)}</span>
         <nav aria-label="Footer">
           <a href={`mailto:${site.email}`}>Email</a>
