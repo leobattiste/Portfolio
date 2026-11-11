@@ -10,10 +10,10 @@ import {
   Journal,
   ArticlePage,
   Contact,
-  Privacy,
   NotFound,
 } from "@/components/Pages";
 import Toolbox from "@/components/Toolbox";
+import { Privacy, Terms } from "@/components/Legal";
 
 function Site({ path }: { path: string }) {
   const content = useContent();
@@ -31,6 +31,7 @@ function Site({ path }: { path: string }) {
   else if (path === "/toolbox/") page = <Toolbox />;
   else if (path === "/contact/") page = <Contact />;
   else if (path === "/privacy/") page = <Privacy />;
+  else if (path === "/terms/") page = <Terms />;
   else if (project) page = <ProjectPage project={project} />;
   else if (article) page = <ArticlePage article={article} />;
   else
