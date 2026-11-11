@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { resources, categories, host, blurb } from "@/lib/site";
+import { useContent, categoriesOf, host, blurb } from "@/lib/site";
 import { useFavorites } from "@/lib/favorites";
 import type { Resource } from "@/types";
 import {
@@ -10,9 +10,6 @@ import {
 } from "../resource-model.mjs";
 import { Intro } from "./Layout";
 
-const counts = new Map(
-  categories.map((c) => [c, resources.filter((r) => r.category === c).length]),
-);
 const typing = (target: EventTarget | null) =>
   target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
 
@@ -58,6 +55,15 @@ function Entry({ resource: r }: { resource: Resource }) {
 
 export default function Toolbox() {
   const { saved, notice, say, toggle, merge } = useFavorites();
+  const { resources } = useContent();
+  const categories = useMemo(() => categoriesOf(resources), [resources]);
+  const counts = useMemo(
+    () =>
+      new Map(
+        categories.map((c) => [c, resources.filter((r) => r.category === c).length]),
+      ),
+    [categories, resources],
+  );
   const [state, setState] = useState({ q: "", category: "all", saved: false });
   const [ready, setReady] = useState(false);
   const search = useRef<HTMLInputElement>(null);
@@ -68,6 +74,7 @@ export default function Toolbox() {
     const { q, category, saved } = parseState(location.search, categories);
     setState({ q, category: category ?? "all", saved });
     setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (!ready) return;
@@ -77,14 +84,14 @@ export default function Toolbox() {
 
   const results = useMemo(
     () => filterResources(resources, state, saved) as Resource[],
-    [state, saved],
+    [state, saved, resources],
   );
   const groups = useMemo(
     () =>
       categories
         .map((c) => ({ name: c, items: results.filter((r) => r.category === c) }))
         .filter((g) => g.items.length),
-    [results],
+    [results, categories],
   );
   const filtered = state.q || state.saved || state.category !== "all";
   const reset = () => setState({ q: "", category: "all", saved: false });

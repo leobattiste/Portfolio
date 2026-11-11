@@ -4,6 +4,7 @@ import { readFile,readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { filterResources,parseState,serializeState,importFavorites,migrateFavorites } from '../src/resource-model.mjs';
 import { markdown,parseArticle,safeWebUrl,validateContent } from '../scripts/lib.mjs';
+import { toProject,fromProject,toResource,sectionsToHtml,slugify,minutes } from '../src/content-model.mjs';
 const resources=JSON.parse(await readFile(new URL('../dist/resources.json',import.meta.url),'utf8'));
 const sample=[{id:'a',title:'Écriture',description:'Type families',domain:'type.test',category:'Typography',tags:['Open source'],featured:false,order:0,url:'https://type.test/'},{id:'b',title:'Grid',description:'UI components',domain:'grid.test',category:'UI & development',tags:[],featured:true,order:1,url:'https://grid.test/'}];
 test('search matches accents, descriptions, and tags, with all terms required',()=>{
@@ -52,7 +53,7 @@ async function htmlFiles(dir){const entries=await readdir(dir,{withFileTypes:tru
 test('every generated page has a title, unique main heading, and canonical metadata',async()=>{
  const files=await htmlFiles(out.pathname);
  const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
- assert.equal(files.length,info.pages+1); // Includes the noindex 404 page.
+ assert.equal(files.length,info.pages+2); // Plus the noindex admin and 404 pages.
  for(const file of files){const text=await readFile(file,'utf8');
   assert.equal((text.match(/<h1(?:\s|>)/g)||[]).length,1,file);
   assert.ok(/<title>.+?<\/title>/.test(text),file);assert.ok(text.includes('rel="canonical"'),file);
@@ -89,4 +90,15 @@ test('sitemap includes real pages and excludes drafts',async()=>{
  assert.ok(sitemap.includes('/work/pheelm/'));assert.ok(!sitemap.includes('designing-pheelm'));
  assert.ok(sitemap.includes('inside-the-toolbox'));assert.ok(sitemap.includes('/contact/'));
  await assert.rejects(()=>readFile(new URL('feed.xml',out)));
+});
+test('content keeps its shape between the database and the site',()=>{
+ const row={slug:'x',title:'X',subtitle:'s',description:'d',published:true,cover:'c.png',cover_alt:'alt',disciplines:['A'],role:'r',platform:'p',status:'Live',live_url:'https://x.test/',source_url:'',content:'<p>Hi</p>',sort:3};
+ assert.deepEqual(fromProject(toProject(row)),row);
+ assert.equal(toResource({id:'a',title:'A',description:'',url:'https://www.a.test/x',category:'C',featured:false,sort:1}).domain,'a.test');
+ assert.equal(sectionsToHtml({sections:[{title:'<b>T</b>',body:'B & C'}],closing:''}),'<h2>&lt;b&gt;T&lt;/b&gt;</h2><p>B &amp; C</p>');
+ assert.equal(slugify('Écriture & Type!'),'ecriture-type');assert.equal(minutes('<p>'+'word '.repeat(450)+'</p>'),3);
+});
+test('the admin is built but kept out of search and the sitemap',async()=>{
+ const admin=await readFile(new URL('admin/index.html',out),'utf8');assert.ok(admin.includes('noindex'));
+ assert.ok(!(await readFile(new URL('sitemap.xml',out),'utf8')).includes('/admin/'));
 });

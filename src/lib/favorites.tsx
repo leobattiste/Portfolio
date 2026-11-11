@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { resources } from "./site";
+import { useContent } from "./site";
 import { migrateFavorites } from "../resource-model.mjs";
 
 const key = "leo-toolbox-favorites-v1";
@@ -24,6 +24,7 @@ const Favorites = createContext<{
 });
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const { resources } = useContent();
   const [saved, setSaved] = useState<Set<string>>(() => new Set());
   const [notice, say] = useState("");
   useEffect(() => {
@@ -40,7 +41,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
-  }, []);
+  }, [resources]);
   function persist(next: Set<string>, message: string) {
     setSaved(next);
     try {

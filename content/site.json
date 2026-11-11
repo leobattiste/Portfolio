@@ -11,5 +11,9 @@
   "origin": "https://design-notes-studio-portfolio.beaminggoat2.chatgpt.site",
   "repository": "https://github.com/leobattiste/Portfolio-",
   "updated": "2026-11-11",
-  "instagram": "https://www.instagram.com/leobattiste/"
+  "instagram": "https://www.instagram.com/leobattiste/",
+  "backend": {
+    "url": "https://fitioiqmfvrzfdujvtqm.supabase.co",
+    "key": "sb_publishable_SW8MorMDLeKCNsl7UhDeZA_5t3Tu_Fz"
+  }
 }

@@ -24,8 +24,8 @@ export interface Project {
   status: string;
   liveUrl: string;
   sourceUrl: string;
-  sections: { id: string; title: string; body: string }[];
-  closing: string;
+  html: string;
+  order: number;
 }
 export interface Article {
   slug: string;
@@ -34,7 +34,18 @@ export interface Article {
   topic: string;
   date: string;
   published: boolean;
-  body: string;
   html: string;
   minutes: number;
+}
+export interface About {
+  statement: string;
+  html: string;
+  portrait: string;
+  disciplines: string[];
+}
+export interface Content {
+  projects: Project[];
+  articles: Article[];
+  resources: Resource[];
+  about: About;
 }

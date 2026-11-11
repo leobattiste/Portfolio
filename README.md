@@ -34,6 +34,9 @@ The output is `dist/`, including all project and article URLs, metadata, sitemap
 - `src/lib`: content helpers and saved-links state.
 - `scripts/build.mjs`: validation, React prerendering, sitemap, and static output.
 
-See [Design system](docs/DESIGN-SYSTEM.md), [Content guide](docs/CONTENT.md), and [Hosting guide](docs/LAUNCH.md).
+- `src/admin`: the admin at `/admin/` (editors, inbox, insights).
+- `src/content-model.mjs`: one content shape shared by the build, the site and the admin.
 
-Saved links and appearance stay in the visitor's browser. Fonts and imagery are served locally. No analytics, advertising scripts, or portfolio accounts are required.
+See [Admin guide](docs/ADMIN.md), [Design system](docs/DESIGN-SYSTEM.md), [Content guide](docs/CONTENT.md), and [Hosting guide](docs/LAUNCH.md).
+
+Saved links and appearance stay in the visitor's browser. Content, contact messages and cookieless page-view counts are stored in Supabase. There are no advertising scripts or third-party trackers.

@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { site, href } from "@/lib/site";
+import { recordView } from "@/lib/backend";
 
 const navigation = [
   { label: "Work", path: "/work/" },
@@ -59,6 +60,7 @@ function ThemeToggle() {
 }
 
 export function Layout({ path, children }: { path: string; children: ReactNode }) {
+  useEffect(() => recordView(path), [path]);
   return (
     <div className="page">
       <a className="skip" href="#main">

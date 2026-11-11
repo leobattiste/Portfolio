@@ -1,5 +1,6 @@
+import { useEffect, useState, type ComponentType } from "react";
 import { FavoritesProvider } from "@/lib/favorites";
-import { projects, articles } from "@/lib/site";
+import { ContentProvider, useContent, getPage, site, href } from "@/lib/site";
 import { Layout } from "@/components/Layout";
 import {
   Home,
@@ -14,9 +15,14 @@ import {
 } from "@/components/Pages";
 import Toolbox from "@/components/Toolbox";
 
-export function App({ path }: { path: string }) {
-  const project = projects.find((p) => path === `/work/${p.slug}/`),
-    article = articles.find((a) => path === `/journal/${a.slug}/`);
+function Site({ path }: { path: string }) {
+  const content = useContent();
+  const project = content.projects.find((p) => path === `/work/${p.slug}/`),
+    article = content.articles.find((a) => path === `/journal/${a.slug}/`);
+  // An entry published after the last build is found once live content loads.
+  useEffect(() => {
+    if (content.settled) document.title = getPage(path, content).title;
+  }, [path, content]);
   let page;
   if (path === "/") page = <Home />;
   else if (path === "/about/") page = <About />;
@@ -27,10 +33,49 @@ export function App({ path }: { path: string }) {
   else if (path === "/privacy/") page = <Privacy />;
   else if (project) page = <ProjectPage project={project} />;
   else if (article) page = <ArticlePage article={article} />;
-  else page = <NotFound />;
+  else
+    page = (
+      <div className={content.settled ? undefined : "pending"}>
+        <NotFound />
+      </div>
+    );
   return (
     <FavoritesProvider>
       <Layout path={path}>{page}</Layout>
     </FavoritesProvider>
+  );
+}
+
+/* The admin is a separate bundle, loaded only on /admin/. */
+function Admin() {
+  const [Loaded, setLoaded] = useState<ComponentType | null>(null);
+  useEffect(() => {
+    import("./admin/Admin").then((module) => setLoaded(() => module.default));
+  }, []);
+  if (Loaded) return <Loaded />;
+  return (
+    <div className="page">
+      <a className="skip" href="#main">
+        Skip to content
+      </a>
+      <header className="site-header row">
+        <a className="site-name" href={href("/")}>
+          {site.name}
+        </a>
+      </header>
+      <main id="main" className="row intro">
+        <div className="rail-empty" />
+        <h1 className="statement">Admin</h1>
+      </main>
+    </div>
+  );
+}
+
+export function App({ path }: { path: string }) {
+  if (path === "/admin/") return <Admin />;
+  return (
+    <ContentProvider>
+      <Site path={path} />
+    </ContentProvider>
   );
 }

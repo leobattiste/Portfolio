@@ -62,6 +62,8 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
     disconnect() {}
   };
   win.HTMLElement.prototype.scrollIntoView = function () {};
+  // The test runs on the content the site was built with, not the live database.
+  globalThis.fetch = () => Promise.reject(new Error("offline"));
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   const React = await import("react"),
     { hydrateRoot } = await import("react-dom/client"),

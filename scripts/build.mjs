@@ -10,6 +10,11 @@ import {
   readingTime,
   validateContent,
 } from "./lib.mjs";
+import {
+  fetchContent,
+  sectionsToHtml,
+  defaultAbout,
+} from "../src/content-model.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = async (p) =>
   JSON.parse(await readFile(path.join(root, p), "utf8"));
@@ -39,22 +44,42 @@ const allArticles = await Promise.all(
 );
 const allResources = await read("content/resources.json");
 validateContent({ ...site, origin }, allProjects, allArticles, allResources);
-const resources = allResources.filter((r) => r.linkStatus !== "broken"),
-  projects = allProjects
+// The files in /content are the starting content and the offline fallback.
+const fromFiles = {
+  resources: allResources.filter((r) => r.linkStatus !== "broken"),
+  projects: allProjects
     .filter((p) => p.published)
-    .sort((a, b) => a.order - b.order),
-  articles = allArticles
+    .sort((a, b) => a.order - b.order)
+    .map(({ sections, closing, sources, ...p }) => ({
+      ...p,
+      html: sectionsToHtml({ sections, closing }),
+    })),
+  articles: allArticles
     .filter((a) => a.published)
     .sort((a, b) => b.date.localeCompare(a.date))
-    .map((a) => ({
+    .map(({ body, ...a }) => ({
       ...a,
-      html: markdown(a.body, u),
-      minutes: readingTime(a.body),
-    }));
+      html: markdown(body, u),
+      minutes: readingTime(body),
+    })),
+};
+fromFiles.about = defaultAbout(site, fromFiles.projects);
+// Once content has been imported in the admin, the database is the source.
+let live = null;
+if (site.backend?.url && !process.env.CONTENT_FROM_FILES) {
+  try {
+    live = await fetchContent(site.backend, { signal: AbortSignal.timeout(10000) });
+  } catch (error) {
+    console.warn(`Database not reachable (${error.message}); building from /content.`);
+  }
+}
+const { resources, projects, articles } = live || fromFiles;
+const about = { ...fromFiles.about, ...(live?.about || {}) };
+console.log(`Content source: ${live ? "database" : "files in /content"}.`);
 await mkdir(path.join(root, ".build"), { recursive: true });
 await writeFile(
   path.join(root, ".build/content.json"),
-  JSON.stringify({ site, resources, projects, articles }),
+  JSON.stringify({ site, resources, projects, articles, about }),
 );
 execFileSync(path.join(root, "node_modules/.bin/tsc"), ["--noEmit"], {
   cwd: root,
@@ -99,7 +124,7 @@ const routes = [
   ...projects.map((p) => "/work/" + p.slug + "/"),
   ...articles.map((a) => "/journal/" + a.slug + "/"),
 ];
-for (const route of [...routes, "/404.html"]) {
+for (const route of [...routes, "/admin/", "/404.html"]) {
   const { html, meta } = render(route),
     canonical = absolute(route),
     image = absolute(meta.image || "/assets/portrait.jpg");
@@ -111,7 +136,7 @@ for (const route of [...routes, "/404.html"]) {
     description: meta.description,
     author: { "@type": "Person", name: site.name, url: absolute("/") },
   };
-  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><noscript><style>.pending{visibility:visible!important}</style></noscript><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
   const file =
     route === "/"
       ? "index.html"

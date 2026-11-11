@@ -1,20 +1,17 @@
-import type { CSSProperties, PointerEvent } from "react";
+import { useState, type CSSProperties, type FormEvent, type PointerEvent } from "react";
 import {
   site,
-  projects,
-  articles,
-  resources,
-  asset,
+  useContent,
+  media,
   href,
   host,
   prettyDate,
 } from "@/lib/site";
+import { sendMessage } from "@/lib/backend";
 import type { Project, Article } from "@/types";
 import { Intro, Section } from "./Layout";
 
 const external = { target: "_blank", rel: "noopener noreferrer" };
-const highlights = resources.filter((r) => r.featured);
-const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 // The same name on a cover across pages lets the browser move it between them.
 const shared = (p: Project) =>
   ({ viewTransitionName: `cover-${p.slug}` }) as CSSProperties;
@@ -28,12 +25,14 @@ function follow(event: PointerEvent<HTMLElement>) {
 function ProjectLink({ project: p }: { project: Project }) {
   return (
     <a className="project" href={href(`/work/${p.slug}/`)}>
-      <span className="cover" style={shared(p)} onPointerMove={follow}>
-        <img src={asset(p.cover)} width="1200" height="630" alt={p.coverAlt} />
-        <span className="cover-chip" aria-hidden="true">
-          Read the case study
+      {p.cover ? (
+        <span className="cover" style={shared(p)} onPointerMove={follow}>
+          <img src={media(p.cover)} width="1200" height="630" alt={p.coverAlt} />
+          <span className="cover-chip" aria-hidden="true">
+            Read the case study
+          </span>
         </span>
-      </span>
+      ) : null}
       <span className="line">
         <span className="line-title">{p.title}</span>
         <span className="line-note">{p.subtitle}</span>
@@ -59,9 +58,6 @@ function ArticleLines({ items }: { items: Article[] }) {
   );
 }
 
-const handle = (url: string) =>
-  "@" + new URL(url).pathname.replace(/\//g, "");
-
 function ContactLines() {
   return (
     <ul className="lines">
@@ -75,7 +71,9 @@ function ContactLines() {
         <li>
           <a className="line" href={site.instagram} {...external}>
             <span className="line-title">Instagram</span>
-            <span className="line-end">{handle(site.instagram)}</span>
+            <span className="line-end">
+              @{site.instagram.replace(/\/$/, "").split("/").pop()}
+            </span>
           </a>
         </li>
       ) : null}
@@ -91,17 +89,75 @@ function ContactLines() {
   );
 }
 
+function ContactForm() {
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    // A field people never see. Only automated senders fill it in.
+    if (data.get("company")) return setState("sent");
+    setState("sending");
+    try {
+      await sendMessage({
+        name: String(data.get("name")).trim(),
+        email: String(data.get("email")).trim(),
+        message: String(data.get("message")).trim(),
+      });
+      form.reset();
+      setState("sent");
+    } catch {
+      setState("failed");
+    }
+  }
+  if (state === "sent")
+    return (
+      <p className="form-note" role="status">
+        Message sent. I’ll reply to the email address you gave.
+      </p>
+    );
+  return (
+    <form className="form" onSubmit={submit}>
+      <label>
+        <span>Name</span>
+        <input name="name" required maxLength={120} autoComplete="name" />
+      </label>
+      <label>
+        <span>Email</span>
+        <input name="email" type="email" required maxLength={200} autoComplete="email" />
+      </label>
+      <label>
+        <span>Message</span>
+        <textarea name="message" required maxLength={5000} rows={6} />
+      </label>
+      <input className="trap" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+      <div className="form-end">
+        <button className="button" type="submit" disabled={state === "sending"}>
+          {state === "sending" ? "Sending" : "Send message"}
+        </button>
+        {state === "failed" ? (
+          <p className="form-note" role="alert">
+            The message didn’t send. Try again, or email {site.email}.
+          </p>
+        ) : null}
+      </div>
+    </form>
+  );
+}
+
 export function Contact() {
   return (
     <>
       <Intro>
         <h1 className="statement">Contact</h1>
         <p className="statement">
-          For projects, questions or a hello, email is the best way to reach
-          me.
+          For projects, questions or a hello, write to me here or by email.
         </p>
       </Intro>
-      <Section label="Reach me">
+      <Section label="Send a message">
+        <ContactForm />
+      </Section>
+      <Section label="Elsewhere">
         <ContactLines />
       </Section>
     </>
@@ -109,8 +165,10 @@ export function Contact() {
 }
 
 export function Home() {
+  const { projects, articles, resources } = useContent();
   const [lead] = projects;
   const [latest] = articles;
+  const highlights = resources.filter((r) => r.featured);
   return (
     <Intro>
       <h1 className="statement">
@@ -121,9 +179,9 @@ export function Home() {
         Here, you can explore my{" "}
         <a className="peek-link" href={href("/work/")}>
           work
-          {lead ? (
+          {lead?.cover ? (
             <span className="peek" aria-hidden="true">
-              <img src={asset(lead.cover)} width="1200" height="630" alt="" />
+              <img src={media(lead.cover)} width="1200" height="630" alt="" />
             </span>
           ) : null}
         </a>
@@ -142,17 +200,19 @@ export function Home() {
         , and check out the tools and resources I use in my{" "}
         <a className="peek-link" href={href("/toolbox/")}>
           toolbox
-          <span className="peek" aria-hidden="true">
-            <span className="peek-text">
-              <strong>
-                {highlights
-                  .slice(0, 3)
-                  .map((r) => r.title)
-                  .join(", ")}
-              </strong>
-              and {resources.length - 3} more links
+          {highlights.length >= 3 ? (
+            <span className="peek" aria-hidden="true">
+              <span className="peek-text">
+                <strong>
+                  {highlights
+                    .slice(0, 3)
+                    .map((r) => r.title)
+                    .join(", ")}
+                </strong>
+                and {resources.length - 3} more links
+              </span>
             </span>
-          </span>
+          ) : null}
         </a>
         .
       </p>
@@ -161,6 +221,7 @@ export function Home() {
 }
 
 export function Work() {
+  const { projects } = useContent();
   return (
     <>
       <Intro>
@@ -182,6 +243,12 @@ export function Work() {
 }
 
 export function ProjectPage({ project: p }: { project: Project }) {
+  const facts = [
+    ["Role", p.role],
+    ["Platform", p.platform],
+    ["Status", p.status],
+    ["Disciplines", p.disciplines.join(", ")],
+  ].filter(([, value]) => value);
   return (
     <article>
       <Intro
@@ -194,22 +261,24 @@ export function ProjectPage({ project: p }: { project: Project }) {
         <h1 className="statement">{p.title}</h1>
         <p className="statement">{p.description}</p>
       </Intro>
-      <div className="row cover-block">
-        <div className="rail-empty" />
-        <figure className="cover" style={shared(p)}>
-          <img src={asset(p.cover)} width="1200" height="630" alt={p.coverAlt} />
-        </figure>
-      </div>
+      {p.cover ? (
+        <div className="row cover-block">
+          <div className="rail-empty" />
+          <figure className="cover" style={shared(p)}>
+            <img src={media(p.cover)} width="1200" height="630" alt={p.coverAlt} />
+          </figure>
+        </div>
+      ) : null}
       <Section label="Details">
         <dl className="facts">
-          <dt>Role</dt>
-          <dd>{p.role}</dd>
-          <dt>Platform</dt>
-          <dd>{p.platform}</dd>
-          <dt>Status</dt>
-          <dd>{p.status}</dd>
+          {facts.map(([name, value]) => (
+            <div key={name}>
+              <dt>{name}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
           {p.liveUrl || p.sourceUrl ? (
-            <>
+            <div>
               <dt>Links</dt>
               <dd>
                 {p.liveUrl ? (
@@ -219,25 +288,17 @@ export function ProjectPage({ project: p }: { project: Project }) {
                 ) : null}
                 {p.sourceUrl ? (
                   <a className="link" href={p.sourceUrl} {...external}>
-                    Source on GitHub
+                    Source code
                   </a>
                 ) : null}
               </dd>
-            </>
+            </div>
           ) : null}
         </dl>
       </Section>
-      {p.sections.map((s) => (
-        <Section key={s.id} label={capital(s.id)}>
-          <div className="prose">
-            <h3>{s.title}</h3>
-            <p>{s.body}</p>
-          </div>
-        </Section>
-      ))}
-      {p.closing ? (
-        <Section label="Next">
-          <p className="prose muted">{p.closing}</p>
+      {p.html ? (
+        <Section label="Case study">
+          <div className="prose" dangerouslySetInnerHTML={{ __html: p.html }} />
         </Section>
       ) : null}
     </article>
@@ -245,6 +306,7 @@ export function ProjectPage({ project: p }: { project: Project }) {
 }
 
 export function Journal() {
+  const { articles } = useContent();
   return (
     <>
       <Intro>
@@ -275,12 +337,13 @@ export function ArticlePage({ article: a }: { article: Article }) {
         }
       >
         <h1 className="statement">{a.title}</h1>
-        <p className="statement">{a.description}</p>
+        {a.description ? <p className="statement">{a.description}</p> : null}
       </Intro>
       <div className="row section">
         <div className="meta">
           <time dateTime={a.date}>{prettyDate(a.date)}</time>
           <span>{a.minutes} min read</span>
+          {a.topic ? <span>{a.topic}</span> : null}
         </div>
         <div className="prose" dangerouslySetInnerHTML={{ __html: a.html }} />
       </div>
@@ -289,56 +352,30 @@ export function ArticlePage({ article: a }: { article: Article }) {
 }
 
 export function About() {
-  const [lead] = projects;
-  const disciplines = [...new Set(projects.flatMap((p) => p.disciplines))];
+  const { about } = useContent();
   return (
     <>
       <Intro>
-        <h1 className="statement">
-          I work across brand and product, so how something looks and how it
-          works come from the same place.
-        </h1>
+        <h1 className="statement">{about.statement}</h1>
       </Intro>
       <div className="row section">
-        <img
-          className="portrait"
-          src={asset("portrait.jpg")}
-          width="1280"
-          height="1280"
-          alt={`Portrait of ${site.name}`}
-        />
-        <div className="prose">
-          <p>
-            I’m {site.name}, a {site.role.toLowerCase()}
-            {site.location ? ` based in ${site.location}` : ""}. I like owning a
-            product from the first idea to the shipped code, because the
-            decisions that matter most tend to fall between disciplines.
-          </p>
-          {lead ? (
-            <p>
-              {lead.title} is the clearest example. It started as a name, became
-              a logo and an identity, and then a product I designed and built
-              myself. You can{" "}
-              <a href={href(`/work/${lead.slug}/`)}>read the case study</a> or{" "}
-              <a href={lead.liveUrl} {...external}>
-                visit the live site
-              </a>
-              .
-            </p>
-          ) : null}
-          <p>
-            I’m also a collector. The{" "}
-            <a href={href("/toolbox/")}>toolbox</a> holds {resources.length}{" "}
-            tools and references I’ve saved over the years, shared in case
-            they’re useful to you too.
-          </p>
-          {site.availability ? <p>{site.availability}</p> : null}
-        </div>
+        {about.portrait ? (
+          <img
+            className="portrait"
+            src={media(about.portrait)}
+            width="1280"
+            height="1280"
+            alt={`Portrait of ${site.name}`}
+          />
+        ) : (
+          <div className="rail-empty" />
+        )}
+        <div className="prose" dangerouslySetInnerHTML={{ __html: about.html }} />
       </div>
-      {disciplines.length ? (
+      {about.disciplines.length ? (
         <Section label="What I do">
           <ul className="lines">
-            {disciplines.map((d) => (
+            {about.disciplines.map((d) => (
               <li className="line" key={d}>
                 <span className="line-title">{d}</span>
               </li>
@@ -359,21 +396,32 @@ export function Privacy() {
       <Intro>
         <h1 className="statement">Privacy</h1>
         <p className="statement">
-          This site has no accounts, no analytics and no advertising trackers.
+          This site has no accounts for visitors, no advertising and no
+          third-party trackers.
         </p>
       </Intro>
+      <Section label="Visits">
+        <p className="prose">
+          The site counts page views so I can see what gets read. Each view
+          records the page, the site you came from, the time, and a random
+          number that lasts until you close the tab. It doesn’t use cookies,
+          and it doesn’t record your IP address or anything that identifies
+          you. If your browser sends a Do Not Track signal, nothing is counted.
+        </p>
+      </Section>
+      <Section label="Messages">
+        <p className="prose">
+          When you use the contact form, your name, email address and message
+          are stored so I can read and answer them. Email{" "}
+          <a href={`mailto:${site.email}`}>{site.email}</a> to have a message
+          deleted.
+        </p>
+      </Section>
       <Section label="Saved links">
         <p className="prose">
           Links you save in the Toolbox are stored in your browser’s local
-          storage. Nothing is sent to a server. Clear this site’s browser data
-          to remove them. When storage is unavailable, saved links last for the
-          current visit only.
-        </p>
-      </Section>
-      <Section label="Import and export">
-        <p className="prose">
-          Exporting creates a JSON file on your device. Importing reads that
-          file in your browser. The file is never uploaded.
+          storage and never leave it. Exporting creates a file on your device,
+          and importing reads that file in your browser.
         </p>
       </Section>
       <Section label="Appearance">
@@ -381,17 +429,12 @@ export function Privacy() {
           Your light or dark theme choice is saved in your browser.
         </p>
       </Section>
-      <Section label="Fonts and links">
-        <p className="prose">
-          Fonts and images are served with the site. External websites have
-          their own privacy practices.
-        </p>
-      </Section>
       <Section label="Hosting">
         <p className="prose">
-          The hosting service may process technical information needed to
-          deliver the site, such as network requests. You can reach me at{" "}
-          <a href={`mailto:${site.email}`}>{site.email}</a>.
+          Content, messages and view counts are stored with Supabase. The
+          hosting service may process technical information needed to deliver
+          the site, such as network requests. External websites have their own
+          privacy practices.
         </p>
       </Section>
     </>
