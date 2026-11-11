@@ -169,10 +169,6 @@ export default function Toolbox() {
     <>
       <Intro>
         <h1 className="statement">Toolbox</h1>
-        <p className="statement">
-          {resources.length} tools and references I’ve saved over the years.
-          They belong to their makers. I only keep the list.
-        </p>
         <div className="filter" role="search">
           <input
             ref={search}
