@@ -180,8 +180,9 @@ main {
   view-transition-name: site-header;
 }
 .site-name {
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
 }
 .site-bar,
 .site-nav {
@@ -780,13 +781,20 @@ a.line:hover {
   }
   .site-header {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 0 0.25rem;
     padding-block: 1.25rem;
+    position: relative;
+    z-index: 30;
   }
   .site-name {
     margin-right: auto;
+    position: relative;
+    z-index: 2;
+  }
+  .theme-toggle {
+    position: relative;
+    z-index: 2;
   }
   .site-bar {
     display: contents;
@@ -798,6 +806,8 @@ a.line:hover {
     margin-right: -0.6rem;
     padding: 0.4rem 0.6rem;
     border-radius: 99px;
+    position: relative;
+    z-index: 2;
   }
   .menu-button path {
     transition: d 0.25s var(--ease);
@@ -806,12 +816,18 @@ a.line:hover {
     d: path("M3 3l10 10M3 13L13 3");
   }
   .site-nav {
-    order: 4;
-    flex-basis: 100%;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100dvh;
     flex-direction: column;
     align-items: stretch;
+    justify-content: flex-start;
     gap: 0;
-    padding-block: 1rem 0.5rem;
+    overflow-y: auto;
+    background: var(--paper);
+    padding: calc(6rem + env(safe-area-inset-top)) clamp(1.25rem, 4vw, 2.5rem) calc(2rem + env(safe-area-inset-bottom));
   }
   .site-nav a {
     padding-block: 0.55rem;
