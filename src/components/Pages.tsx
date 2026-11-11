@@ -46,11 +46,13 @@ function ArticleLines({ items }: { items: Article[] }) {
     <ul className="lines">
       {items.map((a) => (
         <li key={a.slug}>
-          <a className="line" href={href(`/journal/${a.slug}/`)}>
-            <span className="line-title">{a.title}</span>
-            <time className="line-end" dateTime={a.date}>
-              {prettyDate(a.date)}
-            </time>
+          <a className="line article-line" href={href(`/journal/${a.slug}/`)}>
+            <span className="article-list-heading">
+              <span className="line-title">{a.title}</span>
+              <time className="article-list-date" dateTime={a.date}>
+                {prettyDate(a.date)}
+              </time>
+            </span>
           </a>
         </li>
       ))}
@@ -325,11 +327,13 @@ export function ArticlePage({ article: a }: { article: Article }) {
         }
       >
         <h1 className="statement">{a.title}</h1>
+        <time className="article-date" dateTime={a.date}>
+          {prettyDate(a.date)}
+        </time>
         {a.description ? <p className="statement">{a.description}</p> : null}
       </Intro>
       <div className="row section">
         <div className="meta">
-          <time dateTime={a.date}>{prettyDate(a.date)}</time>
           <span>{a.minutes} min read</span>
           {a.topic ? <span>{a.topic}</span> : null}
         </div>
@@ -373,53 +377,6 @@ export function About() {
       ) : null}
       <Section label="Contact">
         <ContactLines />
-      </Section>
-    </>
-  );
-}
-
-export function Privacy() {
-  return (
-    <>
-      <Intro>
-        <h1 className="statement">Privacy</h1>
-      </Intro>
-      <Section label="Visits">
-        <p className="prose">
-          The site counts page views so I can see what gets read. Each view
-          records the page, the site you came from, the time, and a random
-          number that lasts until you close the tab. It doesn’t use cookies,
-          and it doesn’t record your IP address or anything that identifies
-          you. If your browser sends a Do Not Track signal, nothing is counted.
-        </p>
-      </Section>
-      <Section label="Messages">
-        <p className="prose">
-          When you use the contact form, your name, email address and message
-          are stored so I can read and answer them. Email{" "}
-          <a href={`mailto:${site.email}`}>{site.email}</a> to have a message
-          deleted.
-        </p>
-      </Section>
-      <Section label="Saved links">
-        <p className="prose">
-          Links you save in the Toolbox are stored in your browser’s local
-          storage and never leave it. Exporting creates a file on your device,
-          and importing reads that file in your browser.
-        </p>
-      </Section>
-      <Section label="Appearance">
-        <p className="prose">
-          Your light or dark theme choice is saved in your browser.
-        </p>
-      </Section>
-      <Section label="Hosting">
-        <p className="prose">
-          Content, messages and view counts are stored with Supabase. The
-          hosting service may process technical information needed to deliver
-          the site, such as network requests. External websites have their own
-          privacy practices.
-        </p>
       </Section>
     </>
   );
