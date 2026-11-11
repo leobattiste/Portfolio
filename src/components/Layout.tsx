@@ -6,6 +6,7 @@ const navigation = [
   { label: "Journal", path: "/journal/" },
   { label: "Toolbox", path: "/toolbox/" },
   { label: "About", path: "/about/" },
+  { label: "Contact", path: "/contact/" },
 ];
 const storageKey = "leo-appearance";
 
@@ -84,10 +85,12 @@ export function Layout({ path, children }: { path: string; children: ReactNode }
       <footer className="site-footer row">
         <span>© {site.updated.slice(0, 4)}</span>
         <nav aria-label="Footer">
-          <a href={site.github} target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-          <a href={href("/feed.xml")}>RSS</a>
+          <a href={`mailto:${site.email}`}>Email</a>
+          {site.instagram ? (
+            <a href={site.instagram} target="_blank" rel="noopener noreferrer">
+              Instagram
+            </a>
+          ) : null}
           <a href={href("/privacy/")}>Privacy</a>
         </nav>
       </footer>

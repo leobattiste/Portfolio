@@ -77,15 +77,16 @@ test('every internal route and asset resolves in the built site',async()=>{
 test('draft stories and sample concepts are not published',async()=>{
  await assert.rejects(()=>readFile(new URL('journal/designing-pheelm/index.html',out)));
  const home=await readFile(new URL('index.html',out),'utf8');
- assert.ok(home.includes('Leo Battiste'));assert.ok(home.includes('Pheelm'));assert.ok(!home.includes('CONCEPT PROJECT'));
+ assert.ok(home.includes('Leo Battiste'));assert.ok(home.includes('based in Florida'));
+ assert.ok((await readFile(new URL('work/index.html',out),'utf8')).includes('Pheelm'));assert.ok(!home.includes('CONCEPT PROJECT'));
  const toolbox=await readFile(new URL('toolbox/index.html',out),'utf8');
  for(const r of resources)assert.ok(toolbox.includes(`id="${r.id}"`),'toolbox lists '+r.id);
  const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
  assert.ok(project.includes('https://www.pheelm.com/'));assert.ok(project.includes('naming, logo, brand identity'));
 });
-test('feeds and sitemap include real pages and exclude drafts',async()=>{
+test('sitemap includes real pages and excludes drafts',async()=>{
  const sitemap=await readFile(new URL('sitemap.xml',out),'utf8');
- const feed=await readFile(new URL('feed.xml',out),'utf8');
  assert.ok(sitemap.includes('/work/pheelm/'));assert.ok(!sitemap.includes('designing-pheelm'));
- assert.ok(feed.includes('inside-the-toolbox'));assert.ok(!feed.includes('designing-pheelm'));
+ assert.ok(sitemap.includes('inside-the-toolbox'));assert.ok(sitemap.includes('/contact/'));
+ await assert.rejects(()=>readFile(new URL('feed.xml',out)));
 });

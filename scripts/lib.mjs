@@ -27,7 +27,7 @@ export function markdown(text, url = p => p) {
 }
 export function readingTime(body) { return Math.max(1, Math.ceil(body.split(/\s+/).length / 200)); }
 export function validateContent(site, projects, articles, resources) {
-  if (!site.name || !safeWebUrl(site.origin) || !safeWebUrl(site.github)) throw new Error('Site name, origin, and GitHub URL are required.');
+  if (!site.name || !safeWebUrl(site.origin) || !site.email || (site.instagram && !safeWebUrl(site.instagram))) throw new Error('Site name, origin, and email are required.');
   const ids = new Set();
   for (const item of [...projects,...articles]) {
     if (!item.slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug)) throw new Error('Invalid content slug.');

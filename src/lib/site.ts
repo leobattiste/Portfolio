@@ -59,6 +59,10 @@ export function getPage(path: string) {
       title: `Toolbox | ${site.name}`,
       description: `${resources.length} design and development links saved over the years, searchable and sorted by category.`,
     },
+    "/contact/": {
+      title: `Contact | ${site.name}`,
+      description: `Email ${site.name} at ${site.email}.`,
+    },
     "/privacy/": {
       title: `Privacy | ${site.name}`,
       description: "What this site stores in your browser, and what it doesn’t collect.",

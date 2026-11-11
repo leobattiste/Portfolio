@@ -94,6 +94,7 @@ const routes = [
   "/work/",
   "/journal/",
   "/toolbox/",
+  "/contact/",
   "/privacy/",
   ...projects.map((p) => "/work/" + p.slug + "/"),
   ...articles.map((a) => "/journal/" + a.slug + "/"),
@@ -110,7 +111,7 @@ for (const route of [...routes, "/404.html"]) {
     description: meta.description,
     author: { "@type": "Person", name: site.name, url: absolute("/") },
   };
-  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/><link rel="alternate" type="application/rss+xml" title="Leo Battiste — Journal" href="${u("/feed.xml")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
   const file =
     route === "/"
       ? "index.html"
@@ -127,10 +128,6 @@ await writeFile(
 await writeFile(
   path.join(out, "robots.txt"),
   `User-agent: *\nAllow: /\nSitemap: ${absolute("/sitemap.xml")}\n`,
-);
-await writeFile(
-  path.join(out, "feed.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Leo Battiste — Journal</title><link>${e(absolute("/journal/"))}</link><description>Notes on design, resources, and ideas along the way.</description><language>en</language>${articles.map((a) => `<item><title>${e(a.title)}</title><link>${e(absolute("/journal/" + a.slug + "/"))}</link><guid>${e(absolute("/journal/" + a.slug + "/"))}</guid><pubDate>${new Date(a.date + "T12:00:00Z").toUTCString()}</pubDate><description>${e(a.description)}</description></item>`).join("")}</channel></rss>`,
 );
 await writeFile(
   path.join(out, "build-info.json"),

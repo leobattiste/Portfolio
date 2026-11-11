@@ -25,7 +25,6 @@ No domain was provided or purchased. To connect one, add it in the hosting provi
 ## Before promoting the portfolio
 
 - Review the published bio and Journal introduction.
-- Add an email or professional contact URL if GitHub is not your preferred contact.
 - Add a real résumé if you want a download link.
 - Expand Pheelm's process story with your own research, iterations, and results.
 - Review the unverified Toolbox links when useful.

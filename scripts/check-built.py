@@ -8,5 +8,5 @@ class Parser(HTMLParser):
 root=Path(__file__).resolve().parent.parent/'dist'
 for p in root.rglob('*.html'):
  parser=Parser();parser.feed(p.read_text());parser.close()
-for p in ['sitemap.xml','feed.xml']:ET.parse(root/p)
-print('HTML parsed and sitemap/RSS XML validated.')
+ET.parse(root/'sitemap.xml')
+print('HTML parsed and sitemap XML validated.')

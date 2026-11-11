@@ -7,7 +7,6 @@ import {
   asset,
   href,
   host,
-  blurb,
   prettyDate,
 } from "@/lib/site";
 import type { Project, Article } from "@/types";
@@ -60,23 +59,26 @@ function ArticleLines({ items }: { items: Article[] }) {
   );
 }
 
-function Contact() {
+const handle = (url: string) =>
+  "@" + new URL(url).pathname.replace(/\//g, "");
+
+function ContactLines() {
   return (
     <ul className="lines">
-      {site.email ? (
+      <li>
+        <a className="line" href={`mailto:${site.email}`}>
+          <span className="line-title">Email</span>
+          <span className="line-end">{site.email}</span>
+        </a>
+      </li>
+      {site.instagram ? (
         <li>
-          <a className="line" href={`mailto:${site.email}`}>
-            <span className="line-title">Email</span>
-            <span className="line-end">{site.email}</span>
+          <a className="line" href={site.instagram} {...external}>
+            <span className="line-title">Instagram</span>
+            <span className="line-end">{handle(site.instagram)}</span>
           </a>
         </li>
       ) : null}
-      <li>
-        <a className="line" href={site.github} {...external}>
-          <span className="line-title">GitHub</span>
-          <span className="line-end">{site.github.replace("https://", "")}</span>
-        </a>
-      </li>
       {site.resume ? (
         <li>
           <a className="line" href={href(site.resume)}>
@@ -89,93 +91,72 @@ function Contact() {
   );
 }
 
+export function Contact() {
+  return (
+    <>
+      <Intro>
+        <h1 className="statement">Contact</h1>
+        <p className="statement">
+          For projects, questions or a hello, email is the best way to reach
+          me.
+        </p>
+      </Intro>
+      <Section label="Reach me">
+        <ContactLines />
+      </Section>
+    </>
+  );
+}
+
 export function Home() {
   const [lead] = projects;
   const [latest] = articles;
   return (
-    <>
-      <Intro>
-        <h1 className="statement">
-          I’m {site.name}, a product designer who also writes the code.
-        </h1>
-        <p className="statement">
+    <Intro>
+      <h1 className="statement">
+        I’m {site.name}, a {site.role.toLowerCase()} based in {site.location}.
+      </h1>
+      <p className="statement">
+        I enjoy turning ideas into intuitive, thoughtful digital experiences.
+        Here, you can explore my{" "}
+        <a className="peek-link" href={href("/work/")}>
+          work
           {lead ? (
-            <>
-              Lately that’s{" "}
-              <a className="peek-link" href={href(`/work/${lead.slug}/`)}>
-                {lead.title}
-                <span className="peek" aria-hidden="true">
-                  <img src={asset(lead.cover)} width="1200" height="630" alt="" />
-                </span>
-              </a>
-              , a home for films by Black directors. I named it, designed the
-              identity and the product, and wrote the code.{" "}
-            </>
+            <span className="peek" aria-hidden="true">
+              <img src={asset(lead.cover)} width="1200" height="630" alt="" />
+            </span>
           ) : null}
-          I also keep a{" "}
-          <a className="peek-link" href={href("/toolbox/")}>
-            toolbox
+        </a>
+        , read my thoughts and experiences in my{" "}
+        <a className="peek-link" href={href("/journal/")}>
+          journal
+          {latest ? (
             <span className="peek" aria-hidden="true">
               <span className="peek-text">
-                <strong>
-                  {highlights
-                    .slice(0, 3)
-                    .map((r) => r.title)
-                    .join(", ")}
-                </strong>
-                and {resources.length - 3} more links
+                <strong>{latest.title}</strong>
+                {prettyDate(latest.date)}
               </span>
             </span>
-          </a>{" "}
-          of {resources.length} links worth saving
-          {latest ? (
-            <>
-              , and a{" "}
-              <a className="peek-link" href={href("/journal/")}>
-                journal
-                <span className="peek" aria-hidden="true">
-                  <span className="peek-text">
-                    <strong>{latest.title}</strong>
-                    {prettyDate(latest.date)}
-                  </span>
-                </span>
-              </a>{" "}
-              for the thinking in between
-            </>
           ) : null}
-          .
-        </p>
-      </Intro>
-      <Section label="Work">
-        {projects.map((p) => (
-          <ProjectLink key={p.slug} project={p} />
-        ))}
-      </Section>
-      {articles.length ? (
-        <Section label="Journal">
-          <ArticleLines items={articles.slice(0, 4)} />
-        </Section>
-      ) : null}
-      <Section label="Toolbox">
-        <ul className="lines">
-          {highlights.map((r) => (
-            <li key={r.id}>
-              <a className="line" href={r.url} {...external}>
-                <span className="line-title">{r.title}</span>
-                <span className="line-note">{blurb(r)}</span>
-                <span className="line-end">{host(r.url)}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-        <a className="more link" href={href("/toolbox/")}>
-          Browse all {resources.length} links
         </a>
-      </Section>
-      <Section label="Contact">
-        <Contact />
-      </Section>
-    </>
+        , and check out the tools and resources I use in my{" "}
+        <a className="peek-link" href={href("/toolbox/")}>
+          toolbox
+          <span className="peek" aria-hidden="true">
+            <span className="peek-text">
+              <strong>
+                {highlights
+                  .slice(0, 3)
+                  .map((r) => r.title)
+                  .join(", ")}
+              </strong>
+              and {resources.length - 3} more links
+            </span>
+          </span>
+        </a>
+        .
+      </p>
+    </Intro>
   );
 }
 
@@ -366,7 +347,7 @@ export function About() {
         </Section>
       ) : null}
       <Section label="Contact">
-        <Contact />
+        <ContactLines />
       </Section>
     </>
   );
@@ -409,11 +390,8 @@ export function Privacy() {
       <Section label="Hosting">
         <p className="prose">
           The hosting service may process technical information needed to
-          deliver the site, such as network requests. You can reach me on{" "}
-          <a href={site.github} {...external}>
-            GitHub
-          </a>
-          .
+          deliver the site, such as network requests. You can reach me at{" "}
+          <a href={`mailto:${site.email}`}>{site.email}</a>.
         </p>
       </Section>
     </>

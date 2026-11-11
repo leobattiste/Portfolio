@@ -21,7 +21,7 @@ pnpm run check
 python3 scripts/check-built.py
 ```
 
-The output is `dist/`, including all project and article URLs, metadata, RSS, sitemap, and 404 page. Vercel is configured to install with pnpm and serve `dist`.
+The output is `dist/`, including all project and article URLs, metadata, sitemap, and 404 page. Vercel is configured to install with pnpm and serve `dist`.
 
 ## Content and source
 
@@ -32,7 +32,7 @@ The output is `dist/`, including all project and article URLs, metadata, RSS, si
 - `src/styles.css`: design tokens and every style on the site.
 - `src/components`: layout, pages, and the Toolbox index.
 - `src/lib`: content helpers and saved-links state.
-- `scripts/build.mjs`: validation, React prerendering, feeds, and static output.
+- `scripts/build.mjs`: validation, React prerendering, sitemap, and static output.
 
 See [Design system](docs/DESIGN-SYSTEM.md), [Content guide](docs/CONTENT.md), and [Hosting guide](docs/LAUNCH.md).
 

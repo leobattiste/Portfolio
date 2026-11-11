@@ -4,7 +4,7 @@ The site builds from structured files. There is no database, paid service, or ru
 
 ## Your profile
 
-Edit `content/site.json` for your name, introduction, bio, GitHub URL, and optional email, location, availability, or résumé. Empty optional fields are hidden. Add a real résumé to `src/assets` and set `resume` to `/assets/your-resume.pdf` to show a download link. No résumé or employment history has been invented.
+Edit `content/site.json` for your name, introduction, bio, email, Instagram URL, and optional location, availability, or résumé. Empty optional fields are hidden. Add a real résumé to `src/assets` and set `resume` to `/assets/your-resume.pdf` to show a download link. No résumé or employment history has been invented.
 
 ## Projects
 
@@ -16,7 +16,7 @@ Pheelm is the first published project. Its copy is based on Leo's confirmed owne
 
 Create `content/journal/your-story.md`. Start with JSON metadata between `---` lines, followed by Markdown. See `inside-the-toolbox.md` for a published example. Required metadata: slug, title, description, topic, date (YYYY-MM-DD), published.
 
-Supported Markdown: paragraphs, `##` headings, `###` headings, lists starting with `-`, blockquotes starting with `>`, links, bold text, and inline code. Raw HTML is escaped. Drafts (`published: false`) are omitted from the website, RSS, and sitemap. They remain visible in this public GitHub repository: keep confidential drafts outside it.
+Supported Markdown: paragraphs, `##` headings, `###` headings, lists starting with `-`, blockquotes starting with `>`, links, bold text, and inline code. Raw HTML is escaped. Drafts (`published: false`) are omitted from the website and sitemap. They remain visible in this public GitHub repository: keep confidential drafts outside it.
 
 ## Toolbox
 
