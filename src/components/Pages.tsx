@@ -150,9 +150,6 @@ export function Contact() {
     <>
       <Intro>
         <h1 className="statement">Contact</h1>
-        <p className="statement">
-          For projects, questions or a hello, write to me here or by email.
-        </p>
       </Intro>
       <Section label="Send a message">
         <ContactForm />
@@ -226,12 +223,6 @@ export function Work() {
     <>
       <Intro>
         <h1 className="statement">Work</h1>
-        <p className="statement">
-          Products I’ve designed and built.{" "}
-          {projects.length === 1
-            ? "One is public so far, and more are on the way."
-            : null}
-        </p>
       </Intro>
       <Section label="Projects" count={projects.length}>
         {projects.map((p) => (
@@ -311,9 +302,6 @@ export function Journal() {
     <>
       <Intro>
         <h1 className="statement">Journal</h1>
-        <p className="statement">
-          Notes on what I’m making and what I’m learning from it.
-        </p>
       </Intro>
       <Section label="Entries" count={articles.length}>
         {articles.length ? (
@@ -356,7 +344,7 @@ export function About() {
   return (
     <>
       <Intro>
-        <h1 className="statement">{about.statement}</h1>
+        <h1 className="statement">About</h1>
       </Intro>
       <div className="row section">
         {about.portrait ? (
@@ -395,10 +383,6 @@ export function Privacy() {
     <>
       <Intro>
         <h1 className="statement">Privacy</h1>
-        <p className="statement">
-          This site has no accounts for visitors, no advertising and no
-          third-party trackers.
-        </p>
       </Intro>
       <Section label="Visits">
         <p className="prose">
