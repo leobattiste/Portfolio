@@ -243,6 +243,15 @@ main {
 .statement + .statement a {
   color: var(--ink);
 }
+.project-description {
+  margin-top: 1rem;
+  max-width: 38rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--graphite);
+}
 .back {
   font-size: 0.9375rem;
   color: var(--graphite);
