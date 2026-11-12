@@ -134,7 +134,7 @@ export function getPage(path: string, content: Content = initial) {
     "/playground/aspect-ratio/": {
       title: `Aspect ratio | ${site.name}`,
       description:
-        "One shot framed six ways, from 4:3 to Ultra Panavision. Drag to see what each ratio leaves out.",
+        "Six film aspect ratios, from 4:3 to Ultra Panavision, with a movie and a fun fact for each. Drag to see what each one leaves out.",
     },
     "/playground/variable-type/": {
       title: `Variable type | ${site.name}`,

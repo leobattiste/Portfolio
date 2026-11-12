@@ -557,3 +557,47 @@
     animation: none !important;
   }
 }
+
+.ratio-card {
+  max-width: 44rem;
+  margin: 40px auto 0;
+  padding-bottom: 48px;
+  min-height: 15rem;
+}
+.ratio-card h2 {
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.ratio-card p {
+  margin: 0;
+  color: var(--graphite);
+  line-height: 1.6;
+}
+.ratio-card dl {
+  margin: 24px 0 0;
+  display: grid;
+  gap: 16px;
+}
+.ratio-card dl > div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mist);
+}
+.ratio-card dt {
+  color: var(--graphite);
+  font-size: 0.875rem;
+}
+.ratio-card dd {
+  margin: 0;
+  line-height: 1.55;
+}
+@media (max-width: 560px) {
+  .ratio-card dl > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

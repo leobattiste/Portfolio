@@ -66,12 +66,50 @@ function ExperimentPage({
 /* 002 Aspect ratio -------------------------------------------------- */
 
 const ratios = [
-  { value: 1.33, name: "Standard", note: "4:3" },
-  { value: 1.43, name: "IMAX" },
-  { value: 1.78, name: "Widescreen", note: "16:9" },
-  { value: 1.85, name: "Flat" },
-  { value: 2.39, name: "Scope" },
-  { value: 2.76, name: "Ultra Panavision" },
+  {
+    value: 1.33,
+    name: "Standard",
+    note: "4:3",
+    film: "The Artist (2011)",
+    why: "The shape of early cinema. Edison's lab settled on it for 35mm film, and television kept it for about fifty years. Tall and close, it puts a face or a doorway in the middle of the picture.",
+    fact: "The Grand Budapest Hotel uses a near-4:3 frame for its 1930s scenes and widens the picture for each later decade.",
+  },
+  {
+    value: 1.43,
+    name: "IMAX",
+    film: "The Odyssey (2026)",
+    why: "The giant format. IMAX 15/70 film runs through the camera on its side, so the frame is huge and almost square. It is made for scale: mountains, oceans, ships.",
+    fact: "Christopher Nolan shot The Odyssey entirely for IMAX. A single 15/70 frame has roughly ten times the area of a regular 35mm frame, which is why it holds so much detail.",
+  },
+  {
+    value: 1.78,
+    name: "Widescreen",
+    note: "16:9",
+    film: "Whatever you watch at home",
+    why: "The shape of every modern screen. It was proposed in the 1980s as a compromise, so that old 4:3 pictures and wide films could both fit without wasting much of the screen.",
+    fact: "Few films are finished at 16:9 in theaters. It is mostly the frame they end up in on your TV, laptop and phone, which is why wide films come with black bars.",
+  },
+  {
+    value: 1.85,
+    name: "Flat",
+    film: "Pulp Fiction (1994)",
+    why: "The standard for most dramas and comedies. It is wide enough for two people in a conversation and tall enough to keep the faces big.",
+    fact: "It is called flat because it uses ordinary spherical lenses. Wider ratios usually need special lenses that squeeze the image.",
+  },
+  {
+    value: 2.39,
+    name: "Scope",
+    film: "Blade Runner 2049 (2017)",
+    why: "The cinematic default for big stories. It gives up height for width, so it suits landscapes, cities and people sharing a shot from far apart.",
+    fact: "Scope is shot with anamorphic lenses, which squeeze the image sideways and stretch it back later. That is why you see oval blurred highlights and long horizontal flares.",
+  },
+  {
+    value: 2.76,
+    name: "Ultra Panavision",
+    film: "The Hateful Eight (2015)",
+    why: "The widest frame there is: more than two and a half times as wide as it is tall. It was built for epics, and now it is used by a handful of filmmakers.",
+    fact: "Quentin Tarantino shot The Hateful Eight with lenses made in the 1960s. Before it, the format had been used for Ben-Hur in 1959, and almost nothing else.",
+  },
 ];
 const FRAME = 16 / 9;
 const MIN = 1.33,
@@ -136,7 +174,7 @@ export function AspectRatio() {
       title="Aspect ratio"
       lead={
         <>
-          Same shot, different frame.
+          Six ways to frame a film.
           <br />
           Drag to see what each one leaves out.
         </>
@@ -145,10 +183,14 @@ export function AspectRatio() {
       notes={
         <>
           <p>
-            The frame is part of the story. Flat 1.85 sits close to the 16:9 of a
-            laptop screen, while Scope 2.39 trades height for width, which suits
-            landscapes and people sharing a shot. Narrow the frame to 4:3 and the
-            lighthouse on the right drops out of the picture.
+            Watching movies is one of my favorite hobbies, and it changed how I
+            design. I notice the frame before the plot: where the edges sit, what
+            gets cropped, and how much room a shot leaves to breathe. A screen
+            layout makes the same decisions.
+          </p>
+          <p>
+            Narrow the frame to 4:3 and the lighthouse on the right drops out of
+            the picture. Nothing in the scene changed, only what it showed.
           </p>
           <p>
             The bars move on a spring rather than a fixed curve, so every change,
@@ -211,6 +253,29 @@ export function AspectRatio() {
             </span>
           </div>
           <p className="lab-hint">Drag across the frame, or use the arrow keys</p>
+        </div>
+        <div className="ratio-card" aria-live="polite">
+          {preset ? (
+            <>
+              <h2>
+                {preset.name}
+                {preset.note ? ` (${preset.note})` : ""}
+              </h2>
+              <p>{preset.why}</p>
+              <dl>
+                <div>
+                  <dt>In the movies</dt>
+                  <dd>{preset.film}</dd>
+                </div>
+                <div>
+                  <dt>Fun fact</dt>
+                  <dd>{preset.fact}</dd>
+                </div>
+              </dl>
+            </>
+          ) : (
+            <p>This is a custom frame. Pick a ratio above, or drag to a stop, to read about it.</p>
+          )}
         </div>
       </section>
     </ExperimentPage>
