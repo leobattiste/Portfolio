@@ -42,16 +42,8 @@ export function Playground() {
     <>
       <Intro>
         <h1 className="statement">{playground.title}</h1>
-        <p className="statement secondary">
-          {playground.intro.split("\n").map((line, i) => (
-            <span key={i}>
-              {i ? <br /> : null}
-              {line}
-            </span>
-          ))}
-        </p>
       </Intro>
-      <Section label="Experiments" count={1}>
+      <Section>
         <div className="experiments">
           <ExperimentCard
             path="/playground/aspect-ratio/"

@@ -740,13 +740,6 @@ function PlaygroundEditor() {
           aria-label="Page title"
           onChange={(e) => setTop({ title: e.target.value })}
         />
-        <textarea
-          className="statement title-input lead-input"
-          rows={2}
-          value={row.intro}
-          aria-label="Introduction. A new line starts a new row."
-          onChange={(e) => setTop({ intro: e.target.value })}
-        />
         <div className="facts">
           <Field label="Search summary" hint="What search results and link previews show">
             <input

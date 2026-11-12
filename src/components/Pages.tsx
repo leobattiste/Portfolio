@@ -57,11 +57,14 @@ function ProjectLink({ project: p }: { project: Project }) {
 function ArticleLines({ items }: { items: Article[] }) {
   return (
     <ul className="lines">
-      {items.map((a) => (
+      {items.map((a, i) => (
         <li key={a.slug}>
           <a className="line article-line" href={href(`/journal/${a.slug}/`)}>
             <span className="article-list-heading">
-              <span className="line-title">{a.title}</span>
+              <span className="line-title">
+                <span className="article-no">{items.length - i}.</span>
+                {a.title}
+              </span>
               <time className="article-list-date" dateTime={a.date}>
                 {prettyDate(a.date)}
               </time>
@@ -238,7 +241,7 @@ export function Work() {
       <Intro>
         <h1 className="statement">Work</h1>
       </Intro>
-      <Section label="Projects" count={projects.length}>
+      <Section>
         {projects.map((p) => (
           <ProjectLink key={p.slug} project={p} />
         ))}
@@ -315,7 +318,7 @@ export function Journal() {
       <Intro>
         <h1 className="statement">Journal</h1>
       </Intro>
-      <Section label="Entries" count={articles.length}>
+      <Section>
         {articles.length ? (
           <ArticleLines items={articles} />
         ) : (

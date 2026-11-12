@@ -1,6 +1,6 @@
 {
   "index.html": {
-    "file": "assets/index-DzTrgTqO.js",
+    "file": "assets/index-DdJIazdA.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -8,7 +8,7 @@
       "src/admin/Admin.tsx"
     ],
     "css": [
-      "assets/index-Cs2Ac-UU.css"
+      "assets/index-CJY7_gMF.css"
     ],
     "assets": [
       "assets/schibsted-grotesk-latin-ext-wght-normal-hsMS0n0O.woff2",
@@ -24,7 +24,7 @@
     "src": "node_modules/.pnpm/@fontsource-variable+schibsted-grotesk@5.3.0/node_modules/@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2"
   },
   "src/admin/Admin.tsx": {
-    "file": "assets/Admin-Bv8lIa6A.js",
+    "file": "assets/Admin-Cy9PvF3h.js",
     "name": "Admin",
     "src": "src/admin/Admin.tsx",
     "isDynamicEntry": true,

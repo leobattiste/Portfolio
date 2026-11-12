@@ -221,7 +221,7 @@ main {
   transition: transform 0.5s var(--ease);
 }
 [data-theme="dark"] .theme-toggle svg {
-  transform: rotate(180deg);
+  transform: rotate(-25deg);
 }
 
 /* Intro: the opening statement of each page ------------------------- */
@@ -823,4 +823,12 @@ a.line:hover {
 }
 .home-hero .intro {
   padding-block: 0;
+}
+
+.article-no {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--graphite);
+  min-width: 2.25rem;
+  display: inline-block;
 }
