@@ -32,6 +32,7 @@ export function Privacy() {
       <Section label="Services and external links">
         <div className="prose">
           <p>Supabase stores website content, contact messages, and page-view records. Hosting services process the information required to deliver the site. They may keep technical logs under their own policies.</p>
+          <p>The Album covers experiment looks up cover images on MusicBrainz and loads them from the Cover Art Archive. When you press play there, it loads Spotify's player to play the music. Spotify may set its own cookies, and its privacy policy applies.</p>
           <p>Some pages link to other websites and services. When you follow those links, their own privacy policies apply.</p>
         </div>
       </Section>

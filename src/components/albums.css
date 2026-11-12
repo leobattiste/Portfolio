@@ -1,10 +1,6 @@
-/* 001 Album covers: a sleeve or a jewel case, and the disc inside it */
+/* 001 Album covers: a turntable, a sleeve, and the record between them.
+   Everything is sized from --r, the record's diameter. */
 
-.format-switch {
-  display: flex;
-  gap: 8px;
-}
-.format-switch button,
 .btn {
   padding: 8px 16px;
   font-size: 0.85rem;
@@ -16,11 +12,9 @@
     border-color 0.15s,
     color 0.15s;
 }
-.format-switch button:hover,
 .btn:hover {
   border-color: var(--graphite);
 }
-.format-switch button[aria-pressed="true"],
 .btn.primary {
   background: var(--ink);
   border-color: var(--ink);
@@ -34,435 +28,463 @@
 
 .player-stage {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 48px 56px;
-  padding: 24px var(--edge) 48px;
+  gap: 48px;
+  padding: 32px var(--edge) 40px;
 }
 
-/* The deck. Everything is sized from one number, --s, the sleeve's side. */
 .deck {
-  --s: min(330px, calc((100vw - 2 * var(--edge)) / 1.7));
-  --c: calc(var(--s) * 0.86);
-  --rx: 0deg;
-  --ry: 0deg;
+  --r: min(340px, calc((100vw - 2 * var(--edge)) / 2.62));
+  /* where the sleeve and the turntable sit */
+  --sl-x: 0px;
+  --sl-y: calc(var(--r) * 0.06);
+  --pl-x: calc(var(--r) * 1.1);
+  --pl-y: 0px;
+  --spin: 0deg;
+  --progress: 0;
   position: relative;
-  width: calc(var(--s) * 1.66);
-  height: var(--s);
-  perspective: 1600px;
-  touch-action: pan-y;
-  cursor: grab;
-  outline-offset: 12px;
-  border-radius: 6px;
-}
-.deck:active {
-  cursor: grabbing;
-}
-.deck-body {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.deck:active .deck-body {
-  transition-duration: 0.1s;
-}
-.face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-.face-back {
-  transform: rotateY(180deg);
+  width: calc(var(--r) * 2.56);
+  height: calc(var(--r) * 1.12);
+  outline-offset: 16px;
+  border-radius: 8px;
 }
 
-/* Discs */
-.disc-slot {
+/* Plinth: walnut, lit from the top left */
+.plinth {
+  position: absolute;
+  left: var(--pl-x);
+  top: var(--pl-y);
+  width: calc(var(--r) * 1.46);
+  height: calc(var(--r) * 1.12);
+  border-radius: calc(var(--r) * 0.025);
+  background:
+    linear-gradient(160deg, rgb(255 255 255 / 0.1), transparent 35%, rgb(0 0 0 / 0.12)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='460'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.09' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.09 0 0 0 0 0.05 0 0 0 0.75 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E")
+      center / 100% 100%,
+    linear-gradient(100deg, #7a5134, #5e3c26 45%, #6f4a2f);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -2px 0 rgb(0 0 0 / 0.3),
+    0 2px 3px rgb(0 0 0 / 0.2),
+    0 30px 60px -24px rgb(0 0 0 / 0.55);
+}
+
+/* Platter: brushed aluminium rim with strobe dots, a felt mat, a spindle */
+.platter {
+  position: absolute;
+  left: calc(var(--r) * 0.06);
+  top: calc(var(--r) * 0.04);
+  width: calc(var(--r) * 1.04);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow:
+    0 3px 6px rgb(0 0 0 / 0.35),
+    0 0 0 1px rgb(0 0 0 / 0.25);
+}
+.platter-spin {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  rotate: var(--spin);
+  background: conic-gradient(
+    from 0deg,
+    #c9ccd3,
+    #f4f5f7 12%,
+    #a9adb5 25%,
+    #e8e9ec 38%,
+    #b8bcc3 50%,
+    #f4f5f7 62%,
+    #a9adb5 75%,
+    #e8e9ec 88%,
+    #c9ccd3
+  );
+}
+.strobe {
+  position: absolute;
+  inset: 1.2%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#3a3c42 0 0.9deg, transparent 0.9deg 2.4deg);
+  mask: radial-gradient(circle closest-side, transparent 0 94%, #000 94.5% 98%, transparent 98.5%);
+  opacity: 0.7;
+}
+.mat {
+  position: absolute;
+  inset: 3%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle closest-side, rgb(255 255 255 / 0.05), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    #26272b;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.4);
+}
+.spindle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2.6%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #b9bcc4 55%, #73767e);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+  z-index: 1;
+}
+
+/* Controls on the plinth */
+.led {
+  position: absolute;
+  left: calc(var(--r) * 0.07);
+  top: calc(var(--r) * 0.07);
+  width: calc(var(--r) * 0.022);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #4a3a22;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.5);
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+}
+.deck[data-playing="true"] .led {
+  background: var(--marigold);
+  box-shadow:
+    0 0 6px 1px rgb(255 194 51 / 0.7),
+    inset 0 -1px 1px rgb(0 0 0 / 0.2);
+}
+.speeds {
+  position: absolute;
+  left: calc(var(--r) * 0.16);
+  bottom: calc(var(--r) * 0.045);
+  display: flex;
+  gap: calc(var(--r) * 0.02);
+  font-size: calc(var(--r) * 0.03);
+  color: rgb(255 240 220 / 0.45);
+  letter-spacing: 0.05em;
+}
+.speeds b {
+  font-weight: 600;
+  color: rgb(255 240 220 / 0.85);
+}
+.start {
+  position: absolute;
+  left: calc(var(--r) * 0.05);
+  bottom: calc(var(--r) * 0.04);
+  width: calc(var(--r) * 0.08);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f4f5f7, #b5b8c0 70%, #8d9098);
+  box-shadow:
+    0 2px 3px rgb(0 0 0 / 0.45),
+    inset 0 -2px 2px rgb(0 0 0 / 0.15);
+  transition:
+    translate 0.1s,
+    box-shadow 0.1s;
+}
+.start:active,
+.start[aria-pressed="true"] {
+  translate: 0 1px;
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 0.45),
+    inset 0 1px 2px rgb(0 0 0 / 0.2);
+}
+
+/* The record. It waits in the sleeve, then slides onto the platter. */
+.record {
   position: absolute;
   left: 0;
   top: 0;
-  width: var(--s);
-  height: var(--s);
-  transform: translate3d(calc(var(--s) * 0.03), 0, 1px);
+  width: var(--r);
+  aspect-ratio: 1;
+  z-index: 2;
+  translate: calc(var(--sl-x) + var(--r) * 0.1) var(--sl-y);
   transition:
-    transform 0.9s cubic-bezier(0.3, 0.7, 0.2, 1),
-    opacity 0.3s;
+    translate 0.9s cubic-bezier(0.45, 0.05, 0.2, 1),
+    filter 0.9s;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.35));
 }
-.deck[data-format="vinyl"]:hover .disc-slot {
-  transform: translate3d(calc(var(--s) * 0.09), 0, 1px);
+.deck[data-on="false"]:hover .record {
+  translate: calc(var(--sl-x) + var(--r) * 0.16) var(--sl-y);
 }
-.deck[data-format="vinyl"][data-playing="true"] .disc-slot {
-  transform: translate3d(calc(var(--s) * 0.55), 0, 1px);
+.deck[data-on="true"] .record {
+  translate: calc(var(--pl-x) + var(--r) * 0.08) calc(var(--pl-y) + var(--r) * 0.06);
 }
-.deck[data-flipped="true"] .disc-slot {
-  opacity: 0;
-}
-.disc {
+.record-spin,
+.record-sheen {
   position: absolute;
   inset: 0;
   border-radius: 50%;
+  /* the center hole, so the spindle shows through */
+  mask: radial-gradient(circle closest-side, transparent 0 2.4%, #000 2.7%);
 }
-.disc-spin {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  animation: disc-spin 1.8s linear infinite;
-  animation-play-state: paused;
-}
-.deck[data-playing="true"] .disc-spin {
-  animation-play-state: running;
-}
-@keyframes disc-spin {
-  to {
-    rotate: 1turn;
-  }
-}
-.disc-sheen {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-/* Vinyl: grooves, a paper label, and light that stays still while it turns */
-.disc-vinyl {
-  box-shadow: 0 12px 30px rgb(0 0 0 / 0.28);
-  mask: radial-gradient(circle, transparent 0 1.6%, #000 1.8%);
-}
-.disc-vinyl .disc-spin {
+.record-spin {
+  rotate: var(--spin);
   background:
-    radial-gradient(circle, transparent 0 33%, #0b0b0c 33.5% 36%, transparent 36% 69%, #45464d 69.6% 70.7%),
-    repeating-radial-gradient(circle, #151517 0 1.4px, #202024 1.4px 2.8px);
+    /* gaps between songs */
+    radial-gradient(
+      circle closest-side,
+      transparent 0 51.5%,
+      rgb(255 255 255 / 0.07) 51.8% 52.4%,
+      transparent 52.7% 63.5%,
+      rgb(255 255 255 / 0.07) 63.8% 64.4%,
+      transparent 64.7% 75.5%,
+      rgb(255 255 255 / 0.07) 75.8% 76.3%,
+      transparent 76.6% 86.5%,
+      rgb(255 255 255 / 0.07) 86.8% 87.3%,
+      transparent 87.6%
+    ),
+    /* run-out groove and polished edge */
+    radial-gradient(
+      circle closest-side,
+      #1d1d20 0 39%,
+      #2a2a2e 39.3%,
+      transparent 40% 96.6%,
+      #2d2d31 97% 98.6%,
+      #111113 99%
+    ),
+    /* the grooves */
+    repeating-radial-gradient(circle closest-side, #151517 0 0.5%, #19191c 0.5% 1%);
 }
-.disc-label {
+.record-label {
   position: absolute;
   inset: 33.5%;
   border-radius: 50%;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: center;
   justify-items: center;
-  gap: 2px;
-  padding: 14%;
+  gap: calc(var(--r) * 0.004);
+  padding: calc(var(--r) * 0.05) calc(var(--r) * 0.045);
   text-align: center;
-  font-size: calc(var(--s) * 0.026);
+  background:
+    radial-gradient(circle closest-side, transparent 0 7%, rgb(0 0 0 / 0.08) 7.5% 8.5%, transparent 9%),
+    radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.18), transparent 60%),
+    var(--label);
+  color: var(--label-ink);
+  font-size: calc(var(--r) * 0.024);
   line-height: 1.2;
 }
-.disc-label span:first-child {
-  font-weight: 600;
-}
-.disc-label span {
-  max-width: 100%;
+.record-label strong {
+  font-size: 1.15em;
+  font-weight: 650;
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.record-label > span {
+  opacity: 0.8;
+  margin-bottom: calc(var(--r) * 0.05);
+}
+.record-label small {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.8em;
   white-space: nowrap;
+  opacity: 0.7;
 }
-.disc-vinyl .disc-sheen {
-  background: conic-gradient(
-    from 20deg,
-    transparent 0 6%,
-    rgb(255 255 255 / 0.13) 11%,
-    transparent 17% 56%,
-    rgb(255 255 255 / 0.1) 61%,
-    transparent 67%
-  );
-}
-
-/* CD: silver, a clear hub, and a rainbow that stays put */
-.deck[data-format="cd"] .disc-slot {
-  width: calc(var(--c) * 0.92);
-  height: calc(var(--c) * 0.92);
-  left: calc(var(--c) * 0.15);
-  top: calc((var(--s) - var(--c) * 0.92) / 2);
-  transform: translate3d(0, 0, 1px);
-  transition-delay: 0s;
-}
-.deck[data-format="cd"][data-playing="true"] .disc-slot {
-  transform: translate3d(calc(var(--c) * 0.8), 0, 1px);
-  transition-delay: 0.25s;
-}
-.disc-cd {
-  mask: radial-gradient(circle, transparent 0 7%, #000 7.3%);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
-}
-.disc-cd .disc-spin {
-  animation-duration: 0.7s;
+/* Light catches the grooves in two wedges and stays put as the record turns */
+.record-sheen {
+  pointer-events: none;
   background:
-    radial-gradient(circle, rgb(255 255 255 / 0.35) 0 15%, #b9bcc4 15.4% 16.2%, transparent 16.5% 97.5%, #a9acb4 98%),
-    radial-gradient(circle, #e7e9ee 18%, #d2d5dc 62%, #eceef2 96%);
-}
-.disc-print {
-  position: absolute;
-  left: 50%;
-  top: 21%;
-  translate: -50% 0;
-  white-space: nowrap;
-  font-size: calc(var(--c) * 0.028);
-  color: #4a4d55;
-  letter-spacing: 0.02em;
-}
-.disc-cd .disc-sheen {
-  mix-blend-mode: multiply;
-  background: conic-gradient(
-    from 210deg,
-    #ffd6ec,
-    #fff 9%,
-    #c7ecff 17%,
-    #fff 25%,
-    #e4ffcc 33%,
-    #fff 42%,
-    #ffe9c2 50%,
-    #fff 58%,
-    #ffd6ec 67%,
-    #fff 75%,
-    #c7ecff 84%,
-    #fff 92%,
-    #ffd6ec
-  );
-  opacity: 0.9;
+    conic-gradient(
+      from -20deg,
+      transparent 0deg,
+      rgb(255 255 255 / 0.16) 22deg,
+      rgb(255 255 255 / 0.04) 40deg,
+      transparent 58deg 180deg,
+      rgb(255 255 255 / 0.12) 202deg,
+      rgb(255 255 255 / 0.03) 220deg,
+      transparent 238deg
+    );
+  -webkit-mask: radial-gradient(circle closest-side, transparent 0 40%, #000 41% 96.5%, transparent 97%);
+  mask: radial-gradient(circle closest-side, transparent 0 40%, #000 41% 96.5%, transparent 97%);
 }
 
-/* Vinyl sleeve */
+/* The sleeve: cover art on board, with a little ring wear */
 .sleeve {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: var(--s);
-  height: var(--s);
+  left: var(--sl-x);
+  top: var(--sl-y);
+  width: var(--r);
+  aspect-ratio: 1;
+  z-index: 3;
   transform-style: preserve-3d;
-  transform: translateZ(2px) rotateY(0deg);
+  perspective: 1600px;
+  cursor: pointer;
   transition: transform 0.8s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.deck[data-on="true"] .sleeve {
+  cursor: default;
 }
 .deck[data-flipped="true"] .sleeve {
-  transform: translateZ(2px) rotateY(180deg);
-}
-.sleeve .face-front {
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.12),
-    0 22px 44px -12px rgb(0 0 0 / 0.38);
-}
-.face-front img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  user-select: none;
-  pointer-events: none;
-}
-.sleeve-shine {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 30%,
-    rgb(255 255 255 / 0.16) 45%,
-    transparent 58%
-  );
-  translate: calc(var(--ry) * -2) 0;
-  transition: translate 0.6s;
-}
-
-/* Tonearm, at rest beside the record, swinging in when it plays */
-.tonearm {
-  position: absolute;
-  left: calc(var(--s) * 1.58);
-  top: calc(var(--s) * 0.04);
-  transform: translateZ(4px);
-}
-.arm-pivot {
-  position: absolute;
-  width: calc(var(--s) * 0.1);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  translate: -50% -50%;
-  background: radial-gradient(circle, #8d9099 0 22%, #d4d6dc 24% 60%, #b8bbc3 62%);
-  box-shadow: 0 4px 10px rgb(0 0 0 / 0.2);
-}
-.arm {
-  position: absolute;
-  left: -2px;
-  top: 0;
-  width: 4px;
-  height: calc(var(--s) * 0.68);
-  border-radius: 2px;
-  background: linear-gradient(90deg, #a9acb4, #e6e7eb, #a9acb4);
-  transform-origin: 50% 0;
-  rotate: -6deg;
-  transition: rotate 0.9s cubic-bezier(0.4, 0.2, 0.2, 1);
-  box-shadow: 4px 6px 8px rgb(0 0 0 / 0.15);
-}
-.deck[data-playing="true"] .arm {
-  rotate: 22deg;
-  transition-delay: 0.5s;
-}
-.arm-head {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: calc(var(--s) * 0.05);
-  height: calc(var(--s) * 0.085);
-  translate: -50% 40%;
-  border-radius: 2px;
-  background: #2a2b30;
-}
-
-/* CD jewel case: tray underneath, clear lid on a hinge */
-.case {
-  position: absolute;
-  left: 0;
-  top: calc((var(--s) - var(--c)) / 2);
-  width: calc(var(--c) * 1.13);
-  height: var(--c);
-  transform-style: preserve-3d;
-  transform: rotateY(0deg);
-  transition: transform 0.8s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-.deck[data-flipped="true"] .case {
   transform: rotateY(180deg);
 }
-.case-tray {
+.sleeve-face {
   position: absolute;
   inset: 0;
-  border-radius: 3px;
-  background:
-    radial-gradient(circle at 54.5% 50%, #3a3c42 0 4%, #1d1e22 4.5% 9%, transparent 9.5%),
-    #26272c;
-  box-shadow: 0 22px 44px -12px rgb(0 0 0 / 0.4);
-  backface-visibility: hidden;
-}
-.case-lid {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform-origin: 0 50%;
-  transform: translateZ(3px) rotateY(0deg);
-  transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.2, 1) 0.35s;
-}
-.deck[data-playing="true"] .case-lid {
-  transform: translateZ(3px) rotateY(-100deg);
-  transition-delay: 0s;
-}
-.lid-out,
-.lid-in {
-  position: absolute;
-  inset: 0;
-  border-radius: 3px;
+  border-radius: 2px;
+  overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-.lid-out {
-  display: grid;
-  grid-template-columns: 8% 1fr;
-  background: rgb(240 241 244 / 0.25);
   box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.55),
-    0 1px 2px rgb(0 0 0 / 0.2);
-  overflow: hidden;
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 24px 44px -18px rgb(0 0 0 / 0.45);
 }
-.case-hinge {
-  background: repeating-linear-gradient(#2e3036 0 3px, #44464d 3px 5px);
-}
-.lid-out img {
+.sleeve-front img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  padding: 3%;
-  background: #121316;
   user-select: none;
+}
+.sleeve-wear {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
+  background:
+    radial-gradient(circle closest-side, transparent 0 94%, rgb(255 255 255 / 0.07) 95.5% 97.5%, transparent 98.5%),
+    linear-gradient(135deg, rgb(255 255 255 / 0.14), transparent 38%, transparent 70%, rgb(0 0 0 / 0.12));
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.12),
+    inset 0 0 20px rgb(0 0 0 / 0.14);
+  mix-blend-mode: screen;
 }
-.case-shine {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    125deg,
-    rgb(255 255 255 / 0.32) 0 8%,
-    transparent 22% 60%,
-    rgb(255 255 255 / 0.12) 70%,
-    transparent 82%
-  );
-}
-.lid-in {
-  transform: rotateY(180deg);
-  display: grid;
-  align-content: end;
-  gap: 2px;
-  padding: 10%;
-  background: #f3f3f5;
-  color: #17181c;
-  font-size: calc(var(--c) * 0.05);
-  visibility: hidden;
-  transition: visibility 0s 1.05s;
-}
-.deck[data-playing="true"] .lid-in {
-  visibility: visible;
-  transition-delay: 0s;
-}
-.lid-in span {
-  color: #62656e;
-}
-
-/* Back sleeves */
 .sleeve-back {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  background: #f6f6f7;
-  color: #17181c;
-  border-radius: 2px;
-  box-shadow: 0 22px 44px -12px rgb(0 0 0 / 0.38);
-  overflow: hidden;
-}
-.sleeve-back-body {
-  flex: 1;
+  transform: rotateY(180deg);
   display: grid;
   align-content: start;
   gap: 6px;
   padding: 9%;
-  font-size: calc(var(--s) * 0.04);
+  background: #f4f4f2;
+  color: #17181c;
+  font-size: calc(var(--r) * 0.04);
   line-height: 1.45;
 }
-.sleeve-back-cd .sleeve-back-body {
-  font-size: calc(var(--c) * 0.042);
-  padding: 7%;
-}
-.sleeve-back-body strong {
+.sleeve-back strong {
   font-size: 1.5em;
   font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.15;
 }
-.sleeve-back-body span,
-.sleeve-back-body small {
+.sleeve-back span,
+.sleeve-back small {
   color: #62656e;
 }
-.sleeve-back-body p {
+.sleeve-back p {
   margin: 0.6em 0 0;
 }
-.sleeve-back-body small {
-  margin-top: auto;
+.sleeve-back small {
   font-size: 0.8em;
 }
-.sleeve-back-spine {
-  width: 8%;
-  writing-mode: vertical-rl;
-  display: grid;
-  place-items: center;
-  font-size: calc(var(--c) * 0.032);
-  white-space: nowrap;
-  overflow: hidden;
+
+/* Tonearm: pivot, counterweight, tube and headshell. It lifts before it
+   moves and settles once it is over the groove; the shadow tells you which. */
+.tonearm {
+  position: absolute;
+  left: calc(var(--pl-x) + var(--r) * 1.2);
+  top: calc(var(--pl-y) + var(--r) * 0.24);
+  z-index: 4;
 }
-.sleeve-back-spine:first-child {
-  rotate: 180deg;
+.arm-base {
+  position: absolute;
+  width: calc(var(--r) * 0.15);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 46%, rgb(0 0 0 / 0.2) 47% 49%, transparent 50%),
+    conic-gradient(from 30deg, #c4c7ce, #f2f3f5, #9da1aa, #e6e7ea, #b4b8bf, #f2f3f5, #c4c7ce);
+  box-shadow:
+    0 3px 6px rgb(0 0 0 / 0.4),
+    inset 0 0 0 1px rgb(0 0 0 / 0.15);
+}
+.arm-rest {
+  position: absolute;
+  left: calc(var(--r) * 0.0);
+  top: calc(var(--r) * 0.46);
+  width: calc(var(--r) * 0.05);
+  height: calc(var(--r) * 0.035);
+  translate: -50% -50%;
+  border-radius: 3px;
+  background: linear-gradient(#3b3d43, #1f2024);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.4);
+}
+.arm {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  rotate: -2deg;
+  transition:
+    rotate 0.9s cubic-bezier(0.45, 0.05, 0.3, 1),
+    filter 0.4s;
+  filter: drop-shadow(2px 3px 2px rgb(0 0 0 / 0.4));
+}
+.deck[data-arm-at="groove"] .arm {
+  rotate: calc(23.8deg + var(--progress) * 8deg);
+}
+.deck[data-arm-up="true"] .arm {
+  filter: drop-shadow(7px 11px 6px rgb(0 0 0 / 0.3));
+}
+.arm-tube {
+  position: absolute;
+  left: calc(var(--r) * -0.009);
+  top: calc(var(--r) * -0.08);
+  width: calc(var(--r) * 0.018);
+  height: calc(var(--r) * 0.7);
+  border-radius: 99px;
+  background: linear-gradient(90deg, #8f939b, #f5f6f8 45%, #b6bac1 70%, #8f939b);
+}
+.arm-weight {
+  position: absolute;
+  left: calc(var(--r) * -0.034);
+  top: calc(var(--r) * -0.2);
+  width: calc(var(--r) * 0.068);
+  height: calc(var(--r) * 0.11);
+  border-radius: calc(var(--r) * 0.012);
+  background:
+    repeating-linear-gradient(#0000 0 2px, rgb(255 255 255 / 0.06) 2px 3px),
+    linear-gradient(90deg, #1c1d20, #4a4c53 45%, #2a2b2f 75%, #1c1d20);
+}
+.arm-head {
+  position: absolute;
+  left: calc(var(--r) * -0.026);
+  top: calc(var(--r) * 0.6);
+  width: calc(var(--r) * 0.052);
+  height: calc(var(--r) * 0.15);
+  border-radius: 2px 2px 3px 3px;
+  transform-origin: 50% 0;
+  rotate: 22deg;
+  background: linear-gradient(90deg, #17181b, #3a3c42 50%, #17181b);
+}
+.arm-head::after {
+  /* finger lift */
+  content: "";
+  position: absolute;
+  right: -55%;
+  top: 30%;
+  width: 60%;
+  height: 8%;
+  border-radius: 99px;
+  background: #b6bac1;
+}
+.arm-cap {
+  position: absolute;
+  width: calc(var(--r) * 0.05);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #a9adb5 60%, #6f727a);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
 }
 
-/* Info beside the deck */
+/* Information under the deck */
 .player-info {
   display: grid;
-  justify-items: start;
-  max-width: 26rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px 56px;
+  max-width: calc(340px * 2.56);
 }
 .player-count {
   margin: 0 0 12px;
@@ -487,10 +509,9 @@
   line-height: 1.6;
 }
 .player-info dl {
-  margin: 20px 0 0;
+  margin: 0;
   display: grid;
   gap: 8px;
-  width: 100%;
 }
 .player-info dl > div {
   display: grid;
@@ -517,91 +538,105 @@
   gap: 8px;
 }
 .player-listen {
+  display: inline-block;
   margin-top: 16px;
   font-size: 0.9rem;
   color: var(--graphite);
 }
 
-/* The shelf: sleeves in a crate for vinyl, spines in a rack for CDs */
-.shelf {
+/* The crate */
+.crate {
   display: flex;
   gap: 10px;
   overflow-x: auto;
   scrollbar-width: none;
   padding: 16px var(--edge) 24px;
 }
-.shelf::-webkit-scrollbar {
+.crate::-webkit-scrollbar {
   display: none;
 }
-.shelf button {
+.crate button {
   flex: none;
-  transition:
-    translate 0.25s cubic-bezier(0.3, 0.7, 0.2, 1),
-    box-shadow 0.25s;
-}
-.shelf-vinyl button {
   width: 64px;
   aspect-ratio: 1;
   border-radius: 2px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  transition: translate 0.25s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
-.shelf-vinyl img {
+.crate img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.shelf-cd {
-  gap: 3px;
-  align-items: flex-end;
-  min-height: 236px;
-}
-.shelf-cd button {
-  width: 28px;
-  height: 200px;
-  border-radius: 2px;
-  writing-mode: vertical-rl;
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  font-size: 0.72rem;
-  white-space: nowrap;
-  overflow: hidden;
-  box-shadow: inset -1px 0 0 rgb(0 0 0 / 0.12);
-}
-.shelf-cd span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.shelf-cd b {
-  font-weight: 650;
-}
-.shelf button:hover {
+.crate button:hover {
   translate: 0 -4px;
 }
-.shelf button[aria-pressed="true"] {
+.crate button[aria-pressed="true"] {
   translate: 0 -12px;
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px var(--ink);
 }
 
-@media (max-width: 860px) {
-  .player-stage {
+/* Spotify's player stays out of sight unless the browser asks for a tap */
+.spotify {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 320px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.spotify[data-visible="true"] {
+  left: auto;
+  right: 16px;
+  bottom: 16px;
+  max-width: calc(100vw - 32px);
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--mist), 0 20px 40px -12px rgb(0 0 0 / 0.3);
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 50;
+}
+.spotify p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+.spotify:not([data-visible="true"]) p,
+.spotify:not([data-visible="true"]) button {
+  display: none;
+}
+.spotify > div {
+  width: 100%;
+}
+
+/* Phones: the sleeve on top, the turntable below */
+@media (max-width: 720px) {
+  .deck {
+    --r: calc((100vw - 2 * var(--edge)) / 1.46);
+    --sl-x: 0px;
+    --sl-y: 0px;
+    --pl-x: 0px;
+    --pl-y: calc(var(--r) * 1.08);
+    width: calc(var(--r) * 1.46);
+    height: calc(var(--r) * 2.2);
+  }
+  .player-info {
     grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .disc-spin {
-    animation: none;
-  }
-  .disc-slot,
+  .record,
   .sleeve,
-  .case,
-  .case-lid,
-  .arm,
-  .deck-body {
+  .arm {
     transition-duration: 0.01s;
-    transition-delay: 0s;
   }
 }
