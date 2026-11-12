@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import raw from "../../.build/content.json";
-import type { Resource, Project, Article, About, Content } from "@/types";
+import type { Project, Article, About, Content } from "@/types";
 import { fetchContent } from "../content-model.mjs";
 
 export const site = raw.site;
@@ -16,7 +16,6 @@ export const backend = site.backend as { url: string; key: string };
 export const initial: Content = {
   projects: raw.projects as Project[],
   articles: raw.articles as Article[],
-  resources: raw.resources as Resource[],
   about: raw.about as About,
 };
 
@@ -72,21 +71,6 @@ export const host = (url: string) => {
     return url;
   }
 };
-export const categoriesOf = (resources: Resource[]) =>
-  [...new Set(resources.map((r) => r.category))].sort();
-
-/* Many saved links carry a description that only repeats the page title.
-   Show a description only when it adds something. */
-export function blurb(r: Resource) {
-  const flat = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
-  const text = r.description
-    .replace(/\s*A saved reference for [^.]+\.\s*$/i, "")
-    .trim();
-  const a = flat(text),
-    b = flat(r.title);
-  return !a || a.startsWith(b) || b.startsWith(a) ? "" : text;
-}
-
 export function getPage(path: string, content: Content = initial) {
   const project = content.projects.find((p) => path === `/work/${p.slug}/`),
     article = content.articles.find((a) => path === `/journal/${a.slug}/`);
@@ -131,10 +115,6 @@ export function getPage(path: string, content: Content = initial) {
       description:
         "Six film aspect ratios, from 4:3 to Ultra Panavision, with a movie and a fun fact for each. Drag to see what each one leaves out.",
     },
-    "/toolbox/": {
-      title: `Toolbox | ${site.name}`,
-      description: `${content.resources.length} design and development links saved over the years, searchable and sorted by category.`,
-    },
     "/contact/": {
       title: `Contact | ${site.name}`,
       description: `Send ${site.name} a message, or find the email and Instagram.`,
@@ -147,7 +127,7 @@ export function getPage(path: string, content: Content = initial) {
     "/terms/": {
       title: `Terms | ${site.name}`,
       description:
-        "Terms for using this portfolio, its writing, and external resources.",
+        "Terms for using this portfolio and its writing.",
     },
     "/admin/": {
       title: `Admin | ${site.name}`,

@@ -1,15 +1,3 @@
-export interface Resource {
-  id: string;
-  title: string;
-  description: string;
-  url: string;
-  domain: string;
-  category: string;
-  tags: string[];
-  featured: boolean;
-  order: number;
-  linkStatus: string;
-}
 export interface Project {
   slug: string;
   title: string;
@@ -46,6 +34,5 @@ export interface About {
 export interface Content {
   projects: Project[];
   articles: Article[];
-  resources: Resource[];
   about: About;
 }

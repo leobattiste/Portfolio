@@ -6,7 +6,6 @@ const navigation = [
   { label: "Work", path: "/work/" },
   { label: "Playground", path: "/playground/" },
   { label: "Journal", path: "/journal/" },
-  { label: "Toolbox", path: "/toolbox/" },
   { label: "About", path: "/about/" },
   { label: "Contact", path: "/contact/" },
 ];

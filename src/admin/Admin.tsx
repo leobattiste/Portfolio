@@ -14,7 +14,6 @@ import {
   slugify,
   fromProject,
   fromArticle,
-  fromResource,
 } from "../content-model.mjs";
 import { db, upload, problem } from "./db";
 import { RichText } from "./RichText";
@@ -28,7 +27,6 @@ const views = [
   { id: "insights", label: "Insights" },
   { id: "work", label: "Work" },
   { id: "journal", label: "Journal" },
-  { id: "toolbox", label: "Toolbox" },
   { id: "about", label: "About" },
 ] as const;
 
@@ -621,199 +619,6 @@ function ArticleEditor({ id }: { id: string }) {
   );
 }
 
-/* Toolbox: a list of links, edited in place -------------------------- */
-function LinkForm({
-  row,
-  categories,
-  onSave,
-  onDelete,
-  onCancel,
-}: {
-  row: Row;
-  categories: string[];
-  onSave: (row: Row) => Promise<string | void>;
-  onDelete?: () => void;
-  onCancel?: () => void;
-}) {
-  const [draft, setDraft] = useState(row);
-  const [note, setNote] = useState("");
-  const set = (patch: Row) => setDraft((d) => ({ ...d, ...patch }));
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    setNote((await onSave(draft)) || "");
-  }
-  const lists = `categories-${row.id || "new"}`;
-  return (
-    <form className="link-form" onSubmit={submit}>
-      <input
-        required
-        type="url"
-        placeholder="https://"
-        aria-label="Link"
-        value={draft.url}
-        onChange={(e) => set({ url: e.target.value })}
-      />
-      <input
-        required
-        placeholder="Name"
-        aria-label="Name"
-        value={draft.title}
-        onChange={(e) => set({ title: e.target.value })}
-      />
-      <input
-        required
-        placeholder="Category"
-        aria-label="Category"
-        list={lists}
-        value={draft.category}
-        onChange={(e) => set({ category: e.target.value })}
-      />
-      <input
-        className="wide"
-        placeholder="What it’s good for (optional)"
-        aria-label="Description"
-        value={draft.description}
-        onChange={(e) => set({ description: e.target.value })}
-      />
-      <datalist id={lists}>
-        {categories.map((c) => (
-          <option key={c} value={c} />
-        ))}
-      </datalist>
-      <div className="link-form-end">
-        <button className="button" type="submit">
-          {row.id ? "Save" : "Add link"}
-        </button>
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={!!draft.featured}
-            onChange={(e) => set({ featured: e.target.checked })}
-          />
-          Highlight
-        </label>
-        {onCancel ? (
-          <button type="button" className="text-button" onClick={onCancel}>
-            Cancel
-          </button>
-        ) : null}
-        {onDelete ? <DeleteButton onConfirm={onDelete} /> : null}
-        <span role="status" className="muted">
-          {note}
-        </span>
-      </div>
-    </form>
-  );
-}
-
-function ToolboxManager() {
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [q, setQ] = useState("");
-  const [editing, setEditing] = useState("");
-  const [fresh, setFresh] = useState(0);
-  const load = useCallback(() => {
-    db.from("resources")
-      .select("*")
-      .order("category")
-      .order("sort")
-      .limit(2000)
-      .then(({ data }) => setRows(data || []));
-  }, []);
-  useEffect(load, [load]);
-  const categories = useMemo(
-    () => [...new Set((rows || []).map((r) => r.category))].sort(),
-    [rows],
-  );
-  const shown = (rows || []).filter((r) =>
-    `${r.title} ${r.url} ${r.category} ${r.description}`.toLowerCase().includes(q.toLowerCase()),
-  );
-  async function add(draft: Row) {
-    const row = {
-      ...draft,
-      id: `${slugify(draft.title).slice(0, 48) || "link"}-${crypto.randomUUID().slice(0, 6)}`,
-      sort: Math.max(0, ...(rows || []).map((r) => r.sort)) + 1,
-    };
-    const { error } = await db.from("resources").insert(row);
-    if (error)
-      return error.code === "23505" ? "That link is already in the toolbox." : problem(error);
-    setFresh((n) => n + 1);
-    load();
-  }
-  async function update(draft: Row) {
-    const fields = { ...draft };
-    delete fields.id;
-    delete fields.created_at;
-    const { error } = await db.from("resources").update(fields).eq("id", draft.id);
-    if (error)
-      return error.code === "23505" ? "Another entry already uses that link." : problem(error);
-    setEditing("");
-    load();
-  }
-  async function remove(id: string) {
-    await db.from("resources").delete().eq("id", id);
-    setEditing("");
-    load();
-  }
-  return (
-    <>
-      <div className="admin-head">
-        <h1 className="statement">Toolbox</h1>
-        <p className="statement">
-          {rows ? `${rows.length} links.` : "Loading."} Add one, or pick a link to change it.
-        </p>
-      </div>
-      <section className="admin-section">
-        <h2 className="label">New link</h2>
-        <LinkForm
-          key={fresh}
-          row={{ url: "", title: "", category: "", description: "", featured: false }}
-          categories={categories}
-          onSave={add}
-        />
-      </section>
-      <section className="admin-section">
-        <h2 className="label">All links</h2>
-        <div className="filter">
-          <input
-            type="search"
-            placeholder="Filter links"
-            aria-label="Filter links"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
-        </div>
-        <ul className="link-list">
-          {shown.map((r) =>
-            editing === r.id ? (
-              <li key={r.id} className="link-editing">
-                <LinkForm
-                  row={r}
-                  categories={categories}
-                  onSave={update}
-                  onDelete={() => remove(r.id)}
-                  onCancel={() => setEditing("")}
-                />
-              </li>
-            ) : (
-              <li key={r.id}>
-                <button type="button" className="line" onClick={() => setEditing(r.id)}>
-                  <span className="line-title">{r.title}</span>
-                  <span className="line-note">{host(r.url)}</span>
-                  <span className="line-end">
-                    {r.featured ? "Highlight, " : ""}
-                    {r.category}
-                  </span>
-                </button>
-              </li>
-            ),
-          )}
-        </ul>
-        {rows && !shown.length ? <p className="muted">No links match “{q}”.</p> : null}
-      </section>
-    </>
-  );
-}
-
 /* About: laid out like the About page -------------------------------- */
 function AboutEditor() {
   const [row, setRow] = useState<Row | null>(null);
@@ -1015,7 +820,6 @@ function Insights() {
         "/": "Home",
         "/work/": "Work",
         "/journal/": "Journal",
-        "/toolbox/": "Toolbox",
         "/about/": "About",
         "/contact/": "Contact",
         "/privacy/": "Privacy",
@@ -1121,7 +925,6 @@ function ImportContent({ onDone }: { onDone: () => void }) {
       const steps: [string, Row[], string][] = [
         ["projects", initial.projects.map(fromProject), "slug"],
         ["articles", initial.articles.map(fromArticle), "slug"],
-        ["resources", initial.resources.map(fromResource), "id"],
       ];
       for (const [table, rows, key] of steps)
         for (let i = 0; i < rows.length; i += 200) {
@@ -1146,8 +949,8 @@ function ImportContent({ onDone }: { onDone: () => void }) {
     <div className="banner">
       <p>
         Your current content isn’t in the database yet. Import{" "}
-        {initial.projects.length} project, {initial.articles.length} journal entry
-        and {initial.resources.length} links so you can edit them here. Until you
+        {initial.projects.length} project and {initial.articles.length} journal
+        entries so you can edit them here. Until you
         do, the site keeps showing the content it was built with.
       </p>
       <button type="button" className="button" onClick={run} disabled={busy}>
@@ -1253,7 +1056,6 @@ export default function Admin() {
         note={(r) => prettyDate(r.date)}
       />
     );
-  else if (view === "toolbox") page = <ToolboxManager />;
   else if (view === "about") page = <AboutEditor />;
   else page = <Inbox onCount={setUnread} />;
 

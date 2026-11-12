@@ -362,52 +362,6 @@ a.button {
   color: var(--graphite);
 }
 
-/* Toolbox links */
-.link-form {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.6rem;
-}
-.admin .link-form input:not([type="checkbox"]) {
-  padding: 0.55rem 0.7rem;
-  background: var(--wash);
-  border: 1px solid transparent;
-  border-radius: 8px;
-}
-.admin .link-form input:focus {
-  background: var(--paper);
-  border-color: var(--ink);
-}
-.link-form .wide,
-.link-form-end {
-  grid-column: 1 / -1;
-}
-.link-form-end {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem 1.5rem;
-  font-size: 0.9375rem;
-}
-.link-list,
-.inbox {
-  margin-top: 1rem;
-}
-.admin button.line {
-  width: calc(100% + 1.5rem);
-  text-align: left;
-}
-.admin button.line:hover {
-  background: var(--wash);
-}
-.link-editing {
-  margin: 0.5rem -0.75rem;
-  padding: 0.9rem 0.75rem;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  border-radius: 10px;
-}
-
 /* Inbox */
 .inbox .unread .line-title {
   font-weight: 650;

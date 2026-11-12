@@ -2,51 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile,readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { filterResources,parseState,serializeState,importFavorites,migrateFavorites } from '../src/resource-model.mjs';
 import { markdown,parseArticle,safeWebUrl,validateContent } from '../scripts/lib.mjs';
-import { toProject,fromProject,toResource,sectionsToHtml,slugify,minutes } from '../src/content-model.mjs';
-const resources=JSON.parse(await readFile(new URL('../dist/resources.json',import.meta.url),'utf8'));
-const sample=[{id:'a',title:'Écriture',description:'Type families',domain:'type.test',category:'Typography',tags:['Open source'],featured:false,order:0,url:'https://type.test/'},{id:'b',title:'Grid',description:'UI components',domain:'grid.test',category:'UI & development',tags:[],featured:true,order:1,url:'https://grid.test/'}];
-test('search matches accents, descriptions, and tags, with all terms required',()=>{
- assert.equal(filterResources(sample,{q:'ecriture open'}).length,1);
- assert.equal(filterResources(sample,{q:'type families'}).length,1);
- assert.equal(filterResources(sample,{q:'families grid'}).length,0);
-});
-test('category, highlights, and saved filters intersect',()=>{
- assert.deepEqual(filterResources(sample,{category:'Typography',saved:true},new Set(['b'])),[]);
- assert.deepEqual(filterResources(sample,{featured:true},new Set()).map(x=>x.id),['b']);
- assert.deepEqual(filterResources(sample,{saved:true},new Set(['a'])).map(x=>x.id),['a']);
-});
-test('sorting leaves original collection untouched',()=>{
- assert.deepEqual(filterResources(sample,{}).map(x=>x.id),['b','a']);
- assert.deepEqual(filterResources(sample,{sort:'az'}).map(x=>x.id),['a','b']);
- assert.deepEqual(sample.map(x=>x.id),['a','b']);
-});
-test('filter URLs preserve a shared state and reject invalid values',()=>{
- const state={q:'type & icons',category:'Typography',sort:'za',saved:true,featured:true};
- assert.deepEqual(parseState('?'+serializeState(state),['Typography']),state);
- assert.deepEqual(parseState('?category=Unknown&sort=bad&saved=false',[]),{q:'',category:'all',sort:'curated',saved:false,featured:false});
-});
-test('favorites import only accepts a supported export and known IDs',()=>{
- assert.deepEqual(importFavorites({version:1,favorites:[{id:'a'},'a','not-in-collection',null]},sample),['a']);
- assert.throws(()=>importFavorites({version:2,favorites:[]},sample));
- assert.deepEqual([...migrateFavorites(['https://grid.test/','a','unknown'],sample)],['b','a']);
-});
+import { toProject,fromProject,sectionsToHtml,slugify,minutes } from '../src/content-model.mjs';
 test('Markdown escapes markup and prevents script URLs',()=>{
  const rendered=markdown('<script>alert(1)</script>\n\n[bad](javascript:alert)\n\n[good](/about/)',p=>'/Portfolio-'+p);
  assert.ok(!rendered.includes('<script>'));assert.ok(!rendered.includes('href="javascript:'));
  assert.ok(rendered.includes('href="/Portfolio-/about/"'));
  assert.equal(safeWebUrl('javascript:alert(1)'),false);
  assert.equal(safeWebUrl('https://user:password@example.com/'),false);
-});
-test('published collection excludes missing pages and account dashboards',()=>{
- assert.ok(resources.length>0, 'curated collection is not empty');
- for(const r of resources){
-  assert.notEqual(r.linkStatus,'broken');assert.ok(safeWebUrl(r.url));
-  assert.ok(!/analytics\.google|editor\.wix|dashboard\.stripe|drive\.google|outlook\.office/.test(r.url));
- }
- assert.equal(new Set(resources.map(x=>x.id)).size,resources.length);
- assert.equal(new Set(resources.map(x=>x.url)).size,resources.length);
 });
 const out=new URL('../dist/',import.meta.url);
 async function htmlFiles(dir){const entries=await readdir(dir,{withFileTypes:true});const files=[];for(const entry of entries){const p=path.join(dir,entry.name);if(entry.isDirectory())files.push(...await htmlFiles(p));else if(entry.name.endsWith('.html'))files.push(p);}return files;}
@@ -80,31 +43,28 @@ test('draft stories and sample concepts are not published',async()=>{
  const home=await readFile(new URL('index.html',out),'utf8');
  assert.ok(home.includes('Leo Battiste'));assert.ok(home.includes('based in Florida'));
  assert.ok((await readFile(new URL('work/index.html',out),'utf8')).includes('Pheelm'));assert.ok(!home.includes('CONCEPT PROJECT'));
- const toolbox=await readFile(new URL('toolbox/index.html',out),'utf8');
- for(const r of resources)assert.ok(toolbox.includes(`id="${r.id}"`),'toolbox lists '+r.id);
  const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
  assert.ok(project.includes('https://www.pheelm.com/'));assert.ok(project.includes('naming, logo, brand identity'));
 });
 test('sitemap includes real pages and excludes drafts',async()=>{
  const sitemap=await readFile(new URL('sitemap.xml',out),'utf8');
  assert.ok(sitemap.includes('/work/pheelm/'));assert.ok(!sitemap.includes('designing-pheelm'));
- assert.ok(sitemap.includes('inside-the-toolbox'));assert.ok(sitemap.includes('/contact/'));assert.ok(sitemap.includes('/terms/'));
+ assert.ok(sitemap.includes('art-of-simplicity'));assert.ok(!sitemap.includes('toolbox'));assert.ok(sitemap.includes('/contact/'));assert.ok(sitemap.includes('/terms/'));
  await assert.rejects(()=>readFile(new URL('feed.xml',out)));
 });
 test('legal pages and article dates are visible',async()=>{
  const privacy=await readFile(new URL('privacy/index.html',out),'utf8');
  const terms=await readFile(new URL('terms/index.html',out),'utf8');
- assert.ok(privacy.includes('Contact messages') || privacy.includes('Saved links and appearance'));
- assert.ok(terms.includes('Toolbox and external services'));
+ assert.ok(privacy.includes('Contact messages') || privacy.includes('Appearance'));
+ assert.ok(terms.includes('External services'));
  const journal=await readFile(new URL('journal/index.html',out),'utf8');
  assert.ok(journal.includes('class="article-list-date"'));
- const article=await readFile(new URL('journal/inside-the-toolbox/index.html',out),'utf8');
+ const article=await readFile(new URL('journal/art-of-simplicity/index.html',out),'utf8');
  assert.ok(article.includes('class="article-date"'));
- assert.ok(!resources.some(r=>r.category==='Playlist'));
 });
 test('work and journal detail pages have accessible breadcrumbs',async()=>{
  const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
- const article=await readFile(new URL('journal/inside-the-toolbox/index.html',out),'utf8');
+ const article=await readFile(new URL('journal/art-of-simplicity/index.html',out),'utf8');
  for (const [html,section] of [[project,'work'],[article,'journal']]) {
   assert.ok(html.includes('aria-label="Breadcrumb"'), section+' has labeled breadcrumbs');
   assert.ok(html.includes('href="/"'), section+' links home');
@@ -115,7 +75,6 @@ test('work and journal detail pages have accessible breadcrumbs',async()=>{
 test('content keeps its shape between the database and the site',()=>{
  const row={slug:'x',title:'X',subtitle:'s',description:'d',published:true,cover:'c.png',cover_alt:'alt',disciplines:['A'],role:'r',platform:'p',status:'Live',live_url:'https://x.test/',source_url:'',content:'<p>Hi</p>',sort:3};
  assert.deepEqual(fromProject(toProject(row)),row);
- assert.equal(toResource({id:'a',title:'A',description:'',url:'https://www.a.test/x',category:'C',featured:false,sort:1}).domain,'a.test');
  assert.equal(sectionsToHtml({sections:[{title:'<b>T</b>',body:'B & C'}],closing:''}),'<h2>&lt;b&gt;T&lt;/b&gt;</h2><p>B &amp; C</p>');
  assert.equal(slugify('Écriture & Type!'),'ecriture-type');assert.equal(minutes('<p>'+'word '.repeat(450)+'</p>'),3);
 });

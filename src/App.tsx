@@ -1,5 +1,4 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { FavoritesProvider } from "@/lib/favorites";
 import { ContentProvider, useContent, getPage, site, href } from "@/lib/site";
 import { Layout } from "@/components/Layout";
 import {
@@ -16,7 +15,6 @@ import { Playground } from "@/components/Playground";
 import {
   AspectRatio,
 } from "@/components/Experiments";
-import Toolbox from "@/components/Toolbox";
 import { Privacy, Terms } from "@/components/Legal";
 
 function Site({ path }: { path: string }) {
@@ -34,7 +32,6 @@ function Site({ path }: { path: string }) {
   else if (path === "/journal/") page = <Journal />;
   else if (path === "/playground/") page = <Playground />;
   else if (path === "/playground/aspect-ratio/") page = <AspectRatio />;
-  else if (path === "/toolbox/") page = <Toolbox />;
   else if (path === "/contact/") page = <Contact />;
   else if (path === "/privacy/") page = <Privacy />;
   else if (path === "/terms/") page = <Terms />;
@@ -47,9 +44,7 @@ function Site({ path }: { path: string }) {
       </div>
     );
   return (
-    <FavoritesProvider>
-      <Layout path={path}>{page}</Layout>
-    </FavoritesProvider>
+    <Layout path={path}>{page}</Layout>
   );
 }
 

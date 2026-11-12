@@ -8,6 +8,7 @@ import {
   prettyDate,
 } from "@/lib/site";
 import { sendMessage } from "@/lib/backend";
+import { WorkIcon, JournalIcon, PlaygroundIcon } from "./Icons";
 import type { Project, Article } from "@/types";
 import { Intro, Section } from "./Layout";
 
@@ -176,59 +177,97 @@ export function Contact() {
   );
 }
 
+const screens = [
+  {
+    path: "/work/",
+    title: "Work",
+    text: "Product design projects, from the first sketch to the shipped screen.",
+    cta: "See the work",
+    Icon: WorkIcon,
+  },
+  {
+    path: "/journal/",
+    title: "Journal",
+    text: "What I'm thinking about, and what I'm learning along the way.",
+    cta: "Read the journal",
+    Icon: JournalIcon,
+  },
+  {
+    path: "/playground/",
+    title: "Playground",
+    text: "Personal projects and creative explorations, made to see what happens.",
+    cta: "Open the playground",
+    Icon: PlaygroundIcon,
+  },
+];
+
 export function Home() {
-  const { projects, articles, resources } = useContent();
+  const { projects, articles } = useContent();
   const [lead] = projects;
   const [latest] = articles;
-  const highlights = resources.filter((r) => r.featured);
   return (
-    <Intro>
-      <h1 className="statement">
-        I’m {site.name}, a {site.role.toLowerCase()} based in {site.location}.
-      </h1>
-      <p className="statement">
-        I enjoy turning ideas into intuitive, thoughtful digital experiences.
-        Here, you can explore my{" "}
-        <a className="peek-link" href={href("/work/")}>
-          work
-          {lead?.cover ? (
-            <span className="peek" aria-hidden="true">
-              <img src={media(lead.cover)} width="1200" height="630" alt="" />
-            </span>
-          ) : null}
-        </a>
-        , read my thoughts and experiences in my{" "}
-        <a className="peek-link" href={href("/journal/")}>
-          journal
-          {latest ? (
-            <span className="peek" aria-hidden="true">
-              <span className="peek-text">
-                <strong>{latest.title}</strong>
-                {prettyDate(latest.date)}
+    <>
+      <div className="home-screen home-hero">
+        <Intro>
+          <h1 className="statement">
+            I’m {site.name}, a {site.role.toLowerCase()} based in {site.location}.
+          </h1>
+          <p className="statement">
+            I enjoy creating digital products that solve everyday problems and
+            bring people together.
+          </p>
+          <p className="statement">
+            Explore my{" "}
+            <a className="peek-link" href={href("/work/")}>
+              work
+              {lead?.cover ? (
+                <span className="peek" aria-hidden="true">
+                  <img src={media(lead.cover)} width="1200" height="630" alt="" />
+                </span>
+              ) : null}
+            </a>
+            , read what’s on my mind in the{" "}
+            <a className="peek-link" href={href("/journal/")}>
+              journal
+              {latest ? (
+                <span className="peek" aria-hidden="true">
+                  <span className="peek-text">
+                    <strong>{latest.title}</strong>
+                    {prettyDate(latest.date)}
+                  </span>
+                </span>
+              ) : null}
+            </a>
+            , or visit the{" "}
+            <a className="peek-link" href={href("/playground/")}>
+              playground
+              <span className="peek" aria-hidden="true">
+                <span className="peek-text">
+                  <strong>Aspect ratio</strong>
+                  A guide to how films are framed
+                </span>
               </span>
-            </span>
-          ) : null}
-        </a>
-        , and check out the tools and resources I use in my{" "}
-        <a className="peek-link" href={href("/toolbox/")}>
-          toolbox
-          {highlights.length >= 3 ? (
-            <span className="peek" aria-hidden="true">
-              <span className="peek-text">
-                <strong>
-                  {highlights
-                    .slice(0, 3)
-                    .map((r) => r.title)
-                    .join(", ")}
-                </strong>
-                and {resources.length - 3} more links
-              </span>
-            </span>
-          ) : null}
-        </a>
-        .
-      </p>
-    </Intro>
+            </a>{" "}
+            for personal projects and creative explorations.
+          </p>
+        </Intro>
+      </div>
+      {screens.map(({ path, title, text, cta, Icon }) => (
+        <section className="home-screen" key={path} aria-labelledby={`home-${title}`}>
+          <div className="row">
+            <h2 className="label" id={`home-${title}`}>
+              {title}
+            </h2>
+            <a className="home-link" href={href(path)}>
+              <Icon />
+              <span className="home-title">{title}</span>
+              <span className="home-text">{text}</span>
+              <span className="home-cta">{cta}</span>
+            </a>
+          </div>
+        </section>
+      ))}
+    </>
   );
 }
 

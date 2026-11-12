@@ -7,7 +7,7 @@ export function Privacy() {
       <Intro><h1 className="statement">Privacy</h1></Intro>
       <Section label="Overview">
         <div className="prose">
-          <p>This is the personal portfolio of {site.name}. You can browse Work, Journal, and Toolbox without creating an account. This policy explains what the website collects and how that information is used.</p>
+          <p>This is the personal portfolio of {site.name}. You can browse Work, Journal, and the Playground without creating an account. This policy explains what the website collects and how that information is used.</p>
           <p>The public website does not run ads or use third-party advertising or analytics trackers.</p>
         </div>
       </Section>
@@ -23,9 +23,9 @@ export function Privacy() {
           <p>When you send a message through the contact form, the name, email address, and message you provide are stored so I can read and respond to you. Please avoid sending sensitive information through this form.</p>
         </div>
       </Section>
-      <Section label="Saved links and appearance">
+      <Section label="Appearance">
         <div className="prose">
-          <p>Toolbox bookmarks and your light or dark theme preference are saved in your browser's local storage. Bookmarks are not sent to the site's database. You can remove saved links, clear the site's local storage, or export and import your bookmarks.</p>
+          <p>Your light or dark theme preference is saved in your browser's local storage. It is not sent to the site's database. You can clear it at any time by clearing the site's local storage.</p>
           <p>The temporary identifier used for page-view counting is kept separately in session storage.</p>
         </div>
       </Section>
@@ -57,7 +57,7 @@ export function Terms() {
       <Intro><h1 className="statement">Terms</h1></Intro>
       <Section label="Using the website">
         <div className="prose">
-          <p>These terms cover your use of {site.name}'s personal portfolio, including Work, Journal, Toolbox, and the contact form. Please use the website lawfully and respect the rights of others.</p>
+          <p>These terms cover your use of {site.name}'s personal portfolio, including Work, Journal, the Playground, and the contact form. Please use the website lawfully and respect the rights of others.</p>
         </div>
       </Section>
       <Section label="Content and ownership">
@@ -66,10 +66,9 @@ export function Terms() {
           <p>Third-party photographs, project screenshots, trademarks, album artwork, and product names remain the property of their respective owners. Featuring them here does not imply a partnership or endorsement.</p>
         </div>
       </Section>
-      <Section label="Toolbox and external services">
+      <Section label="External services">
         <div className="prose">
-          <p>The Toolbox contains selected tools, books, websites, and other resources for reference and discovery. Listings are personal recommendations, and their availability, features, and prices may change.</p>
-          <p>External websites are operated by their own providers. Their terms, policies, and charges apply when you use them.</p>
+          <p>Pages here may link to external websites, which are operated by their own providers. Their terms, policies, and charges apply when you use them.</p>
         </div>
       </Section>
       <Section label="Contact form">

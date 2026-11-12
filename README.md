@@ -28,11 +28,10 @@ The output is `dist/`, including all project and article URLs, metadata, sitemap
 - `content/site.json`: profile and optional contact details.
 - `content/projects/*.json`: projects, with unpublished template support.
 - `content/journal/*.md`: stories with draft control.
-- `content/resources.json`: curated resources with stable IDs and link status.
 - `src/components/Playground.tsx`: the Playground index.
 - `src/components/Experiments.tsx`: the Aspect ratio experiment at `/playground/aspect-ratio/`. Its springs come from `src/lib/spring.ts`.
 - `src/styles.css`: design tokens and every style on the site.
-- `src/components`: layout, pages, and the Toolbox index.
+- `src/components`: layout, pages, and the big home-page icons.
 - `src/lib`: content helpers and saved-links state.
 - `scripts/build.mjs`: validation, React prerendering, sitemap, and static output.
 

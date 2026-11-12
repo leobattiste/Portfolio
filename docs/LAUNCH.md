@@ -27,7 +27,6 @@ No domain was provided or purchased. To connect one, add it in the hosting provi
 - Review the published bio and Journal introduction.
 - Add a real résumé if you want a download link.
 - Expand Pheelm's process story with your own research, iterations, and results.
-- Review the unverified Toolbox links when useful.
 
 ## Verification
 

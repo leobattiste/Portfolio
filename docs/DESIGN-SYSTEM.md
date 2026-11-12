@@ -25,7 +25,7 @@ One family, Schibsted Grotesk Variable, served with the site.
 
 ## Layout
 
-Every block is a `.row`: an 11rem rail on the left for the label, and a content column beside it. The header, each section, the Toolbox categories and the footer all sit on the same two columns. Below 48rem the rail stacks above the content. Use `<Section label="…">` and `<Intro>` from `src/components/Layout.tsx` rather than new wrappers.
+Every block is a `.row`: an 11rem rail on the left for the label, and a content column beside it. The header, each section and the footer all sit on the same two columns. Below 48rem the rail stacks above the content. Use `<Section label="…">` and `<Intro>` from `src/components/Layout.tsx` rather than new wrappers.
 
 ## Interaction
 
@@ -33,10 +33,10 @@ Every block is a `.row`: an 11rem rail on the left for the label, and a content 
 - **Theme.** The toggle opens the new theme as a circle from the button. The choice is stored under `leo-appearance`; first visits follow the system setting.
 - **Peeks.** Links inside the home statement show a small preview on hover or keyboard focus.
 - **Cover chip.** A label follows the pointer over a project cover.
-- **Toolbox.** `/` focuses the filter, arrow keys or J and K move through the list, S saves, Enter opens. The focused row is filled with marigold. Filters are kept in the URL.
+- **Home.** The intro and each of Work, Journal and Playground fill one screen, each with a big line icon that shifts slightly on hover.
 
 All motion answers an action. `prefers-reduced-motion` turns transitions off.
 
 ## Checks
 
-`pnpm run check` builds the site and runs content, route and DOM interaction tests. The DOM suite hydrates the prerendered Toolbox and exercises filtering, saving, keyboard navigation and the theme. It does not replace looking at the pages in a browser.
+`pnpm run check` builds the site and runs content, route and DOM interaction tests. The DOM suite hydrates the prerendered home page and exercises the menu, the theme and the Aspect ratio experiment. It does not replace looking at the pages in a browser.

@@ -26,7 +26,7 @@ export function markdown(text, url = p => p) {
   }).join('\n');
 }
 export function readingTime(body) { return Math.max(1, Math.ceil(body.split(/\s+/).length / 200)); }
-export function validateContent(site, projects, articles, resources) {
+export function validateContent(site, projects, articles) {
   if (!site.name || !safeWebUrl(site.origin) || !site.email || (site.instagram && !safeWebUrl(site.instagram))) throw new Error('Site name, origin, and email are required.');
   const ids = new Set();
   for (const item of [...projects,...articles]) {
@@ -37,11 +37,5 @@ export function validateContent(site, projects, articles, resources) {
     ids.add(id);
     for (const key of ['liveUrl','sourceUrl']) if (item[key] && !safeWebUrl(item[key])) throw new Error(`Invalid ${key}: ${item.slug}`);
     if (item.published && 'body' in item && (!/^\d{4}-\d{2}-\d{2}$/.test(item.date) || !item.topic)) throw new Error(`Article metadata is incomplete: ${item.slug}`);
-  }
-  const resourceIds = new Set(), urls = new Set();
-  for (const r of resources) {
-    if (!safeWebUrl(r.url) || !/^[a-z0-9-]+$/.test(r.id) || !r.category || !r.title || !r.description) throw new Error(`Invalid resource: ${r.id}`);
-    if (resourceIds.has(r.id) || urls.has(r.url)) throw new Error(`Duplicate resource: ${r.id}`);
-    resourceIds.add(r.id); urls.add(r.url);
   }
 }
