@@ -129,7 +129,7 @@ export function getPage(path: string, content: Content = initial) {
     "/playground/album-covers/": {
       title: `Album covers | ${site.name}`,
       description:
-        "Explore 20 iconic album covers across genres in an interactive 3D record collection.",
+        "Twenty favorite album covers you can play as a vinyl record or a CD: pull it out, spin it, turn the sleeve over.",
     },
     "/playground/aspect-ratio/": {
       title: `Aspect ratio | ${site.name}`,

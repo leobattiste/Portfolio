@@ -12,7 +12,8 @@ import {
   Contact,
   NotFound,
 } from "@/components/Pages";
-import { Playground, AlbumCovers } from "@/components/Playground";
+import { Playground } from "@/components/Playground";
+import { AlbumCovers } from "@/components/Albums";
 import {
   AspectRatio,
   VariableType,

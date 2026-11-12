@@ -1,0 +1,607 @@
+/* 001 Album covers: a sleeve or a jewel case, and the disc inside it */
+
+.format-switch {
+  display: flex;
+  gap: 8px;
+}
+.format-switch button,
+.btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border: 1px solid var(--mist);
+  border-radius: 999px;
+  color: var(--ink);
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.format-switch button:hover,
+.btn:hover {
+  border-color: var(--graphite);
+}
+.format-switch button[aria-pressed="true"],
+.btn.primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.btn.icon {
+  width: 38px;
+  padding: 8px 0;
+  text-align: center;
+}
+
+.player-stage {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 48px 56px;
+  padding: 24px var(--edge) 48px;
+}
+
+/* The deck. Everything is sized from one number, --s, the sleeve's side. */
+.deck {
+  --s: min(330px, calc((100vw - 2 * var(--edge)) / 1.7));
+  --c: calc(var(--s) * 0.86);
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  width: calc(var(--s) * 1.66);
+  height: var(--s);
+  perspective: 1600px;
+  touch-action: pan-y;
+  cursor: grab;
+  outline-offset: 12px;
+  border-radius: 6px;
+}
+.deck:active {
+  cursor: grabbing;
+}
+.deck-body {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.deck:active .deck-body {
+  transition-duration: 0.1s;
+}
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.face-back {
+  transform: rotateY(180deg);
+}
+
+/* Discs */
+.disc-slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--s);
+  height: var(--s);
+  transform: translate3d(calc(var(--s) * 0.03), 0, 1px);
+  transition:
+    transform 0.9s cubic-bezier(0.3, 0.7, 0.2, 1),
+    opacity 0.3s;
+}
+.deck[data-format="vinyl"]:hover .disc-slot {
+  transform: translate3d(calc(var(--s) * 0.09), 0, 1px);
+}
+.deck[data-format="vinyl"][data-playing="true"] .disc-slot {
+  transform: translate3d(calc(var(--s) * 0.55), 0, 1px);
+}
+.deck[data-flipped="true"] .disc-slot {
+  opacity: 0;
+}
+.disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.disc-spin {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: disc-spin 1.8s linear infinite;
+  animation-play-state: paused;
+}
+.deck[data-playing="true"] .disc-spin {
+  animation-play-state: running;
+}
+@keyframes disc-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+.disc-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Vinyl: grooves, a paper label, and light that stays still while it turns */
+.disc-vinyl {
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.28);
+  mask: radial-gradient(circle, transparent 0 1.6%, #000 1.8%);
+}
+.disc-vinyl .disc-spin {
+  background:
+    radial-gradient(circle, transparent 0 33%, #0b0b0c 33.5% 36%, transparent 36% 69%, #45464d 69.6% 70.7%),
+    repeating-radial-gradient(circle, #151517 0 1.4px, #202024 1.4px 2.8px);
+}
+.disc-label {
+  position: absolute;
+  inset: 33.5%;
+  border-radius: 50%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  padding: 14%;
+  text-align: center;
+  font-size: calc(var(--s) * 0.026);
+  line-height: 1.2;
+}
+.disc-label span:first-child {
+  font-weight: 600;
+}
+.disc-label span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.disc-vinyl .disc-sheen {
+  background: conic-gradient(
+    from 20deg,
+    transparent 0 6%,
+    rgb(255 255 255 / 0.13) 11%,
+    transparent 17% 56%,
+    rgb(255 255 255 / 0.1) 61%,
+    transparent 67%
+  );
+}
+
+/* CD: silver, a clear hub, and a rainbow that stays put */
+.deck[data-format="cd"] .disc-slot {
+  width: calc(var(--c) * 0.92);
+  height: calc(var(--c) * 0.92);
+  left: calc(var(--c) * 0.15);
+  top: calc((var(--s) - var(--c) * 0.92) / 2);
+  transform: translate3d(0, 0, 1px);
+  transition-delay: 0s;
+}
+.deck[data-format="cd"][data-playing="true"] .disc-slot {
+  transform: translate3d(calc(var(--c) * 0.8), 0, 1px);
+  transition-delay: 0.25s;
+}
+.disc-cd {
+  mask: radial-gradient(circle, transparent 0 7%, #000 7.3%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+}
+.disc-cd .disc-spin {
+  animation-duration: 0.7s;
+  background:
+    radial-gradient(circle, rgb(255 255 255 / 0.35) 0 15%, #b9bcc4 15.4% 16.2%, transparent 16.5% 97.5%, #a9acb4 98%),
+    radial-gradient(circle, #e7e9ee 18%, #d2d5dc 62%, #eceef2 96%);
+}
+.disc-print {
+  position: absolute;
+  left: 50%;
+  top: 21%;
+  translate: -50% 0;
+  white-space: nowrap;
+  font-size: calc(var(--c) * 0.028);
+  color: #4a4d55;
+  letter-spacing: 0.02em;
+}
+.disc-cd .disc-sheen {
+  mix-blend-mode: multiply;
+  background: conic-gradient(
+    from 210deg,
+    #ffd6ec,
+    #fff 9%,
+    #c7ecff 17%,
+    #fff 25%,
+    #e4ffcc 33%,
+    #fff 42%,
+    #ffe9c2 50%,
+    #fff 58%,
+    #ffd6ec 67%,
+    #fff 75%,
+    #c7ecff 84%,
+    #fff 92%,
+    #ffd6ec
+  );
+  opacity: 0.9;
+}
+
+/* Vinyl sleeve */
+.sleeve {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--s);
+  height: var(--s);
+  transform-style: preserve-3d;
+  transform: translateZ(2px) rotateY(0deg);
+  transition: transform 0.8s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.deck[data-flipped="true"] .sleeve {
+  transform: translateZ(2px) rotateY(180deg);
+}
+.sleeve .face-front {
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.12),
+    0 22px 44px -12px rgb(0 0 0 / 0.38);
+}
+.face-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+.sleeve-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.16) 45%,
+    transparent 58%
+  );
+  translate: calc(var(--ry) * -2) 0;
+  transition: translate 0.6s;
+}
+
+/* Tonearm, at rest beside the record, swinging in when it plays */
+.tonearm {
+  position: absolute;
+  left: calc(var(--s) * 1.58);
+  top: calc(var(--s) * 0.04);
+  transform: translateZ(4px);
+}
+.arm-pivot {
+  position: absolute;
+  width: calc(var(--s) * 0.1);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(circle, #8d9099 0 22%, #d4d6dc 24% 60%, #b8bbc3 62%);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.2);
+}
+.arm {
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 4px;
+  height: calc(var(--s) * 0.68);
+  border-radius: 2px;
+  background: linear-gradient(90deg, #a9acb4, #e6e7eb, #a9acb4);
+  transform-origin: 50% 0;
+  rotate: -6deg;
+  transition: rotate 0.9s cubic-bezier(0.4, 0.2, 0.2, 1);
+  box-shadow: 4px 6px 8px rgb(0 0 0 / 0.15);
+}
+.deck[data-playing="true"] .arm {
+  rotate: 22deg;
+  transition-delay: 0.5s;
+}
+.arm-head {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--s) * 0.05);
+  height: calc(var(--s) * 0.085);
+  translate: -50% 40%;
+  border-radius: 2px;
+  background: #2a2b30;
+}
+
+/* CD jewel case: tray underneath, clear lid on a hinge */
+.case {
+  position: absolute;
+  left: 0;
+  top: calc((var(--s) - var(--c)) / 2);
+  width: calc(var(--c) * 1.13);
+  height: var(--c);
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform 0.8s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.deck[data-flipped="true"] .case {
+  transform: rotateY(180deg);
+}
+.case-tray {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background:
+    radial-gradient(circle at 54.5% 50%, #3a3c42 0 4%, #1d1e22 4.5% 9%, transparent 9.5%),
+    #26272c;
+  box-shadow: 0 22px 44px -12px rgb(0 0 0 / 0.4);
+  backface-visibility: hidden;
+}
+.case-lid {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 0 50%;
+  transform: translateZ(3px) rotateY(0deg);
+  transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.2, 1) 0.35s;
+}
+.deck[data-playing="true"] .case-lid {
+  transform: translateZ(3px) rotateY(-100deg);
+  transition-delay: 0s;
+}
+.lid-out,
+.lid-in {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.lid-out {
+  display: grid;
+  grid-template-columns: 8% 1fr;
+  background: rgb(240 241 244 / 0.25);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.55),
+    0 1px 2px rgb(0 0 0 / 0.2);
+  overflow: hidden;
+}
+.case-hinge {
+  background: repeating-linear-gradient(#2e3036 0 3px, #44464d 3px 5px);
+}
+.lid-out img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  padding: 3%;
+  background: #121316;
+  user-select: none;
+  pointer-events: none;
+}
+.case-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    rgb(255 255 255 / 0.32) 0 8%,
+    transparent 22% 60%,
+    rgb(255 255 255 / 0.12) 70%,
+    transparent 82%
+  );
+}
+.lid-in {
+  transform: rotateY(180deg);
+  display: grid;
+  align-content: end;
+  gap: 2px;
+  padding: 10%;
+  background: #f3f3f5;
+  color: #17181c;
+  font-size: calc(var(--c) * 0.05);
+  visibility: hidden;
+  transition: visibility 0s 1.05s;
+}
+.deck[data-playing="true"] .lid-in {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.lid-in span {
+  color: #62656e;
+}
+
+/* Back sleeves */
+.sleeve-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  background: #f6f6f7;
+  color: #17181c;
+  border-radius: 2px;
+  box-shadow: 0 22px 44px -12px rgb(0 0 0 / 0.38);
+  overflow: hidden;
+}
+.sleeve-back-body {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 9%;
+  font-size: calc(var(--s) * 0.04);
+  line-height: 1.45;
+}
+.sleeve-back-cd .sleeve-back-body {
+  font-size: calc(var(--c) * 0.042);
+  padding: 7%;
+}
+.sleeve-back-body strong {
+  font-size: 1.5em;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.sleeve-back-body span,
+.sleeve-back-body small {
+  color: #62656e;
+}
+.sleeve-back-body p {
+  margin: 0.6em 0 0;
+}
+.sleeve-back-body small {
+  margin-top: auto;
+  font-size: 0.8em;
+}
+.sleeve-back-spine {
+  width: 8%;
+  writing-mode: vertical-rl;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--c) * 0.032);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sleeve-back-spine:first-child {
+  rotate: 180deg;
+}
+
+/* Info beside the deck */
+.player-info {
+  display: grid;
+  justify-items: start;
+  max-width: 26rem;
+}
+.player-count {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  color: var(--graphite);
+  font-variant-numeric: tabular-nums;
+}
+.player-info h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+.player-artist {
+  margin: 6px 0 0;
+  font-size: 1.125rem;
+  color: var(--graphite);
+}
+.player-note {
+  margin: 20px 0 0;
+  line-height: 1.6;
+}
+.player-info dl {
+  margin: 20px 0 0;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+.player-info dl > div {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--mist);
+  font-size: 0.9rem;
+}
+.player-info dt {
+  color: var(--graphite);
+}
+.player-info dd {
+  margin: 0;
+}
+.player-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+.player-step {
+  display: flex;
+  gap: 8px;
+}
+.player-listen {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--graphite);
+}
+
+/* The shelf: sleeves in a crate for vinyl, spines in a rack for CDs */
+.shelf {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 16px var(--edge) 24px;
+}
+.shelf::-webkit-scrollbar {
+  display: none;
+}
+.shelf button {
+  flex: none;
+  transition:
+    translate 0.25s cubic-bezier(0.3, 0.7, 0.2, 1),
+    box-shadow 0.25s;
+}
+.shelf-vinyl button {
+  width: 64px;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+}
+.shelf-vinyl img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shelf-cd {
+  gap: 3px;
+  align-items: flex-end;
+  min-height: 236px;
+}
+.shelf-cd button {
+  width: 28px;
+  height: 200px;
+  border-radius: 2px;
+  writing-mode: vertical-rl;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: inset -1px 0 0 rgb(0 0 0 / 0.12);
+}
+.shelf-cd span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shelf-cd b {
+  font-weight: 650;
+}
+.shelf button:hover {
+  translate: 0 -4px;
+}
+.shelf button[aria-pressed="true"] {
+  translate: 0 -12px;
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+}
+
+@media (max-width: 860px) {
+  .player-stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disc-spin {
+    animation: none;
+  }
+  .disc-slot,
+  .sleeve,
+  .case,
+  .case-lid,
+  .arm,
+  .deck-body {
+    transition-duration: 0.01s;
+    transition-delay: 0s;
+  }
+}

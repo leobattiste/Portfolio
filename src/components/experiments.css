@@ -12,20 +12,19 @@
 body {
   overflow-x: clip;
 }
+/* Tabs on top, options underneath */
 .lab-toolbar {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px 20px;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   padding: 20px var(--edge);
 }
 /* A row of tabs that scrolls sideways when it runs out of room */
 .lab-tabs {
   display: flex;
   gap: 8px;
-  flex: 1;
+  align-self: stretch;
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
@@ -271,8 +270,8 @@ body {
 .ratio-stage {
   gap: 28px;
   align-content: center;
-  justify-items: end;
-  text-align: right;
+  justify-items: start;
+  text-align: left;
   padding-inline: var(--edge);
 }
 .ratio-frame {
@@ -310,7 +309,7 @@ body {
 }
 .ratio-readout {
   display: grid;
-  justify-items: end;
+  justify-items: start;
   gap: 2px;
 }
 .ratio-readout strong {
@@ -661,7 +660,7 @@ body {
 .ratio-stage .lab-hint {
   left: var(--edge);
   right: var(--edge);
-  text-align: right;
+  text-align: left;
 }
 @media (max-width: 640px) {
   .ratio-stage {

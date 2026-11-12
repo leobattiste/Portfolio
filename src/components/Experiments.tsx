@@ -21,7 +21,7 @@ const springStyle = (stiffness: number, damping: number, slow = 1) => {
   } as CSSProperties;
 };
 
-function ExperimentPage({
+export function ExperimentPage({
   number,
   title,
   lead,
