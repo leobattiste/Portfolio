@@ -126,25 +126,10 @@ export function getPage(path: string, content: Content = initial) {
       description:
         "Small experiments, loose ideas, and things made just to see what happens.",
     },
-    "/playground/album-covers/": {
-      title: `Album covers | ${site.name}`,
-      description:
-        "Twenty favorite album covers you can play as a vinyl record or a CD: pull it out, spin it, turn the sleeve over.",
-    },
     "/playground/aspect-ratio/": {
       title: `Aspect ratio | ${site.name}`,
       description:
         "Six film aspect ratios, from 4:3 to Ultra Panavision, with a movie and a fun fact for each. Drag to see what each one leaves out.",
-    },
-    "/playground/variable-type/": {
-      title: `Variable type | ${site.name}`,
-      description:
-        "Type a word and watch each letter get heavier the closer your pointer gets.",
-    },
-    "/playground/morphing-button/": {
-      title: `Morphing button | ${site.name}`,
-      description:
-        "One button that moves through four states on a spring you can tune.",
     },
     "/toolbox/": {
       title: `Toolbox | ${site.name}`,

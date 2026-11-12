@@ -1,4 +1,4 @@
-/* Shared lab: the same room as the album collection, for every experiment */
+/* The lab: a toolbar, a stage, and controls */
 .lab {
   /* break out of the page column to span the whole window */
   width: 100vw;
@@ -134,7 +134,7 @@ body {
   }
 }
 
-/* 002 Aspect ratio: a drawn sunset under four bars */
+/* Aspect ratio: a drawn sunset under four bars */
 .scene {
   position: absolute;
   inset: 0;
@@ -323,170 +323,6 @@ body {
   color: var(--graphite);
 }
 
-/* 003 Variable type */
-.type-stage {
-  cursor: crosshair;
-  touch-action: pan-y;
-  user-select: none;
-  overflow: hidden;
-}
-.type-word {
-  max-width: 100%;
-  text-align: center;
-  font-size: clamp(3rem, 1rem + 8vw, 7.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  overflow-wrap: anywhere;
-}
-.type-word span {
-  font-weight: var(--w, 400);
-  font-variation-settings: "wght" var(--w, 400);
-  transition:
-    font-variation-settings 0.35s cubic-bezier(0.2, 0.7, 0.1, 1),
-    font-weight 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
-}
-.type-word .type-placeholder {
-  color: var(--graphite);
-}
-
-/* 004 Morphing button */
-.morph-stage {
-  min-height: 340px;
-}
-.morph {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  height: 48px;
-  min-width: 48px;
-  padding: 0 22px;
-  border-radius: 99px;
-  background: var(--ink);
-  color: var(--paper);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  transition-property: width, background-color, color, padding;
-  transition-duration: 0.5s;
-  transition-duration: var(--spring-ms, 0.5s);
-  transition-timing-function: var(--ease-spring, cubic-bezier(0.2, 0.7, 0.1, 1));
-}
-.morph[data-state="loading"] {
-  padding: 0;
-  cursor: progress;
-}
-.morph[data-state="done"] {
-  background: var(--marigold);
-  color: var(--on-marigold);
-  cursor: default;
-}
-.morph[data-state="failed"] {
-  background: #c2261d;
-  color: #fff;
-  animation: shake 0.42s cubic-bezier(0.3, 0, 0.3, 1);
-}
-.morph:focus-visible {
-  outline-offset: 4px;
-  border-radius: 99px;
-}
-.morph-face {
-  grid-area: 1 / 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-/* Faces stack in the middle; the button's width comes from measuring each one. */
-.morph > .morph-face {
-  position: absolute;
-  grid-area: auto;
-  width: max-content;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  transition:
-    opacity 0.2s,
-    filter 0.25s,
-    scale 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
-}
-.morph > .morph-face[data-active="false"] {
-  opacity: 0;
-  filter: blur(4px);
-  scale: 0.85;
-}
-.morph-spinner {
-  animation: spin 0.8s linear infinite;
-}
-.morph-check path {
-  stroke-dasharray: 16;
-  stroke-dashoffset: 16;
-}
-.morph > .morph-face[data-active="true"] .morph-check path {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.4s 0.12s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-.morph:not([data-ready]) > .morph-face[data-active="true"] {
-  position: static;
-  translate: none;
-}
-.morph-measure {
-  position: absolute;
-  visibility: hidden;
-  pointer-events: none;
-  height: 0;
-  overflow: hidden;
-}
-.morph-measure .morph {
-  width: auto;
-}
-.morph-measure .morph-face {
-  position: static;
-  translate: none;
-}
-@keyframes spin {
-  to { rotate: 1turn; }
-}
-@keyframes shake {
-  20% { translate: -6px 0; }
-  40% { translate: 5px 0; }
-  60% { translate: -3px 0; }
-  80% { translate: 2px 0; }
-}
-.morph-controls {
-  justify-content: space-between;
-  align-items: center;
-}
-.morph-sliders {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 20px 28px;
-}
-.curve {
-  display: grid;
-  gap: 6px;
-  width: 240px;
-  margin: 0;
-}
-.curve svg {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-.curve path {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.5;
-}
-.curve-target {
-  stroke: var(--marigold);
-  stroke-dasharray: 3 3;
-}
-.curve figcaption {
-  font-size: 0.8rem;
-  color: var(--graphite);
-  font-variant-numeric: tabular-nums;
-}
-
 /* Previews on the Playground index */
 .art-frame {
   position: relative;
@@ -502,63 +338,6 @@ body {
   --letter: 0% !important;
   --pillar: 12.5% !important;
 }
-.art-word {
-  font-size: clamp(3.5rem, 2rem + 6vw, 6rem);
-  letter-spacing: -0.03em;
-}
-.art-word span {
-  --w: calc(400 + var(--i) * 100);
-  font-weight: var(--w);
-  font-variation-settings: "wght" var(--w);
-  transition:
-    font-variation-settings 0.5s cubic-bezier(0.2, 0.7, 0.1, 1),
-    font-weight 0.5s cubic-bezier(0.2, 0.7, 0.1, 1);
-  transition-delay: calc(var(--i) * 40ms);
-}
-.experiment:hover .art-word span,
-.experiment:focus-visible .art-word span {
-  --w: calc(900 - var(--i) * 100);
-}
-.art-morph {
-  display: grid;
-  place-items: center;
-  width: 10.5rem;
-  height: 52px;
-  border-radius: 99px;
-  background: var(--ink);
-  color: var(--paper);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  transition: width 0.5s cubic-bezier(0.2, 0.7, 0.1, 1);
-  transition-duration: var(--spring-ms, 0.5s);
-  transition-timing-function: var(--ease-spring, cubic-bezier(0.2, 0.7, 0.1, 1));
-}
-.art-morph > * {
-  grid-area: 1 / 1;
-  transition:
-    opacity 0.2s,
-    filter 0.25s;
-}
-.art-morph .morph-spinner {
-  opacity: 0;
-  filter: blur(4px);
-}
-.experiment:hover .art-morph,
-.experiment:focus-visible .art-morph {
-  width: 52px;
-}
-.experiment:hover .art-morph-label,
-.experiment:focus-visible .art-morph-label {
-  opacity: 0;
-  filter: blur(4px);
-}
-.experiment:hover .art-morph .morph-spinner,
-.experiment:focus-visible .art-morph .morph-spinner {
-  opacity: 1;
-  filter: none;
-}
-
 @media (max-width: 767px) {
   .lab-toolbar,
   .lab-controls {

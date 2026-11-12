@@ -29,9 +29,8 @@ The output is `dist/`, including all project and article URLs, metadata, sitemap
 - `content/projects/*.json`: projects, with unpublished template support.
 - `content/journal/*.md`: stories with draft control.
 - `content/resources.json`: curated resources with stable IDs and link status.
-- `content/albums.json`: the Playground album collection (title, artist, genre, sleeve notes, and source). Add artwork in `src/assets/albums/` using the record ID.
-- `src/components/Playground.tsx`: the experiment index and interactive CSS 3D record collection at `/playground/album-covers/`.
-- `src/components/Experiments.tsx`: Aspect ratio, Variable type and Morphing button, at `/playground/aspect-ratio/`, `/playground/variable-type/` and `/playground/morphing-button/`. Their springs come from `src/lib/spring.ts`.
+- `src/components/Playground.tsx`: the Playground index.
+- `src/components/Experiments.tsx`: the Aspect ratio experiment at `/playground/aspect-ratio/`. Its springs come from `src/lib/spring.ts`.
 - `src/styles.css`: design tokens and every style on the site.
 - `src/components`: layout, pages, and the Toolbox index.
 - `src/lib`: content helpers and saved-links state.

@@ -146,33 +146,7 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
     await click(document.querySelector(".theme-toggle"));
     assert.equal(document.documentElement.dataset.theme, "dark");
     assert.equal(localStorage.getItem("leo-appearance"), "dark");
-    await render("/playground/album-covers/");
     const buttonNamed = (name) => [...document.querySelectorAll("button")].find(b => b.textContent.trim() === name);
-    const deck = () => document.querySelector(".deck");
-    const title = () => document.querySelector(".player-info h2").textContent;
-    assert.equal(document.querySelectorAll(".crate button").length, 20);
-    assert.ok(!document.querySelector(".format-switch"), "vinyl only");
-    await click(buttonNamed("Rap"));
-    assert.equal(document.querySelectorAll(".crate button").length, 3);
-    assert.equal(title(), "Illmatic");
-    await key(deck(), { key: "ArrowLeft" });
-    assert.equal(title(), "To Pimp a Butterfly", "navigation wraps within the genre");
-    await click(buttonNamed("Play record"));
-    assert.equal(deck().dataset.on, "true", "the record moves onto the platter");
-    assert.equal(deck().dataset.playing, "true");
-    await click(buttonNamed("Stop"));
-    assert.equal(deck().dataset.playing, "false");
-    assert.equal(deck().dataset.on, "true", "stopping leaves the record on the platter");
-    await click(buttonNamed("See the back"));
-    assert.equal(deck().dataset.flipped, "true");
-    await click(buttonNamed("All"));
-    await new Promise((r) => setTimeout(r, 800));
-    assert.equal(deck().dataset.on, "false", "changing records puts this one back in its sleeve");
-    await click(document.querySelectorAll(".crate button")[1]);
-    assert.equal(title(), "Abbey Road");
-    await key(deck(), { key: " " });
-    assert.equal(deck().dataset.playing, "true", "space plays");
-
     await render("/playground/aspect-ratio/");
     const frame = () => document.querySelector(".ratio-frame");
     await click(buttonNamed("Standard"));
@@ -182,17 +156,6 @@ test("Toolbox filter, saving, keyboard navigation, and theme work together", asy
     await key(frame(), { key: "End" });
     assert.equal(document.querySelector("[data-ratio]").textContent, "2.76 : 1");
     assert.equal(document.querySelector(".ratio-readout span").textContent, "Ultra Panavision");
-
-    await render("/playground/variable-type/");
-    await type(document.querySelector(".lab-field input"), "Hi you");
-    assert.equal(document.querySelectorAll("[data-letter]").length, 5, "spaces aren't weighted letters");
-
-    await render("/playground/morphing-button/");
-    const morph = () => document.querySelector(".lab-stage > .morph");
-    await click(morph());
-    assert.equal(morph().dataset.state, "loading");
-    assert.equal(morph().getAttribute("aria-disabled"), "true");
-    assert.equal(document.querySelector(".morph-stage [role=status]").textContent, "Publishing");
   } finally {
     await React.act(async () => root.unmount());
     win.close();

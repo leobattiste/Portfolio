@@ -1,13 +1,8 @@
 import type { ReactNode } from "react";
 import { Intro, Section } from "./Layout";
 import { href } from "@/lib/site";
-import { TurntableArt } from "./Albums";
 import "./playground.css";
-import {
-  AspectRatioArt,
-  VariableTypeArt,
-  MorphingButtonArt,
-} from "./Experiments";
+import { AspectRatioArt } from "./Experiments";
 
 function ExperimentCard({
   path,
@@ -51,35 +46,14 @@ export function Playground() {
           Things made just to see what happens.
         </p>
       </Intro>
-      <Section label="Experiments" count={4}>
+      <Section label="Experiments" count={1}>
         <div className="experiments">
-          <ExperimentCard
-            path="/playground/album-covers/"
-            title="Album covers"
-            blurb="Twenty favorite records on a turntable you can play."
-            label="001 · Music"
-            art={<TurntableArt />}
-          />
           <ExperimentCard
             path="/playground/aspect-ratio/"
             title="Aspect ratio"
-            blurb="Six ways to frame the same shot. Drag to see what each one hides."
-            label="002 · Film"
+            blurb="Six ways to frame a film. Drag to see what each one hides."
+            label="001 · Film"
             art={<AspectRatioArt />}
-          />
-          <ExperimentCard
-            path="/playground/variable-type/"
-            title="Variable type"
-            blurb="Letters that get heavier the closer you get."
-            label="003 · Type"
-            art={<VariableTypeArt />}
-          />
-          <ExperimentCard
-            path="/playground/morphing-button/"
-            title="Morphing button"
-            blurb="One button, four states, tuned with real springs."
-            label="004 · Motion"
-            art={<MorphingButtonArt />}
           />
         </div>
       </Section>
