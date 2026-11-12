@@ -31,8 +31,30 @@ export interface About {
   portrait: string;
   disciplines: string[];
 }
+export interface PlaygroundRatio {
+  value: number;
+  name: string;
+  note?: string;
+  film: string;
+  essay: string[];
+  fact: string;
+}
+export interface Playground {
+  title: string;
+  intro: string;
+  description: string;
+  aspect: {
+    cardTitle: string;
+    cardBlurb: string;
+    lead: string;
+    description: string;
+    notes: string;
+    ratios: PlaygroundRatio[];
+  };
+}
 export interface Content {
   projects: Project[];
   articles: Article[];
   about: About;
+  playground: Playground;
 }

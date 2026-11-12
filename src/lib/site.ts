@@ -7,8 +7,9 @@ import {
   type ReactNode,
 } from "react";
 import raw from "../../.build/content.json";
-import type { Project, Article, About, Content } from "@/types";
+import type { Project, Article, About, Content, Playground } from "@/types";
 import { fetchContent } from "../content-model.mjs";
+import { mergePlayground } from "../playground-content.mjs";
 
 export const site = raw.site;
 export const backend = site.backend as { url: string; key: string };
@@ -17,6 +18,7 @@ export const initial: Content = {
   projects: raw.projects as Project[],
   articles: raw.articles as Article[],
   about: raw.about as About,
+  playground: raw.playground as Playground,
 };
 
 const ContentContext = createContext<Content & { settled: boolean }>({
@@ -30,11 +32,19 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     let active = true;
     fetchContent(backend)
       .then(
-        (live: (Omit<Content, "about"> & { about: About | null }) | null) => {
+        (
+          live:
+            | (Omit<Content, "about" | "playground"> & {
+                about: About | null;
+                playground: Partial<Playground> | null;
+              })
+            | null,
+        ) => {
           if (active && live)
             setContent({
               ...live,
               about: { ...initial.about, ...(live.about || {}) },
+              playground: mergePlayground(initial.playground, live.playground),
             });
         },
       )
@@ -106,14 +116,12 @@ export function getPage(path: string, content: Content = initial) {
       description: "Notes on what I’m making and what I’m learning from it.",
     },
     "/playground/": {
-      title: `Playground | ${site.name}`,
-      description:
-        "Small experiments, loose ideas, and things made just to see what happens.",
+      title: `${content.playground.title} | ${site.name}`,
+      description: content.playground.description,
     },
     "/playground/aspect-ratio/": {
-      title: `Aspect ratio | ${site.name}`,
-      description:
-        "Six film aspect ratios, from 4:3 to Ultra Panavision, with a movie and a fun fact for each. Drag to see what each one leaves out.",
+      title: `${content.playground.aspect.cardTitle} | ${site.name}`,
+      description: content.playground.aspect.description,
     },
     "/contact/": {
       title: `Contact | ${site.name}`,

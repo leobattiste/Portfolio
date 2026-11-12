@@ -15,6 +15,7 @@ import {
   sectionsToHtml,
   defaultAbout,
 } from "../src/content-model.mjs";
+import { defaultPlayground, mergePlayground } from "../src/playground-content.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = async (p) =>
   JSON.parse(await readFile(path.join(root, p), "utf8"));
@@ -62,6 +63,7 @@ const fromFiles = {
     })),
 };
 fromFiles.about = defaultAbout(site, fromFiles.projects);
+fromFiles.playground = defaultPlayground;
 // Once content has been imported in the admin, the database is the source.
 let live = null;
 if (site.backend?.url && !process.env.CONTENT_FROM_FILES) {
@@ -73,11 +75,12 @@ if (site.backend?.url && !process.env.CONTENT_FROM_FILES) {
 }
 const { projects, articles } = live || fromFiles;
 const about = { ...fromFiles.about, ...(live?.about || {}) };
+const playground = mergePlayground(defaultPlayground, live?.playground);
 console.log(`Content source: ${live ? "database" : "files in /content"}.`);
 await mkdir(path.join(root, ".build"), { recursive: true });
 await writeFile(
   path.join(root, ".build/content.json"),
-  JSON.stringify({ site, projects, articles, about }),
+  JSON.stringify({ site, projects, articles, about, playground }),
 );
 execFileSync(path.join(root, "node_modules/.bin/tsc"), ["--noEmit"], {
   cwd: root,

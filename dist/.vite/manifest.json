@@ -1,6 +1,6 @@
 {
   "index.html": {
-    "file": "assets/index-b27KmMRn.js",
+    "file": "assets/index-30HYVoav.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -24,7 +24,7 @@
     "src": "node_modules/.pnpm/@fontsource-variable+schibsted-grotesk@5.3.0/node_modules/@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2"
   },
   "src/admin/Admin.tsx": {
-    "file": "assets/Admin-CHxtp8YZ.js",
+    "file": "assets/Admin-CLHvz1PT.js",
     "name": "Admin",
     "src": "src/admin/Admin.tsx",
     "isDynamicEntry": true,

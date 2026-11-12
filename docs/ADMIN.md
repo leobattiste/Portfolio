@@ -17,6 +17,7 @@ Only confirmed accounts whose email is listed in `private.admin_emails` can read
 | --- | --- | --- |
 | Work | Case studies: name, description, cover, details, rich text body | `projects` |
 | Journal | Entries: title, summary, date, topic, rich text body | `articles` |
+| Playground | The page title and intro, the Aspect ratio card, opening lines and notes, and each ratio's name, movie, fun fact and essay | `site_content` (`playground`) |
 | About | Opening statement, portrait, rich text body, "What I do" | `site_content` (`about`) |
 | Inbox | Messages from the contact form | `messages` |
 | Insights | Page views, visits, top pages, journal reads, sources | `page_views` via `insights()` |

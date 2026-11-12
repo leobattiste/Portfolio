@@ -123,5 +123,6 @@ export async function fetchContent({ url, key }, { signal } = {}) {
     projects: projects.map(toProject),
     articles: articles.map(toArticle),
     about: stored.about || null,
+    playground: stored.playground || null,
   };
 }

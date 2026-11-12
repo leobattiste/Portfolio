@@ -17,6 +17,7 @@ import {
 } from "../content-model.mjs";
 import { db, upload, problem } from "./db";
 import { RichText } from "./RichText";
+import { mergePlayground } from "../playground-content.mjs";
 import "./admin.css";
 
 // Rows come straight from the database, so their shape is checked there.
@@ -27,6 +28,7 @@ const views = [
   { id: "insights", label: "Insights" },
   { id: "work", label: "Work" },
   { id: "journal", label: "Journal" },
+  { id: "playground", label: "Playground" },
   { id: "about", label: "About" },
 ] as const;
 
@@ -686,6 +688,157 @@ function AboutEditor() {
   );
 }
 
+/* Playground: the index and each experiment's words --------------------- */
+function PlaygroundEditor() {
+  const base = initial.playground;
+  const [row, setRow] = useState<typeof base | null>(null);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    db.from("site_content")
+      .select("value")
+      .eq("key", "playground")
+      .maybeSingle()
+      .then(({ data }) => setRow(mergePlayground(base, data?.value)));
+  }, [base]);
+  if (!row) return <p className="muted">Loading</p>;
+  const setTop = (patch: Partial<typeof base>) => setRow({ ...row, ...patch });
+  const setAspect = (patch: Partial<typeof base.aspect>) =>
+    setRow({ ...row, aspect: { ...row.aspect, ...patch } });
+  const setRatio = (value: number, patch: Partial<(typeof base.aspect.ratios)[number]>) =>
+    setAspect({
+      ratios: row.aspect.ratios.map((r) => (r.value === value ? { ...r, ...patch } : r)),
+    });
+  async function save() {
+    if (!row) return;
+    setBusy(true);
+    const { error } = await db
+      .from("site_content")
+      .upsert({ key: "playground", value: row, updated_at: new Date().toISOString() });
+    setBusy(false);
+    setNote(error ? problem(error) : "Saved and live on the site.");
+  }
+  async function reset() {
+    if (!confirm("Go back to the original Playground text?")) return;
+    setBusy(true);
+    const { error } = await db.from("site_content").delete().eq("key", "playground");
+    setBusy(false);
+    if (error) setNote(problem(error));
+    else {
+      setRow(base);
+      setNote("Back to the original text.");
+    }
+  }
+  return (
+    <>
+      <h1 className="sr-only">Edit the Playground</h1>
+      <section className="admin-section">
+        <h2 className="label">Playground page</h2>
+        <input
+          className="statement title-input"
+          value={row.title}
+          aria-label="Page title"
+          onChange={(e) => setTop({ title: e.target.value })}
+        />
+        <textarea
+          className="statement title-input lead-input"
+          rows={2}
+          value={row.intro}
+          aria-label="Introduction. A new line starts a new row."
+          onChange={(e) => setTop({ intro: e.target.value })}
+        />
+        <div className="facts">
+          <Field label="Search summary" hint="What search results and link previews show">
+            <input
+              value={row.description}
+              onChange={(e) => setTop({ description: e.target.value })}
+            />
+          </Field>
+        </div>
+      </section>
+      <section className="admin-section">
+        <h2 className="label">Aspect ratio</h2>
+        <div className="facts">
+          <Field label="Name" hint="Also the experiment’s page title">
+            <input
+              value={row.aspect.cardTitle}
+              onChange={(e) => setAspect({ cardTitle: e.target.value })}
+            />
+          </Field>
+          <Field label="Card text" hint="Shown on the Playground page">
+            <input
+              value={row.aspect.cardBlurb}
+              onChange={(e) => setAspect({ cardBlurb: e.target.value })}
+            />
+          </Field>
+          <Field label="Search summary">
+            <input
+              value={row.aspect.description}
+              onChange={(e) => setAspect({ description: e.target.value })}
+            />
+          </Field>
+        </div>
+        <textarea
+          className="statement title-input lead-input"
+          rows={2}
+          value={row.aspect.lead}
+          aria-label="Opening lines. A new line starts a new row."
+          onChange={(e) => setAspect({ lead: e.target.value })}
+        />
+      </section>
+      <section className="admin-section">
+        <h2 className="label">Guide to each ratio</h2>
+        {row.aspect.ratios.map((r) => (
+          <div className="facts" key={r.value}>
+            <h3 className="statement">
+              {r.value.toFixed(2)}:1
+            </h3>
+            <Field label="Name">
+              <input value={r.name} onChange={(e) => setRatio(r.value, { name: e.target.value })} />
+            </Field>
+            <Field label="Also called" hint="For example 4:3. Can be empty.">
+              <input value={r.note ?? ""} onChange={(e) => setRatio(r.value, { note: e.target.value })} />
+            </Field>
+            <Field label="In the movies">
+              <input value={r.film} onChange={(e) => setRatio(r.value, { film: e.target.value })} />
+            </Field>
+            <Field label="Fun fact">
+              <textarea
+                className="plain-area"
+                rows={3}
+                value={r.fact}
+                onChange={(e) => setRatio(r.value, { fact: e.target.value })}
+              />
+            </Field>
+            <Field label="Essay" hint="Leave a blank line between paragraphs">
+              <textarea
+                className="plain-area"
+                rows={8}
+                value={r.essay.join("\n\n")}
+                onChange={(e) =>
+                  setRatio(r.value, { essay: e.target.value.split(/\n\s*\n/) })
+                }
+              />
+            </Field>
+          </div>
+        ))}
+      </section>
+      <section className="admin-section">
+        <h2 className="label">Notes</h2>
+        <RichText
+          value={row.aspect.notes}
+          onChange={(notes) => setAspect({ notes })}
+          placeholder="What this experiment is about."
+        />
+      </section>
+      <SaveBar row={row} note={note} busy={busy} onSave={save} viewPath="/playground/" />
+      <button type="button" className="button" onClick={reset} disabled={busy}>
+        Reset to original text
+      </button>
+    </>
+  );
+}
+
 /* Inbox --------------------------------------------------------------- */
 const when = (stamp: string) =>
   new Date(stamp).toLocaleString("en-US", {
@@ -1056,6 +1209,7 @@ export default function Admin() {
         note={(r) => prettyDate(r.date)}
       />
     );
+  else if (view === "playground") page = <PlaygroundEditor />;
   else if (view === "about") page = <AboutEditor />;
   else page = <Inbox onCount={setUnread} />;
 

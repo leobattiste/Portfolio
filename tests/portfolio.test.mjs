@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile,readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { defaultPlayground,mergePlayground } from '../src/playground-content.mjs';
 import { markdown,parseArticle,safeWebUrl,validateContent } from '../scripts/lib.mjs';
 import { toProject,fromProject,sectionsToHtml,slugify,minutes } from '../src/content-model.mjs';
 test('Markdown escapes markup and prevents script URLs',()=>{
@@ -81,4 +82,13 @@ test('content keeps its shape between the database and the site',()=>{
 test('the admin is built but kept out of search and the sitemap',async()=>{
  const admin=await readFile(new URL('admin/index.html',out),'utf8');assert.ok(admin.includes('noindex'));
  assert.ok(!(await readFile(new URL('sitemap.xml',out),'utf8')).includes('/admin/'));
+});
+test('saved Playground text replaces the defaults field by field',()=>{
+ assert.deepEqual(mergePlayground(defaultPlayground,null),defaultPlayground);
+ const merged=mergePlayground(defaultPlayground,{intro:'Hello',aspect:{cardTitle:'Framing',notes:'  ',ratios:[{value:2.39,film:'Dune',essay:['One','','Two']},{value:9,name:'Nope'}]}});
+ assert.equal(merged.intro,'Hello');assert.equal(merged.title,defaultPlayground.title);
+ assert.equal(merged.aspect.cardTitle,'Framing');assert.equal(merged.aspect.notes,defaultPlayground.aspect.notes,'blank text falls back');
+ assert.equal(merged.aspect.ratios.length,defaultPlayground.aspect.ratios.length,'ratios cannot be added or removed');
+ const scope=merged.aspect.ratios.find(r=>r.value===2.39);
+ assert.equal(scope.film,'Dune');assert.deepEqual(scope.essay,['One','Two']);assert.equal(scope.name,'Scope');
 });
