@@ -44,7 +44,7 @@ export function AlbumCovers() {
   const [arm, setArm] = useState<{ at: "rest" | "groove"; up: boolean }>({ at: "rest", up: false });
   const [flipped, setFlipped] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [blocked, setBlocked] = useState(false);
+  const [blocked, setBlocked] = useState<false | "tap" | "failed">(false);
 
   const deck = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
@@ -90,7 +90,9 @@ export function AlbumCovers() {
     const landed = onPlatter ? 0 : 900;
     setOnPlatter(true);
     const audio = getPlayer();
-    audio.warm();
+    /* Start loading and playing right here, inside the click, because
+       browsers only let sound start from something the person just did. */
+    audio.play(`spotify:album:${album.spotify}`).catch(() => setBlocked("failed"));
     run([
       [landed, () => setSpinning(true)],
       [landed + 150, () => setArm({ at: "rest", up: true })],
@@ -99,10 +101,14 @@ export function AlbumCovers() {
         landed + 1400,
         () => {
           setArm({ at: "groove", up: false });
-          audio.play(`spotify:album:${album.spotify}`).catch(() => {});
         },
       ],
-      [landed + 5400, () => !heard.current && audio.loaded() && setBlocked(true)],
+      [
+        landed + 4000,
+        () => {
+          if (!heard.current) setBlocked(audio.loaded() ? "tap" : "failed");
+        },
+      ],
     ]);
   }
 
@@ -395,10 +401,25 @@ export function AlbumCovers() {
         </div>
       </section>
 
-      {/* Spotify's player, out of sight. It only appears if the browser
-          wants one more tap before it will play sound. */}
-      <div className="spotify" data-visible={blocked}>
-        <p>Your browser needs one more tap. Press play in the Spotify player.</p>
+      {/* Spotify's player, out of sight. Some browsers (Safari especially)
+          won't start sound until the person taps inside the player itself,
+          so if nothing is heard it comes forward with a note. */}
+      <div className="spotify" data-visible={blocked !== false} data-failed={blocked === "failed"}>
+        {blocked === "failed" ? (
+          <p>
+            Spotify could not load here.{" "}
+            <a
+              className="link"
+              href={`https://open.spotify.com/album/${album.spotify}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open this album in Spotify
+            </a>
+          </p>
+        ) : (
+          <p>Your browser needs a tap to start the sound. Press play below.</p>
+        )}
         <div ref={host} />
         <button type="button" className="btn" onClick={() => setBlocked(false)}>
           Hide

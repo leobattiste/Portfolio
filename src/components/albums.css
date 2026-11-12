@@ -585,7 +585,8 @@
   left: 0;
   bottom: 0;
   width: 320px;
-  opacity: 0;
+  /* not display:none or fully transparent: browsers can refuse to play from those */
+  opacity: 0.01;
   pointer-events: none;
   z-index: -1;
 }
@@ -615,6 +616,10 @@
 }
 .spotify > div {
   width: 100%;
+  min-height: 80px;
+}
+.spotify[data-failed="true"] > div {
+  display: none;
 }
 
 /* Phones: the sleeve on top, the turntable below */
