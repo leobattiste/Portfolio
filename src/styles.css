@@ -815,80 +815,12 @@ a.line:hover {
   }
 }
 
-/* Home: every part is a screen of its own --------------------------- */
-.home-screen {
-  min-height: 100svh;
-  display: grid;
-  align-items: center;
-}
+/* Home: the intro fills the first screen ----------------------------- */
 .home-hero {
   min-height: calc(100svh - 5.75rem);
+  display: grid;
+  align-items: center;
 }
 .home-hero .intro {
   padding-block: 0;
-}
-.home-screen > .row {
-  align-items: center;
-  align-content: center;
-}
-.home-screen .label {
-  align-self: start;
-}
-.home-link {
-  display: grid;
-  justify-items: start;
-  gap: 0.5rem;
-  padding-block: 2.5rem;
-}
-.big-icon {
-  width: clamp(11rem, 44svh, 26rem);
-  height: auto;
-  margin-bottom: 1.5rem;
-  color: var(--ink);
-  overflow: visible;
-}
-.big-icon .move {
-  transition: translate 0.5s var(--ease);
-}
-.home-title {
-  font-size: clamp(2.5rem, 1.5rem + 5vw, 5.5rem);
-  line-height: 1;
-  font-weight: 650;
-  letter-spacing: -0.04em;
-}
-.home-text {
-  max-width: 24em;
-  font-size: clamp(1.0625rem, 1rem + 0.5vw, 1.375rem);
-  line-height: 1.4;
-  color: var(--graphite);
-  text-wrap: pretty;
-}
-.home-cta {
-  margin-top: 0.75rem;
-  padding: 0.5rem 1.1rem;
-  border: 1px solid var(--mist);
-  border-radius: 999px;
-  font-size: 0.9375rem;
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    color 0.2s;
-}
-.home-link:hover .home-cta,
-.home-link:focus-visible .home-cta {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .home-link:hover .big-icon .move,
-  .home-link:focus-visible .big-icon .move {
-    translate: 6px -6px;
-  }
-}
-html:has(.home-screen) {
-  scroll-snap-type: y proximity;
-}
-.home-screen {
-  scroll-snap-align: start;
 }

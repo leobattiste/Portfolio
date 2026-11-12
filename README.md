@@ -31,7 +31,7 @@ The output is `dist/`, including all project and article URLs, metadata, sitemap
 - `src/components/Playground.tsx`: the Playground index.
 - `src/components/Experiments.tsx`: the Aspect ratio experiment at `/playground/aspect-ratio/`. Its springs come from `src/lib/spring.ts`.
 - `src/styles.css`: design tokens and every style on the site.
-- `src/components`: layout, pages, and the big home-page icons.
+- `src/components`: layout and pages.
 - `src/lib`: content helpers and saved-links state.
 - `scripts/build.mjs`: validation, React prerendering, sitemap, and static output.
 

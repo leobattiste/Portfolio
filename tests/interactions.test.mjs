@@ -96,7 +96,7 @@ test("Home, menu, theme and the Aspect ratio experiment work together", async ()
     });
   try {
     await render("/");
-    assert.equal(document.querySelectorAll(".home-screen").length, 4, "an intro and three full screens");
+    assert.ok(document.querySelector(".home-hero"), "the intro fills the first screen");
     assert.ok(!document.querySelector('a[href="/toolbox/"]'), "no Toolbox");
     assert.deepEqual(hydrationErrors, [], "static HTML hydrates without mismatches");
 

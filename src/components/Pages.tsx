@@ -8,7 +8,6 @@ import {
   prettyDate,
 } from "@/lib/site";
 import { sendMessage } from "@/lib/backend";
-import { WorkIcon, JournalIcon, PlaygroundIcon } from "./Icons";
 import type { Project, Article } from "@/types";
 import { Intro, Section } from "./Layout";
 
@@ -177,37 +176,13 @@ export function Contact() {
   );
 }
 
-const screens = [
-  {
-    path: "/work/",
-    title: "Work",
-    text: "Product design projects, from the first sketch to the shipped screen.",
-    cta: "See the work",
-    Icon: WorkIcon,
-  },
-  {
-    path: "/journal/",
-    title: "Journal",
-    text: "What I'm thinking about, and what I'm learning along the way.",
-    cta: "Read the journal",
-    Icon: JournalIcon,
-  },
-  {
-    path: "/playground/",
-    title: "Playground",
-    text: "Personal projects and creative explorations, made to see what happens.",
-    cta: "Open the playground",
-    Icon: PlaygroundIcon,
-  },
-];
-
 export function Home() {
   const { projects, articles } = useContent();
   const [lead] = projects;
   const [latest] = articles;
   return (
     <>
-      <div className="home-screen home-hero">
+      <div className="home-hero">
         <Intro>
           <h1 className="statement">
             I’m {site.name}, a {site.role.toLowerCase()} based in {site.location}.
@@ -252,21 +227,6 @@ export function Home() {
           </p>
         </Intro>
       </div>
-      {screens.map(({ path, title, text, cta, Icon }) => (
-        <section className="home-screen" key={path} aria-labelledby={`home-${title}`}>
-          <div className="row">
-            <h2 className="label" id={`home-${title}`}>
-              {title}
-            </h2>
-            <a className="home-link" href={href(path)}>
-              <Icon />
-              <span className="home-title">{title}</span>
-              <span className="home-text">{text}</span>
-              <span className="home-cta">{cta}</span>
-            </a>
-          </div>
-        </section>
-      ))}
     </>
   );
 }

@@ -33,7 +33,7 @@ Every block is a `.row`: an 11rem rail on the left for the label, and a content 
 - **Theme.** The toggle opens the new theme as a circle from the button. The choice is stored under `leo-appearance`; first visits follow the system setting.
 - **Peeks.** Links inside the home statement show a small preview on hover or keyboard focus.
 - **Cover chip.** A label follows the pointer over a project cover.
-- **Home.** The intro and each of Work, Journal and Playground fill one screen, each with a big line icon that shifts slightly on hover.
+- **Home.** The intro fills the first screen.
 
 All motion answers an action. `prefers-reduced-motion` turns transitions off.
 
