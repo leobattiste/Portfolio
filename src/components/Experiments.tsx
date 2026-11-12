@@ -255,7 +255,7 @@ export function AspectRatio() {
           <p className="lab-hint">Drag across the frame, or use the arrow keys</p>
         </div>
       </section>
-      <Section label="Guide">
+      <Section>
         <div className="ratio-guide">
           {ratios.map((r) => (
             <article key={r.value} aria-current={preset?.value === r.value ? "true" : undefined}>
@@ -264,19 +264,6 @@ export function AspectRatio() {
                   {r.name}
                   <span>{r.note ? `${r.note}, ` : ""}{r.value.toFixed(2)}:1</span>
                 </h2>
-                <button
-                  type="button"
-                  className="pill"
-                  onClick={() => {
-                    setRatio(r.value);
-                    document.querySelector(".ratio-stage")?.scrollIntoView({
-                      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-                      block: "center",
-                    });
-                  }}
-                >
-                  See it in the frame
-                </button>
               </header>
               {r.essay.map((text) => (
                 <p key={text}>{text}</p>

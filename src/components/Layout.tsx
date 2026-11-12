@@ -203,17 +203,21 @@ export function Section({
   className = "section",
   children,
 }: {
-  label: string;
+  label?: string;
   count?: number;
   className?: string;
   children: ReactNode;
 }) {
   return (
     <section className={`row ${className}`}>
-      <h2 className="label">
-        {label}
-        {count === undefined ? null : <span>{count}</span>}
-      </h2>
+      {label ? (
+        <h2 className="label">
+          {label}
+          {count === undefined ? null : <span>{count}</span>}
+        </h2>
+      ) : (
+        <div aria-hidden="true" />
+      )}
       <div>{children}</div>
     </section>
   );
