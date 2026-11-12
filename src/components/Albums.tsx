@@ -407,3 +407,54 @@ export function AlbumCovers() {
     </ExperimentPage>
   );
 }
+
+/* The Playground card: the same deck, small and still, spinning on hover. */
+export function TurntableArt() {
+  const album = albums[0];
+  return (
+    <div className="art-turntable">
+      <div
+        className="deck"
+        data-on="true"
+        data-playing="true"
+        data-arm-at="groove"
+        data-arm-up="false"
+        style={{ "--label": album.color, "--label-ink": inkOn(album.color) } as CSSProperties}
+      >
+        <div className="plinth">
+          <div className="platter">
+            <div className="platter-spin">
+              <span className="strobe" />
+              <span className="mat" />
+            </div>
+            <span className="spindle" />
+          </div>
+          <span className="led" />
+          <span className="start" />
+        </div>
+        <div className="record">
+          <div className="record-spin">
+            <div className="record-label" />
+          </div>
+          <span className="record-sheen" />
+        </div>
+        <div className="sleeve">
+          <div className="sleeve-face sleeve-front">
+            <img src={local(album)} alt="" draggable={false} />
+            <span className="sleeve-wear" />
+          </div>
+        </div>
+        <div className="tonearm">
+          <span className="arm-base" />
+          <span className="arm-rest" />
+          <span className="arm">
+            <span className="arm-weight" />
+            <span className="arm-tube" />
+            <span className="arm-head" />
+          </span>
+          <span className="arm-cap" />
+        </div>
+      </div>
+    </div>
+  );
+}

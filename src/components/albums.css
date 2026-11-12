@@ -640,3 +640,30 @@
     transition-duration: 0.01s;
   }
 }
+
+/* Playground card */
+.art-turntable .deck {
+  --r: min(150px, calc((100vw - 56px) / 2.7));
+  --sl-x: 0px;
+  --sl-y: calc(var(--r) * 0.06);
+  --pl-x: calc(var(--r) * 1.1);
+  --pl-y: 0px;
+  width: calc(var(--r) * 2.56);
+  height: calc(var(--r) * 1.12);
+  pointer-events: none;
+}
+.experiment:hover .art-turntable .record-spin,
+.experiment:hover .art-turntable .platter-spin {
+  animation: art-spin 1.8s linear infinite;
+}
+@keyframes art-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experiment:hover .art-turntable .record-spin,
+  .experiment:hover .art-turntable .platter-spin {
+    animation: none;
+  }
+}

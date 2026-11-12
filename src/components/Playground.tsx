@@ -1,7 +1,7 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Intro, Section } from "./Layout";
-import { asset, href } from "@/lib/site";
-import albums from "../../content/albums.json";
+import { href } from "@/lib/site";
+import { TurntableArt } from "./Albums";
 import "./playground.css";
 import {
   AspectRatioArt,
@@ -56,16 +56,9 @@ export function Playground() {
           <ExperimentCard
             path="/playground/album-covers/"
             title="Album covers"
-            blurb="Twenty favorite records. Play them on vinyl or CD."
+            blurb="Twenty favorite records on a turntable you can play."
             label="001 · Music"
-            art={[albums[17], albums[0], albums[15]].map((a, i) => (
-              <img
-                key={a.id}
-                src={asset(`albums/${a.id}.jpg`)}
-                alt=""
-                style={{ "--i": i } as CSSProperties}
-              />
-            ))}
+            art={<TurntableArt />}
           />
           <ExperimentCard
             path="/playground/aspect-ratio/"
