@@ -1,10 +1,12 @@
 /* Shared lab: the same room as the album collection, for every experiment */
 .lab {
-  border: 1px solid var(--mist);
-  border-radius: 4px;
-  margin-bottom: 64px;
-  overflow: hidden;
+  /* break out of the page column to span the whole window */
+  width: 100vw;
+  margin: 0 calc(50% - 50vw) 64px;
   background: var(--wash);
+}
+body {
+  overflow-x: clip;
 }
 .lab-toolbar {
   display: flex;
@@ -12,19 +14,21 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px 20px;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--mist);
+  padding: 20px max(24px, 4vw);
   background: var(--paper);
 }
 .lab-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--wash);
 }
 .lab-tabs button {
-  padding: 7px 10px;
-  font-size: 0.8rem;
-  border-radius: 3px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border-radius: 999px;
   color: var(--graphite);
   transition:
     color 0.15s,
@@ -71,8 +75,7 @@
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 20px 32px;
-  padding: 20px 24px 24px;
-  border-top: 1px solid var(--mist);
+  padding: 24px max(24px, 4vw) 32px;
   background: var(--paper);
 }
 .lab-field {
@@ -85,10 +88,10 @@
 }
 .lab-field input:not([type="range"]) {
   width: 100%;
-  padding: 0.55rem 0.7rem;
+  padding: 0.6rem 1rem;
   background: var(--wash);
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 1rem;
   color: var(--ink);
 }
@@ -98,9 +101,15 @@
   border-color: var(--ink);
 }
 .lab-reset {
-  font-size: 0.8rem;
-  color: var(--graphite);
+  font-size: 0.85rem;
+  color: var(--ink);
   align-self: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--wash);
+}
+.link.lab-reset {
+  text-decoration: none;
 }
 /* Springs arrive as linear() easings; older browsers keep the plain curve. */
 @supports (transition-timing-function: linear(0, 1)) {
