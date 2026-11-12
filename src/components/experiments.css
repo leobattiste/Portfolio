@@ -567,45 +567,74 @@ body {
   }
 }
 
-.ratio-card {
-  max-width: 44rem;
-  margin: 40px auto 0;
-  padding-bottom: 48px;
-  min-height: 15rem;
+.ratio-guide {
+  display: grid;
+  gap: 64px;
+  max-width: 40rem;
 }
-.ratio-card h2 {
+.ratio-guide article {
+  display: grid;
+  gap: 16px;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.ratio-guide article[aria-current="true"] {
+  opacity: 1;
+}
+.ratio-guide header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.ratio-guide h2 {
+  margin: 0;
   font-size: 1.5rem;
   font-weight: 650;
   letter-spacing: -0.02em;
-  margin: 0 0 12px;
 }
-.ratio-card p {
-  margin: 0;
+.ratio-guide h2 span {
+  margin-left: 12px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--graphite);
-  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
 }
-.ratio-card dl {
-  margin: 24px 0 0;
+.ratio-guide p {
+  margin: 0;
+  line-height: 1.65;
+}
+.ratio-guide .pill {
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  background: var(--wash);
+  color: var(--ink);
+}
+.ratio-guide dl {
+  margin: 8px 0 0;
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
-.ratio-card dl > div {
+.ratio-guide dl > div {
   display: grid;
   grid-template-columns: 8rem 1fr;
   gap: 16px;
-  padding-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid var(--mist);
 }
-.ratio-card dt {
+.ratio-guide dt {
   color: var(--graphite);
   font-size: 0.875rem;
 }
-.ratio-card dd {
+.ratio-guide dd {
   margin: 0;
   line-height: 1.55;
 }
 @media (max-width: 560px) {
-  .ratio-card dl > div {
+  .ratio-guide dl > div {
     grid-template-columns: 1fr;
     gap: 4px;
   }

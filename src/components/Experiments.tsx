@@ -71,44 +71,44 @@ const ratios = [
     name: "Standard",
     note: "4:3",
     film: "The Artist (2011)",
-    why: "The shape of early cinema. Edison's lab settled on it for 35mm film, and television kept it for about fifty years. Tall and close, it puts a face or a doorway in the middle of the picture.",
-    fact: "The Grand Budapest Hotel uses a near-4:3 frame for its 1930s scenes and widens the picture for each later decade.",
+    essay: ["Cinema began here. In the 1890s Edison's lab settled on a frame about a third wider than it was tall, and for decades nobody had a reason to change it. Television inherited the shape, so for half a century it was also what a living room looked like.", "The frame is tall and close. A face fills it easily, a doorway turns into a portrait, and there is little room for anything that does not matter. Filmmakers who choose it today usually want that pressure: intimacy, nostalgia, or the feeling of being boxed in."],
+    fact: "The Grand Budapest Hotel uses a near-4:3 frame for its 1930s scenes, then widens the picture for each later decade.",
   },
   {
     value: 1.43,
     name: "IMAX",
     film: "The Odyssey (2026)",
-    why: "The giant format. IMAX 15/70 film runs through the camera on its side, so the frame is huge and almost square. It is made for scale: mountains, oceans, ships.",
-    fact: "Christopher Nolan shot The Odyssey entirely for IMAX. A single 15/70 frame has roughly ten times the area of a regular 35mm frame, which is why it holds so much detail.",
+    essay: ["IMAX 15/70 is the largest frame in regular film use. The film runs through the camera on its side, and each frame spans fifteen perforations, which makes it almost square and roughly ten times the area of a regular 35mm frame. More area means less grain and more detail, so the picture stays sharp on a screen several stories tall.", "The cost is practical. The cameras are heavy and loud, a roll of film lasts only a few minutes, and only some theaters can show it at full size. Christopher Nolan has pushed the format further than anyone, and he shot The Odyssey entirely for IMAX."],
+    fact: "IMAX film projectors hold each frame flat against the lens with suction, which keeps a frame this large perfectly sharp.",
   },
   {
     value: 1.78,
     name: "Widescreen",
     note: "16:9",
     film: "Whatever you watch at home",
-    why: "The shape of every modern screen. It was proposed in the 1980s as a compromise, so that old 4:3 pictures and wide films could both fit without wasting much of the screen.",
-    fact: "Few films are finished at 16:9 in theaters. It is mostly the frame they end up in on your TV, laptop and phone, which is why wide films come with black bars.",
+    essay: ["16:9 was never a cinema standard. It was proposed in the 1980s for television as a compromise: take the old 4:3 shape and the widest film shape, and find a rectangle that wastes about the same amount of screen on both.", "It stuck, and now it is everywhere: TVs, laptops, phones turned sideways, YouTube. For films it works mostly as the container. A scope film on this screen gets bars above and below, and a 4:3 film gets bars at the sides. It is also the shape of the frame in this experiment, so every other ratio here is shown as bars inside it."],
+    fact: "Almost every screen you own is 16:9, which means almost every film you watch has been resized to fit it.",
   },
   {
     value: 1.85,
     name: "Flat",
     film: "Pulp Fiction (1994)",
-    why: "The standard for most dramas and comedies. It is wide enough for two people in a conversation and tall enough to keep the faces big.",
-    fact: "It is called flat because it uses ordinary spherical lenses. Wider ratios usually need special lenses that squeeze the image.",
+    essay: ["Flat is the quiet default. It is wide enough for two people to share a shot and tall enough to keep their faces large, so it is what most dramas and comedies use. Conversations get by with nothing but faces and a table, like the diner scenes in Pulp Fiction.", "The name comes from the lenses. Flat uses ordinary spherical lenses, with no squeezing, where scope needs special anamorphic ones. Because it asks nothing special of the audience, it is the ratio you notice least, and that is often the point."],
+    fact: "Flat sits so close to 16:9 that most people never notice the thin bars it gets at home.",
   },
   {
     value: 2.39,
     name: "Scope",
     film: "Blade Runner 2049 (2017)",
-    why: "The cinematic default for big stories. It gives up height for width, so it suits landscapes, cities and people sharing a shot from far apart.",
-    fact: "Scope is shot with anamorphic lenses, which squeeze the image sideways and stretch it back later. That is why you see oval blurred highlights and long horizontal flares.",
+    essay: ["Scope began as a reply to television. In the 1950s studios needed a reason to get people out of their living rooms, and CinemaScope, introduced with The Robe in 1953, offered a much wider picture. It does this with anamorphic lenses that squeeze the image onto the film and stretch it back out on screen. The ratio settled at 2.39 over the following decades.", "The look has side effects that people now love: oval blurred highlights and long horizontal streaks of light. The shape favors landscapes and distance. Two characters can stand far apart and still share a frame, and the empty space between them becomes part of the scene."],
+    fact: "Scope is the ratio most people think of as cinematic, which is why creators on YouTube and in games often add black bars to get the look.",
   },
   {
     value: 2.76,
     name: "Ultra Panavision",
     film: "The Hateful Eight (2015)",
-    why: "The widest frame there is: more than two and a half times as wide as it is tall. It was built for epics, and now it is used by a handful of filmmakers.",
-    fact: "Quentin Tarantino shot The Hateful Eight with lenses made in the 1960s. Before it, the format had been used for Ben-Hur in 1959, and almost nothing else.",
+    essay: ["Ultra Panavision 70 is the widest frame in use. It squeezes a picture more than two and a half times as wide as it is tall onto 65mm film. It was made for epics in the 1950s and 60s, like Ben-Hur in 1959, and then almost disappeared.", "Quentin Tarantino brought it back for The Hateful Eight, shot with lenses made in the 1960s, and used it on a story set mostly in one room. That is the surprise: the extreme width does not make the cabin feel bigger, it makes it feel crowded, with every character in the shot at once."],
+    fact: "The Hateful Eight was shown in a 70mm roadshow cut with an overture and an intermission, the way epics were released in the 1960s.",
   },
 ];
 const FRAME = 16 / 9;
@@ -254,30 +254,47 @@ export function AspectRatio() {
           </div>
           <p className="lab-hint">Drag across the frame, or use the arrow keys</p>
         </div>
-        <div className="ratio-card" aria-live="polite">
-          {preset ? (
-            <>
-              <h2>
-                {preset.name}
-                {preset.note ? ` (${preset.note})` : ""}
-              </h2>
-              <p>{preset.why}</p>
+      </section>
+      <Section label="Guide">
+        <div className="ratio-guide">
+          {ratios.map((r) => (
+            <article key={r.value} aria-current={preset?.value === r.value ? "true" : undefined}>
+              <header>
+                <h2>
+                  {r.name}
+                  <span>{r.note ? `${r.note}, ` : ""}{r.value.toFixed(2)}:1</span>
+                </h2>
+                <button
+                  type="button"
+                  className="pill"
+                  onClick={() => {
+                    setRatio(r.value);
+                    document.querySelector(".ratio-stage")?.scrollIntoView({
+                      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+                      block: "center",
+                    });
+                  }}
+                >
+                  See it in the frame
+                </button>
+              </header>
+              {r.essay.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
               <dl>
                 <div>
                   <dt>In the movies</dt>
-                  <dd>{preset.film}</dd>
+                  <dd>{r.film}</dd>
                 </div>
                 <div>
                   <dt>Fun fact</dt>
-                  <dd>{preset.fact}</dd>
+                  <dd>{r.fact}</dd>
                 </div>
               </dl>
-            </>
-          ) : (
-            <p>This is a custom frame. Pick a ratio above, or drag to a stop, to read about it.</p>
-          )}
+            </article>
+          ))}
         </div>
-      </section>
+      </Section>
     </ExperimentPage>
   );
 }
