@@ -18,7 +18,7 @@ async function htmlFiles(dir){const entries=await readdir(dir,{withFileTypes:tru
 test('every generated page has a title, unique main heading, and canonical metadata',async()=>{
  const files=await htmlFiles(out.pathname);
  const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
- assert.equal(files.length,info.pages+2+(info.redirects||0)); // Plus the noindex admin and 404 pages.
+ assert.equal(files.length,info.pages+2); // Plus the noindex admin and 404 pages.
  for(const file of files){const text=await readFile(file,'utf8');
   assert.equal((text.match(/<h1(?:\s|>)/g)||[]).length,1,file);
   assert.ok(/<title>.+?<\/title>/.test(text),file);assert.ok(text.includes('rel="canonical"'),file);
@@ -118,22 +118,27 @@ test('Studio presents all items as one collection under one navigation item',asy
  assert.ok(!nav.includes('>Work</a>'));
  assert.ok(!nav.includes('>Playground</a>'));
 });
-test('legacy addresses redirect to Studio and stay out of the sitemap',async()=>{
+test('old Work and Playground pages are removed while Vercel redirects to Studio',async()=>{
  const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
  const sitemap=await readFile(new URL('sitemap.xml',out),'utf8');
- for (const [oldPath,target] of [
-  ['work/','studio/'],['playground/','studio/'],
-  ['work/pheelm/','studio/pheelm/'],
-  ['playground/aspect-ratio/','studio/aspect-ratio/'],
+ for (const oldPath of [
+  'work/','playground/','work/pheelm/','playground/aspect-ratio/',
  ]) {
-  const html=await readFile(new URL(oldPath+'index.html',out),'utf8');
-  assert.ok(html.includes('http-equiv="refresh" content="0;url='+info.basePath+'/'+target+'"'));
-  assert.ok(html.includes('rel="canonical" href="'+info.origin+info.basePath+'/'+target+'"'));
-  assert.ok(html.includes('content="noindex,follow"'));
+  await assert.rejects(()=>readFile(new URL(oldPath+'index.html',out)),{code:'ENOENT'});
   assert.ok(!sitemap.includes(info.basePath+'/'+oldPath+'<'));
  }
- assert.ok(sitemap.includes(info.basePath+'/studio/<'));
- assert.ok(sitemap.includes(info.basePath+'/studio/aspect-ratio/<'));
+ const config=JSON.parse(await readFile(new URL('../vercel.json',import.meta.url),'utf8'));
+ for (const section of ['work','playground']) {
+  assert.ok(config.redirects.some(redirect=>
+   redirect.source==='/'+section+'/:path*' &&
+   redirect.destination==='/studio/:path*' && redirect.permanent===true
+  ),section+' uses an HTTP redirect rather than a generated page');
+ }
+ for (const currentPath of ['studio/','studio/pheelm/','studio/aspect-ratio/']) {
+  const html=await readFile(new URL(currentPath+'index.html',out),'utf8');
+  assert.ok(html.includes('rel="canonical" href="'+info.origin+info.basePath+'/'+currentPath+'"'));
+  assert.ok(sitemap.includes(info.basePath+'/'+currentPath+'<'));
+ }
 });
 
 test('legacy Playground headings become Studio while saved experiment text survives',()=>{

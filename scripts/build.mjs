@@ -123,18 +123,9 @@ const routes = [
   ...projects.map((p) => "/studio/" + p.slug + "/"),
   ...articles.map((a) => "/journal/" + a.slug + "/"),
 ];
-// Static hosts cannot send HTTP redirects. These pages retain readable content
-// and refresh to the canonical address; Vercel sends permanent redirects instead.
-const redirects = new Map([
-  ["/work/", "/studio/"],
-  ["/playground/", "/studio/"],
-  ["/playground/aspect-ratio/", "/studio/aspect-ratio/"],
-  ...projects.map((p) => [`/work/${p.slug}/`, `/studio/${p.slug}/`]),
-]);
-for (const route of [...routes, "/admin/", "/404.html", ...redirects.keys()]) {
-  const target = redirects.get(route) || route;
-  const { html, meta } = render(target),
-    canonical = absolute(target),
+for (const route of [...routes, "/admin/", "/404.html"]) {
+  const { html, meta } = render(route),
+    canonical = absolute(route),
     image = absolute(meta.image || "/assets/og.png");
   const structured = {
     "@context": "https://schema.org",
@@ -144,7 +135,7 @@ for (const route of [...routes, "/admin/", "/404.html", ...redirects.keys()]) {
     description: meta.description,
     author: { "@type": "Person", name: site.name, url: absolute("/") },
   };
-  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><noscript><style>.pending{visibility:visible!important}</style></noscript><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script>${target !== route ? `<meta http-equiv="refresh" content="0;url=${e(u(target))}"/>` : ""}<title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex || target !== route ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/><link rel="apple-touch-icon" href="${u("/assets/apple-touch-icon.png")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><noscript><style>.pending{visibility:visible!important}</style></noscript><meta name="theme-color" content="#fafafb"/><script>try{var t=localStorage.getItem("leo-appearance");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;if(t==="dark")document.querySelector('meta[name="theme-color"]').content="#131417"}catch(e){}</script><title>${e(meta.title)}</title><meta name="description" content="${e(meta.description)}"/><meta name="robots" content="${meta.noindex ? "noindex,follow" : "index,follow"}"/><link rel="canonical" href="${e(canonical)}"/><meta property="og:title" content="${e(meta.title)}"/><meta property="og:description" content="${e(meta.description)}"/><meta property="og:type" content="${meta.type || "website"}"/><meta property="og:url" content="${e(canonical)}"/><meta property="og:image" content="${e(image)}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><link rel="icon" type="image/svg+xml" href="${u("/assets/favicon.svg")}"/><link rel="apple-touch-icon" href="${u("/assets/apple-touch-icon.png")}"/>${(entry.css || []).map((file) => `<link rel="stylesheet" href="${u("/" + file)}"/>`).join("")}<script type="application/ld+json">${JSON.stringify(structured).replace(/</g, "\\u003c")}</script><script type="module" crossorigin src="${u("/" + entry.file)}"></script></head><body><div id="root">${html}</div></body></html>`;
   const file =
     route === "/"
       ? "index.html"
@@ -169,7 +160,6 @@ await writeFile(
     projects: projects.length,
     articles: articles.length,
     pages: routes.length,
-    redirects: redirects.size,
     origin,
     basePath: prefix,
   }),

@@ -16,7 +16,7 @@ In repository Settings → Pages, choose GitHub Actions as the build source. In 
 
 Import the repository with its root directory left at the repository root. The tracked `vercel.json` installs the locked pnpm dependencies, runs `pnpm run build`, and serves `dist/`. Node.js is pinned to `22.x` in `package.json`, matching GitHub Actions. The site does not generate a `public/` directory.
 
-Studio combines projects and experiments at `/studio/`. Vercel permanently redirects old `/work/` and `/playground/` addresses, including detail pages, to their Studio equivalents. Static exports include refresh pages for existing legacy addresses, with canonical URLs pointing to Studio. These legacy pages stay out of the sitemap.
+Studio combines all items at `/studio/`, with one Studio link in the site menu. The old Work and Playground pages are removed from the app and static output. Vercel sends permanent HTTP redirects from `/work/` and `/playground/`, including detail addresses, to their Studio equivalents. Static hosts serve their normal 404 page for these old addresses. The collection uses Studio URLs in the sitemap and canonical metadata.
 
 With Vercel's Git integration, pushing to `main` builds a production deployment; other branches receive preview deployments. Set `SITE_ORIGIN` to the final HTTPS portfolio origin for canonical URLs, social metadata, RSS, and the sitemap. Leave `BASE_PATH` unset for a Vercel root-domain deployment.
 

@@ -81,12 +81,7 @@ export const host = (url: string) => {
     return url;
   }
 };
-// Keep bookmarked Work and Playground addresses working after their move to Studio.
-export const studioPath = (path: string) =>
-  path.replace(/^\/(?:work|playground)\//, "/studio/");
-
 export function getPage(path: string, content: Content = initial) {
-  path = studioPath(path);
   const project = content.projects.find((p) => path === `/studio/${p.slug}/`),
     article = content.articles.find((a) => path === `/journal/${a.slug}/`);
   if (project)

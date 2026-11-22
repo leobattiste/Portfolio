@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { ContentProvider, useContent, getPage, site, href, studioPath } from "@/lib/site";
+import { ContentProvider, useContent, getPage, site, href } from "@/lib/site";
 import { Layout } from "@/components/Layout";
 import {
   Home,
@@ -16,12 +16,7 @@ import {
 } from "@/components/Experiments";
 import { Privacy, Terms } from "@/components/Legal";
 
-function Site({ path: requestedPath }: { path: string }) {
-  const path = studioPath(requestedPath);
-  useEffect(() => {
-    if (requestedPath !== path)
-      window.location.replace(href(path) + window.location.search + window.location.hash);
-  }, [requestedPath, path]);
+function Site({ path }: { path: string }) {
   const content = useContent();
   const project = content.projects.find((p) => path === `/studio/${p.slug}/`),
     article = content.articles.find((a) => path === `/journal/${a.slug}/`);
