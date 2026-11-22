@@ -26,7 +26,12 @@ export function markdown(text, url = p => p) {
   }).join('\n');
 }
 export function readingTime(body) { return Math.max(1, Math.ceil(body.split(/\s+/).length / 200)); }
+export function validateProjectRoutes(projects) {
+  if (projects.some(project => project.slug === 'aspect-ratio'))
+    throw new Error('Project address "aspect-ratio" is reserved for the Studio experiment.');
+}
 export function validateContent(site, projects, articles) {
+  validateProjectRoutes(projects);
   if (!site.name || !safeWebUrl(site.origin) || !site.email || (site.instagram && !safeWebUrl(site.instagram))) throw new Error('Site name, origin, and email are required.');
   const ids = new Set();
   for (const item of [...projects,...articles]) {

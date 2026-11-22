@@ -1,9 +1,10 @@
 import test from 'node:test';
+import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { readFile,readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { defaultPlayground,mergePlayground } from '../src/playground-content.mjs';
-import { markdown,parseArticle,safeWebUrl,validateContent } from '../scripts/lib.mjs';
+import { markdown,parseArticle,safeWebUrl,validateContent,validateProjectRoutes } from '../scripts/lib.mjs';
 import { toProject,fromProject,sectionsToHtml,slugify,minutes } from '../src/content-model.mjs';
 test('Markdown escapes markup and prevents script URLs',()=>{
  const rendered=markdown('<script>alert(1)</script>\n\n[bad](javascript:alert)\n\n[good](/about/)',p=>'/Portfolio-'+p);
@@ -43,13 +44,13 @@ test('draft stories and sample concepts are not published',async()=>{
  await assert.rejects(()=>readFile(new URL('journal/designing-pheelm/index.html',out)));
  const home=await readFile(new URL('index.html',out),'utf8');
  assert.ok(home.includes('Leo Battiste'));assert.ok(home.includes('based in Florida'));
- assert.ok((await readFile(new URL('work/index.html',out),'utf8')).includes('Pheelm'));assert.ok(!home.includes('CONCEPT PROJECT'));
- const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
+ assert.ok((await readFile(new URL('studio/index.html',out),'utf8')).includes('Pheelm'));assert.ok(!home.includes('CONCEPT PROJECT'));
+ const project=await readFile(new URL('studio/pheelm/index.html',out),'utf8');
  assert.ok(project.includes('https://www.pheelm.com/'));assert.ok(project.includes('naming, logo, brand identity'));
 });
 test('sitemap includes real pages and excludes drafts',async()=>{
  const sitemap=await readFile(new URL('sitemap.xml',out),'utf8');
- assert.ok(sitemap.includes('/work/pheelm/'));assert.ok(!sitemap.includes('designing-pheelm'));
+ assert.ok(sitemap.includes('/studio/pheelm/'));assert.ok(!sitemap.includes('designing-pheelm'));
  assert.ok(sitemap.includes('art-of-simplicity'));assert.ok(!sitemap.includes('toolbox'));assert.ok(sitemap.includes('/contact/'));assert.ok(sitemap.includes('/terms/'));
  await assert.rejects(()=>readFile(new URL('feed.xml',out)));
 });
@@ -63,13 +64,14 @@ test('legal pages and article dates are visible',async()=>{
  const article=await readFile(new URL('journal/art-of-simplicity/index.html',out),'utf8');
  assert.ok(article.includes('class="article-date"'));
 });
-test('work and journal detail pages have accessible breadcrumbs',async()=>{
- const project=await readFile(new URL('work/pheelm/index.html',out),'utf8');
+test('studio and journal detail pages have accessible breadcrumbs',async()=>{
+ const project=await readFile(new URL('studio/pheelm/index.html',out),'utf8');
  const article=await readFile(new URL('journal/art-of-simplicity/index.html',out),'utf8');
- for (const [html,section] of [[project,'work'],[article,'journal']]) {
+ for (const [html,section] of [[project,'studio'],[article,'journal']]) {
   assert.ok(html.includes('aria-label="Breadcrumb"'), section+' has labeled breadcrumbs');
-  assert.ok(html.includes('href="/"'), section+' links home');
-  assert.ok(html.includes('href="/'+section+'/"'), section+' links to its index');
+  const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
+  assert.ok(html.includes('href="'+info.basePath+'/"'), section+' links home');
+  assert.ok(html.includes('href="'+info.basePath+'/'+section+'/"'), section+' links to its index');
   assert.ok(html.includes('aria-current="page"'), section+' identifies the current page');
  }
 });
@@ -91,4 +93,61 @@ test('saved Playground text replaces the defaults field by field',()=>{
  assert.equal(merged.aspect.ratios.length,defaultPlayground.aspect.ratios.length,'ratios cannot be added or removed');
  const scope=merged.aspect.ratios.find(r=>r.value===2.39);
  assert.equal(scope.film,'Dune');assert.deepEqual(scope.essay,['One','Two']);assert.equal(scope.name,'Scope');
+});
+
+test('Studio presents all items as one collection under one navigation item',async()=>{
+ const html=await readFile(new URL('studio/index.html',out),'utf8');
+ const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
+ assert.ok(/<h1[^>]*>Studio<\/h1>/.test(html));
+ assert.ok(html.includes('Pheelm'));
+ assert.ok(html.includes('Aspect ratio'));
+ assert.ok(html.includes('href="'+info.basePath+'/studio/pheelm/"'));
+ assert.ok(html.includes('href="'+info.basePath+'/studio/aspect-ratio/"'));
+ const dom=new JSDOM(html);
+ const document=dom.window.document;
+ const collection=document.querySelector('main ul[aria-label="Studio"]');
+ assert.ok(collection,'one collection contains all Studio items');
+ assert.equal(document.querySelectorAll('main section').length,1,'no separate project and experiment sections');
+ assert.deepEqual([...collection.querySelectorAll('h2')].map(heading=>heading.textContent),['Pheelm','Aspect ratio']);
+ assert.equal(collection.querySelectorAll(':scope > li > a').length,2,'both entries use the same list');
+ assert.ok(![...document.querySelectorAll('main h2')].some(heading=>['Projects','Experiments'].includes(heading.textContent)));
+ dom.window.close();
+ const nav=html.match(/<nav[^>]*aria-label="Main"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+ assert.ok(nav,'main navigation exists');
+ assert.ok(nav.includes('>Studio</a>'));
+ assert.ok(!nav.includes('>Work</a>'));
+ assert.ok(!nav.includes('>Playground</a>'));
+});
+test('old Work and Playground pages are removed while Vercel redirects to Studio',async()=>{
+ const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
+ const sitemap=await readFile(new URL('sitemap.xml',out),'utf8');
+ for (const oldPath of [
+  'work/','playground/','work/pheelm/','playground/aspect-ratio/',
+ ]) {
+  await assert.rejects(()=>readFile(new URL(oldPath+'index.html',out)),{code:'ENOENT'});
+  assert.ok(!sitemap.includes(info.basePath+'/'+oldPath+'<'));
+ }
+ const config=JSON.parse(await readFile(new URL('../vercel.json',import.meta.url),'utf8'));
+ for (const section of ['work','playground']) {
+  assert.ok(config.redirects.some(redirect=>
+   redirect.source==='/'+section+'/:path*' &&
+   redirect.destination==='/studio/:path*' && redirect.permanent===true
+  ),section+' uses an HTTP redirect rather than a generated page');
+ }
+ for (const currentPath of ['studio/','studio/pheelm/','studio/aspect-ratio/']) {
+  const html=await readFile(new URL(currentPath+'index.html',out),'utf8');
+  assert.ok(html.includes('rel="canonical" href="'+info.origin+info.basePath+'/'+currentPath+'"'));
+  assert.ok(sitemap.includes(info.basePath+'/'+currentPath+'<'));
+ }
+});
+
+test('legacy Playground headings become Studio while saved experiment text survives',()=>{
+ const merged=mergePlayground(defaultPlayground,{title:'Playground',aspect:{cardTitle:'Framing'}});
+ assert.equal(merged.title,'Studio');
+ assert.equal(merged.aspect.cardTitle,'Framing');
+ assert.equal(mergePlayground(defaultPlayground,{title:'My studio'}).title,'My studio');
+});
+test('project addresses cannot replace the Studio experiment',()=>{
+ assert.throws(()=>validateProjectRoutes([{slug:'aspect-ratio'}]),/reserved/);
+ assert.doesNotThrow(()=>validateProjectRoutes([{slug:'pheelm'}]));
 });

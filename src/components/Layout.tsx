@@ -5,8 +5,7 @@ import { site, href } from "@/lib/site";
 import { recordView } from "@/lib/backend";
 
 const navigation = [
-  { label: "Work", path: "/work/" },
-  { label: "Playground", path: "/playground/" },
+  { label: "Studio", path: "/studio/" },
   { label: "Journal", path: "/journal/" },
   { label: "About", path: "/about/" },
   { label: "Contact", path: "/contact/" },

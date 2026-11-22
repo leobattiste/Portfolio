@@ -9,6 +9,7 @@ import {
   parseArticle,
   readingTime,
   validateContent,
+  validateProjectRoutes,
 } from "./lib.mjs";
 import {
   fetchContent,
@@ -74,6 +75,7 @@ if (site.backend?.url && !process.env.CONTENT_FROM_FILES) {
   }
 }
 const { projects, articles } = live || fromFiles;
+validateProjectRoutes(projects);
 const about = { ...fromFiles.about, ...(live?.about || {}) };
 const playground = mergePlayground(defaultPlayground, live?.playground);
 console.log(`Content source: ${live ? "database" : "files in /content"}.`);
@@ -112,14 +114,13 @@ await writeFile(path.join(out, ".nojekyll"), "");
 const routes = [
   "/",
   "/about/",
-  "/work/",
+  "/studio/",
   "/journal/",
-  "/playground/",
-  "/playground/aspect-ratio/",
+  "/studio/aspect-ratio/",
   "/contact/",
   "/privacy/",
   "/terms/",
-  ...projects.map((p) => "/work/" + p.slug + "/"),
+  ...projects.map((p) => "/studio/" + p.slug + "/"),
   ...articles.map((a) => "/journal/" + a.slug + "/"),
 ];
 for (const route of [...routes, "/admin/", "/404.html"]) {

@@ -139,9 +139,8 @@ kbd {
 
 /* Layout: a label rail and a content column, on every page ---------- */
 .page {
-  max-width: 62rem;
-  margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  width: 100%;
+  padding-inline: 20px;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -709,7 +708,7 @@ a.line:hover {
     gap: 0;
     overflow-y: auto;
     background: var(--paper);
-    padding: calc(6rem + env(safe-area-inset-top)) clamp(1.25rem, 4vw, 2.5rem) calc(2rem + env(safe-area-inset-bottom));
+    padding: calc(6rem + env(safe-area-inset-top)) 20px calc(2rem + env(safe-area-inset-bottom));
   }
   .site-nav a {
     padding-block: 0.55rem;

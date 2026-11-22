@@ -1,4 +1,4 @@
-/* The Playground's text: what the pages say, shared by the build, the site
+/* Studio's text: what the pages say, shared by the build, the site
    and the admin. Anything saved in the admin replaces it field by field. */
 
 export const defaultRatios = [
@@ -49,9 +49,9 @@ export const defaultRatios = [
 ];
 
 export const defaultPlayground = {
-  title: "Playground",
-  intro: "Small experiments. Loose ideas.\nThings made just to see what happens.",
-  description: "Small experiments and loose ideas, made to see what happens.",
+  title: "Studio",
+  intro: "Products, personal projects, and creative explorations.",
+  description: "Products, personal projects, and creative explorations by Leo Battiste.",
   aspect: {
     cardTitle: "Aspect ratio",
     cardBlurb: "Six ways to frame a film. Drag to see what each one hides.",
@@ -74,7 +74,7 @@ export function mergePlayground(base, saved) {
   const text = (v, fallback) => (typeof v === "string" && v.trim() ? v : fallback);
   const a = saved.aspect || {};
   return {
-    title: text(saved.title, base.title),
+    title: saved.title === "Playground" ? base.title : text(saved.title, base.title),
     intro: text(saved.intro, base.intro),
     description: text(saved.description, base.description),
     aspect: {

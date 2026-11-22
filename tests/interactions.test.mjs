@@ -116,7 +116,14 @@ test("Home, menu, theme and the Aspect ratio experiment work together", async ()
     assert.equal(document.documentElement.dataset.theme, "dark");
     assert.equal(localStorage.getItem("leo-appearance"), "dark");
     const buttonNamed = (name) => [...document.querySelectorAll("button")].find(b => b.textContent.trim() === name);
-    await render("/playground/aspect-ratio/");
+    await render("/studio/");
+    assert.equal(document.querySelector("h1").textContent, "Studio");
+    const studioLink = document.querySelector('.site-nav a[href$="/studio/"]');
+    assert.equal(studioLink?.getAttribute("aria-current"), "page");
+    assert.ok(document.querySelector('a[href$="/studio/pheelm/"]'));
+    assert.ok(document.querySelector('a[href$="/studio/aspect-ratio/"]'));
+    await render("/studio/aspect-ratio/");
+    assert.equal(document.querySelector('.site-nav a[href$="/studio/"]')?.getAttribute("aria-current"), "page");
     const frame = () => document.querySelector(".ratio-frame");
     await click(buttonNamed("Standard"));
     assert.equal(document.querySelector("[data-ratio]").textContent, "1.33 : 1");

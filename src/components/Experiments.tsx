@@ -29,14 +29,12 @@ const lines = (text: string) =>
   ));
 
 export function ExperimentPage({
-  number,
   title,
   lead,
   meta,
   notes,
   children,
 }: {
-  number: string;
   title: string;
   lead: string;
   meta: string;
@@ -47,8 +45,8 @@ export function ExperimentPage({
     <>
       <Intro
         rail={
-          <a className="label" href={href("/playground/")}>
-            ← Playground
+          <a className="label" href={href("/studio/")}>
+            ← Studio
           </a>
         }
       >
@@ -58,7 +56,7 @@ export function ExperimentPage({
             <p className="statement secondary">{lines(lead)}</p>
           </div>
           <span className="label">
-            Experiment {number} / {meta}
+            {meta}
           </span>
         </div>
       </Intro>
@@ -133,7 +131,6 @@ export function AspectRatio() {
   }
   return (
     <ExperimentPage
-      number="001"
       title={aspect.cardTitle}
       lead={aspect.lead}
       meta={`${ratios.length} ratios`}
@@ -226,7 +223,7 @@ export function AspectRatio() {
   );
 }
 
-/* Previews for the Playground index -------------------------------- */
+/* Previews for the Studio index -------------------------------- */
 
 export function AspectRatioArt() {
   return (

@@ -1,13 +1,8 @@
 /* The lab: a toolbar, a stage, and controls */
 .lab {
-  /* break out of the page column to span the whole window */
-  width: 100vw;
-  margin: 0 calc(50% - 50vw) 64px;
-  /* the page column's edge, so content lines up with the text above */
-  --edge: max(
-    clamp(1.25rem, 4vw, 2.5rem),
-    calc((100vw - 62rem) / 2 + clamp(1.25rem, 4vw, 2.5rem))
-  );
+  width: 100%;
+  margin-bottom: 64px;
+  --edge: 0px;
 }
 body {
   overflow-x: clip;
@@ -323,7 +318,7 @@ body {
   color: var(--graphite);
 }
 
-/* Previews on the Playground index */
+/* Previews on the Studio index */
 .art-frame {
   position: relative;
   width: min(72%, 440px);
@@ -333,15 +328,15 @@ body {
   overflow: hidden;
   box-shadow: 0 24px 40px -24px #0008;
 }
-.experiment:hover .art-frame,
-.experiment:focus-visible .art-frame {
+.studio-card:hover .art-frame,
+.studio-card:focus-visible .art-frame {
   --letter: 0% !important;
   --pillar: 12.5% !important;
 }
 @media (max-width: 767px) {
   .lab-toolbar,
   .lab-controls {
-    padding-inline: 14px;
+    padding-inline: var(--edge);
   }
   .lab-stage {
     min-height: 360px;

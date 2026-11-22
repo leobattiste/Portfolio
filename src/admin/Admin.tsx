@@ -26,14 +26,19 @@ type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
 const views = [
   { id: "inbox", label: "Inbox" },
   { id: "insights", label: "Insights" },
-  { id: "work", label: "Work" },
+  { id: "studio", label: "Studio" },
   { id: "journal", label: "Journal" },
-  { id: "playground", label: "Playground" },
   { id: "about", label: "About" },
 ] as const;
 
-const readHash = () =>
-  location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+const readHash = () => {
+  const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  // Keep saved editor links useful after Work and Playground joined Studio.
+  if (parts[0] === "work") parts[0] = "studio";
+  if (parts[0] === "playground") return ["studio", "aspect-ratio"];
+  if (parts[0] === "studio" && parts[1] === "experiments") parts[1] = "aspect-ratio";
+  return parts;
+};
 function useHash() {
   const [parts, setParts] = useState<string[]>(readHash);
   useEffect(() => {
@@ -300,6 +305,8 @@ function useRecord(table: string, view: string, id: string, blank: Row) {
       updated_at: new Date().toISOString(),
     };
     if (!payload.slug) return setNote("The address needs at least one letter or number.");
+    if (table === "projects" && payload.slug === "aspect-ratio")
+      return setNote("That address belongs to Aspect ratio. Choose another address.");
     setBusy(true);
     const { data, error } =
       id === "new"
@@ -378,6 +385,61 @@ function EntryList({
   );
 }
 
+/* Every Studio item uses the same list row, regardless of its editor. */
+function StudioList() {
+  const [rows, setRows] = useState<Row[] | null>(null);
+  const [copy, setCopy] = useState(initial.playground);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      db.from("projects").select("*").order("sort", { ascending: true }),
+      db.from("site_content").select("value").eq("key", "playground").maybeSingle(),
+    ]).then(([projects, saved]) => {
+      if (!active) return;
+      if (projects.error) setError(problem(projects.error));
+      else setRows(projects.data || []);
+      if (saved.error) setError(problem(saved.error));
+      else setCopy(mergePlayground(initial.playground, saved.data?.value));
+    });
+    return () => { active = false; };
+  }, []);
+  const items = [
+    ...(rows || []).map((row) => ({
+      id: row.id,
+      title: row.title,
+      note: row.subtitle,
+      published: row.published,
+    })),
+    { id: "aspect-ratio", title: copy.aspect.cardTitle, note: copy.aspect.cardBlurb, published: true },
+  ];
+  return (
+    <>
+      <div className="admin-head">
+        <h1 className="statement">Studio</h1>
+        <p className="statement">Everything in Studio, in the order it appears on the site.</p>
+        <div className="studio-actions">
+          <button type="button" className="button" onClick={() => go("studio/new")}>New item</button>
+          <a className="text-button" href="#/studio/settings">Page settings</a>
+        </div>
+      </div>
+      {error ? <p role="alert">{error}</p> : null}
+      {!rows && !error ? <p className="muted">Loading</p> : null}
+      <ul className="lines">
+        {items.map((item) => (
+          <li key={item.id}>
+            <a className="line" href={`#/studio/${item.id}`}>
+              <span className="line-title">{item.title}</span>
+              <span className="line-note">{item.note}</span>
+              <span className="line-end">{item.published ? "Published" : "Draft"}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 /* Cover or portrait: shows the image where the page shows it ---------- */
 function ImageSlot({
   value,
@@ -442,7 +504,7 @@ function ImageSlot({
   );
 }
 
-/* Work: laid out like a case study page ------------------------------ */
+/* Studio projects: laid out like a case study page ------------------------------ */
 const blankProject = {
   title: "",
   slug: "",
@@ -461,7 +523,7 @@ const blankProject = {
   sort: 0,
 };
 function ProjectEditor({ id }: { id: string }) {
-  const { row, set, save, remove, note, busy } = useRecord("projects", "work", id, blankProject);
+  const { row, set, save, remove, note, busy } = useRecord("projects", "studio", id, blankProject);
   if (!row) return <p className="muted">{note || "Loading"}</p>;
   const text = (key: string, placeholder = "") => (
     <input
@@ -472,16 +534,16 @@ function ProjectEditor({ id }: { id: string }) {
   );
   return (
     <>
-      <a className="back" href="#/work">
-        All work
+      <a className="back" href="#/studio">
+        Back to Studio
       </a>
-      <h1 className="sr-only">{id === "new" ? "New project" : "Edit project"}</h1>
+      <h1 className="sr-only">{id === "new" ? "New item" : "Edit item"}</h1>
       <textarea
         className="statement title-input"
         rows={1}
         value={row.title}
-        placeholder="Project name"
-        aria-label="Project name"
+        placeholder="Item name"
+        aria-label="Item name"
         onChange={(e) => set({ title: e.target.value })}
       />
       <textarea
@@ -520,7 +582,7 @@ function ProjectEditor({ id }: { id: string }) {
           </Field>
           <Field label="Live link">{text("live_url", "https://")}</Field>
           <Field label="Source link">{text("source_url", "https://")}</Field>
-          <Field label="Address" hint={`/work/${slugify(row.slug || row.title) || "…"}/`}>
+          <Field label="Address" hint={`/studio/${slugify(row.slug || row.title) || "…"}/`}>
             {text("slug", slugify(row.title))}
           </Field>
           <Field label="Order" hint="Lower numbers come first">
@@ -533,7 +595,7 @@ function ProjectEditor({ id }: { id: string }) {
         </div>
       </section>
       <section className="admin-section">
-        <h2 className="label">Case study</h2>
+        <h2 className="label">Content</h2>
         <RichText
           value={row.content}
           onChange={(content) => set({ content })}
@@ -547,7 +609,7 @@ function ProjectEditor({ id }: { id: string }) {
         busy={busy}
         onSave={save}
         onDelete={id === "new" ? undefined : remove}
-        viewPath={id !== "new" && row.published ? `/work/${row.slug}/` : undefined}
+        viewPath={id !== "new" && row.published ? `/studio/${row.slug}/` : undefined}
       />
     </>
   );
@@ -688,8 +750,8 @@ function AboutEditor() {
   );
 }
 
-/* Playground: the index and each experiment's words --------------------- */
-function PlaygroundEditor() {
+/* Studio page settings and the Aspect ratio item share stored content. */
+function StudioEditor({ part }: { part: "settings" | "aspect" }) {
   const base = initial.playground;
   const [row, setRow] = useState<typeof base | null>(null);
   const [note, setNote] = useState("");
@@ -709,36 +771,53 @@ function PlaygroundEditor() {
     setAspect({
       ratios: row.aspect.ratios.map((r) => (r.value === value ? { ...r, ...patch } : r)),
     });
-  async function save() {
-    if (!row) return;
+  async function persist(value: typeof base, success = "Saved and live on the site.") {
     setBusy(true);
-    const { error } = await db
-      .from("site_content")
-      .upsert({ key: "playground", value: row, updated_at: new Date().toISOString() });
-    setBusy(false);
-    setNote(error ? problem(error) : "Saved and live on the site.");
-  }
-  async function reset() {
-    if (!confirm("Go back to the original Playground text?")) return;
-    setBusy(true);
-    const { error } = await db.from("site_content").delete().eq("key", "playground");
+    // Save only this editor's fields so page settings and item edits stay independent.
+    const { data, error: loadError } = await db.from("site_content")
+      .select("value").eq("key", "playground").maybeSingle();
+    if (loadError) {
+      setBusy(false);
+      setNote(problem(loadError));
+      return;
+    }
+    const latest = mergePlayground(base, data?.value);
+    const next = part === "settings"
+      ? { ...latest, title: value.title, intro: value.intro, description: value.description }
+      : { ...latest, aspect: value.aspect };
+    const { error } = await db.from("site_content")
+      .upsert({ key: "playground", value: next, updated_at: new Date().toISOString() });
     setBusy(false);
     if (error) setNote(problem(error));
     else {
-      setRow(base);
-      setNote("Back to the original text.");
+      setRow(next);
+      setNote(success);
     }
+  }
+  const save = () => row && persist(row);
+  async function reset() {
+    if (!confirm(part === "settings" ? "Go back to the original Studio page text?" : "Go back to the original Aspect ratio text?")) return;
+    await persist(base, "Back to the original text.");
   }
   return (
     <>
-      <h1 className="sr-only">Edit the Playground</h1>
-      <section className="admin-section">
-        <h2 className="label">Playground page</h2>
+      <a className="back" href="#/studio">Back to Studio</a>
+      <h1 className="sr-only">{part === "settings" ? "Studio page settings" : "Edit Aspect ratio"}</h1>
+      {part === "settings" ? <section className="admin-section">
+        <h2 className="label">Studio page</h2>
         <input
           className="statement title-input"
           value={row.title}
           aria-label="Page title"
           onChange={(e) => setTop({ title: e.target.value })}
+        />
+        <textarea
+          className="statement title-input lead-input"
+          rows={2}
+          value={row.intro}
+          aria-label="Studio introduction"
+          placeholder="A short introduction to Studio"
+          onChange={(e) => setTop({ intro: e.target.value })}
         />
         <div className="facts">
           <Field label="Search summary" hint="What search results and link previews show">
@@ -748,17 +827,17 @@ function PlaygroundEditor() {
             />
           </Field>
         </div>
-      </section>
+      </section> : <>
       <section className="admin-section">
         <h2 className="label">Aspect ratio</h2>
         <div className="facts">
-          <Field label="Name" hint="Also the experiment’s page title">
+          <Field label="Name" hint="Also the item’s page title">
             <input
               value={row.aspect.cardTitle}
               onChange={(e) => setAspect({ cardTitle: e.target.value })}
             />
           </Field>
-          <Field label="Card text" hint="Shown on the Playground page">
+          <Field label="Card text" hint="Shown on the Studio page">
             <input
               value={row.aspect.cardBlurb}
               onChange={(e) => setAspect({ cardBlurb: e.target.value })}
@@ -821,10 +900,11 @@ function PlaygroundEditor() {
         <RichText
           value={row.aspect.notes}
           onChange={(notes) => setAspect({ notes })}
-          placeholder="What this experiment is about."
+          placeholder="What this item is about."
         />
       </section>
-      <SaveBar row={row} note={note} busy={busy} onSave={save} viewPath="/playground/" />
+      </>}
+      <SaveBar row={row} note={note} busy={busy} onSave={save} viewPath={part === "settings" ? "/studio/" : "/studio/aspect-ratio/"} />
       <button type="button" className="button" onClick={reset} disabled={busy}>
         Reset to original text
       </button>
@@ -964,15 +1044,20 @@ function Insights() {
     ]).then(([projects, articles]) => {
       const map: Record<string, string> = {
         "/": "Home",
-        "/work/": "Work",
+        "/studio/": "Studio",
+        "/work/": "Studio",
         "/journal/": "Journal",
         "/about/": "About",
         "/contact/": "Contact",
         "/privacy/": "Privacy",
-        "/playground/": "Playground",
+        "/playground/": "Studio",
+        "/studio/aspect-ratio/": "Aspect ratio",
         "/playground/aspect-ratio/": "Aspect ratio",
       };
-      for (const p of projects.data || []) map[`/work/${p.slug}/`] = p.title;
+      for (const p of projects.data || []) {
+        map[`/studio/${p.slug}/`] = p.title;
+        map[`/work/${p.slug}/`] = p.title;
+      }
       for (const a of articles.data || []) map[`/journal/${a.slug}/`] = a.title;
       setTitles(map);
     });
@@ -1174,19 +1259,15 @@ export default function Admin() {
 
   let page: ReactNode;
   if (view === "insights") page = <Insights />;
-  else if (view === "work")
-    page = id ? (
+  else if (view === "studio")
+    page = id === "settings" ? (
+      <StudioEditor key="settings" part="settings" />
+    ) : id === "aspect-ratio" ? (
+      <StudioEditor key="aspect" part="aspect" />
+    ) : id ? (
       <ProjectEditor key={id} id={id} />
     ) : (
-      <EntryList
-        table="projects"
-        view="work"
-        title="Work"
-        noun="project"
-        order="sort"
-        lead="Case studies, in the order they appear on the site."
-        note={(r) => r.subtitle}
-      />
+      <StudioList />
     );
   else if (view === "journal")
     page = id ? (
@@ -1202,7 +1283,6 @@ export default function Admin() {
         note={(r) => prettyDate(r.date)}
       />
     );
-  else if (view === "playground") page = <PlaygroundEditor />;
   else if (view === "about") page = <AboutEditor />;
   else page = <Inbox onCount={setUnread} />;
 
