@@ -1,25 +1,29 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { ContentProvider, useContent, getPage, site, href } from "@/lib/site";
+import { ContentProvider, useContent, getPage, site, href, studioPath } from "@/lib/site";
 import { Layout } from "@/components/Layout";
 import {
   Home,
   About,
-  Work,
   ProjectPage,
   Journal,
   ArticlePage,
   Contact,
   NotFound,
 } from "@/components/Pages";
-import { Playground } from "@/components/Playground";
+import { Studio } from "@/components/Studio";
 import {
   AspectRatio,
 } from "@/components/Experiments";
 import { Privacy, Terms } from "@/components/Legal";
 
-function Site({ path }: { path: string }) {
+function Site({ path: requestedPath }: { path: string }) {
+  const path = studioPath(requestedPath);
+  useEffect(() => {
+    if (requestedPath !== path)
+      window.location.replace(href(path) + window.location.search + window.location.hash);
+  }, [requestedPath, path]);
   const content = useContent();
-  const project = content.projects.find((p) => path === `/work/${p.slug}/`),
+  const project = content.projects.find((p) => path === `/studio/${p.slug}/`),
     article = content.articles.find((a) => path === `/journal/${a.slug}/`);
   // An entry published after the last build is found once live content loads.
   useEffect(() => {
@@ -28,10 +32,9 @@ function Site({ path }: { path: string }) {
   let page;
   if (path === "/") page = <Home />;
   else if (path === "/about/") page = <About />;
-  else if (path === "/work/") page = <Work />;
+  else if (path === "/studio/") page = <Studio />;
   else if (path === "/journal/") page = <Journal />;
-  else if (path === "/playground/") page = <Playground />;
-  else if (path === "/playground/aspect-ratio/") page = <AspectRatio />;
+  else if (path === "/studio/aspect-ratio/") page = <AspectRatio />;
   else if (path === "/contact/") page = <Contact />;
   else if (path === "/privacy/") page = <Privacy />;
   else if (path === "/terms/") page = <Terms />;

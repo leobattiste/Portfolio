@@ -47,8 +47,8 @@ export function ExperimentPage({
     <>
       <Intro
         rail={
-          <a className="label" href={href("/playground/")}>
-            ← Playground
+          <a className="label" href={href("/studio/")}>
+            ← Studio
           </a>
         }
       >
@@ -226,7 +226,7 @@ export function AspectRatio() {
   );
 }
 
-/* Previews for the Playground index -------------------------------- */
+/* Previews for the Studio index -------------------------------- */
 
 export function AspectRatioArt() {
   return (

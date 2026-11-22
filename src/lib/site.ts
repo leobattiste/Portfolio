@@ -81,8 +81,13 @@ export const host = (url: string) => {
     return url;
   }
 };
+// Keep bookmarked Work and Playground addresses working after their move to Studio.
+export const studioPath = (path: string) =>
+  path.replace(/^\/(?:work|playground)\//, "/studio/");
+
 export function getPage(path: string, content: Content = initial) {
-  const project = content.projects.find((p) => path === `/work/${p.slug}/`),
+  path = studioPath(path);
+  const project = content.projects.find((p) => path === `/studio/${p.slug}/`),
     article = content.articles.find((a) => path === `/journal/${a.slug}/`);
   if (project)
     return {
@@ -107,19 +112,15 @@ export function getPage(path: string, content: Content = initial) {
       description: site.intro,
     },
     "/about/": { title: `About | ${site.name}`, description: site.bio },
-    "/work/": {
-      title: `Work | ${site.name}`,
-      description: `Products designed and built by ${site.name}.`,
+    "/studio/": {
+      title: `${content.playground.title} | ${site.name}`,
+      description: content.playground.description,
     },
     "/journal/": {
       title: `Journal | ${site.name}`,
       description: "Notes on what I’m making and what I’m learning from it.",
     },
-    "/playground/": {
-      title: `${content.playground.title} | ${site.name}`,
-      description: content.playground.description,
-    },
-    "/playground/aspect-ratio/": {
+    "/studio/aspect-ratio/": {
       title: `${content.playground.aspect.cardTitle} | ${site.name}`,
       description: content.playground.aspect.description,
     },

@@ -26,14 +26,18 @@ type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
 const views = [
   { id: "inbox", label: "Inbox" },
   { id: "insights", label: "Insights" },
-  { id: "work", label: "Work" },
+  { id: "studio", label: "Studio" },
   { id: "journal", label: "Journal" },
-  { id: "playground", label: "Playground" },
   { id: "about", label: "About" },
 ] as const;
 
-const readHash = () =>
-  location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+const readHash = () => {
+  const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  // Keep saved editor links useful after Work and Playground joined Studio.
+  if (parts[0] === "work") parts[0] = "studio";
+  if (parts[0] === "playground") return ["studio", "experiments"];
+  return parts;
+};
 function useHash() {
   const [parts, setParts] = useState<string[]>(readHash);
   useEffect(() => {
@@ -300,6 +304,8 @@ function useRecord(table: string, view: string, id: string, blank: Row) {
       updated_at: new Date().toISOString(),
     };
     if (!payload.slug) return setNote("The address needs at least one letter or number.");
+    if (table === "projects" && payload.slug === "aspect-ratio")
+      return setNote("That address belongs to the Aspect ratio experiment. Choose another address.");
     setBusy(true);
     const { data, error } =
       id === "new"
@@ -333,6 +339,7 @@ function EntryList({
   order,
   noun,
   note,
+  listLabel,
 }: {
   table: string;
   view: string;
@@ -341,6 +348,7 @@ function EntryList({
   order: string;
   noun: string;
   note: (row: Row) => string;
+  listLabel?: string;
 }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState("");
@@ -355,6 +363,7 @@ function EntryList({
       <div className="admin-head">
         <h1 className="statement">{title}</h1>
         <p className="statement">{lead}</p>
+        {listLabel ? <h2 className="label admin-list-label">{listLabel}</h2> : null}
         <button type="button" className="button" onClick={() => go(`${view}/new`)}>
           New {noun}
         </button>
@@ -442,7 +451,7 @@ function ImageSlot({
   );
 }
 
-/* Work: laid out like a case study page ------------------------------ */
+/* Studio projects: laid out like a case study page ------------------------------ */
 const blankProject = {
   title: "",
   slug: "",
@@ -461,7 +470,7 @@ const blankProject = {
   sort: 0,
 };
 function ProjectEditor({ id }: { id: string }) {
-  const { row, set, save, remove, note, busy } = useRecord("projects", "work", id, blankProject);
+  const { row, set, save, remove, note, busy } = useRecord("projects", "studio", id, blankProject);
   if (!row) return <p className="muted">{note || "Loading"}</p>;
   const text = (key: string, placeholder = "") => (
     <input
@@ -472,8 +481,8 @@ function ProjectEditor({ id }: { id: string }) {
   );
   return (
     <>
-      <a className="back" href="#/work">
-        All work
+      <a className="back" href="#/studio">
+        Back to Studio
       </a>
       <h1 className="sr-only">{id === "new" ? "New project" : "Edit project"}</h1>
       <textarea
@@ -520,7 +529,7 @@ function ProjectEditor({ id }: { id: string }) {
           </Field>
           <Field label="Live link">{text("live_url", "https://")}</Field>
           <Field label="Source link">{text("source_url", "https://")}</Field>
-          <Field label="Address" hint={`/work/${slugify(row.slug || row.title) || "…"}/`}>
+          <Field label="Address" hint={`/studio/${slugify(row.slug || row.title) || "…"}/`}>
             {text("slug", slugify(row.title))}
           </Field>
           <Field label="Order" hint="Lower numbers come first">
@@ -547,7 +556,7 @@ function ProjectEditor({ id }: { id: string }) {
         busy={busy}
         onSave={save}
         onDelete={id === "new" ? undefined : remove}
-        viewPath={id !== "new" && row.published ? `/work/${row.slug}/` : undefined}
+        viewPath={id !== "new" && row.published ? `/studio/${row.slug}/` : undefined}
       />
     </>
   );
@@ -688,8 +697,8 @@ function AboutEditor() {
   );
 }
 
-/* Playground: the index and each experiment's words --------------------- */
-function PlaygroundEditor() {
+/* Studio: the page and each experiment's words --------------------- */
+function StudioEditor() {
   const base = initial.playground;
   const [row, setRow] = useState<typeof base | null>(null);
   const [note, setNote] = useState("");
@@ -719,7 +728,7 @@ function PlaygroundEditor() {
     setNote(error ? problem(error) : "Saved and live on the site.");
   }
   async function reset() {
-    if (!confirm("Go back to the original Playground text?")) return;
+    if (!confirm("Go back to the original Studio and experiment text?")) return;
     setBusy(true);
     const { error } = await db.from("site_content").delete().eq("key", "playground");
     setBusy(false);
@@ -731,14 +740,23 @@ function PlaygroundEditor() {
   }
   return (
     <>
-      <h1 className="sr-only">Edit the Playground</h1>
+      <a className="back" href="#/studio">Back to Studio</a>
+      <h1 className="sr-only">Edit Studio and experiments</h1>
       <section className="admin-section">
-        <h2 className="label">Playground page</h2>
+        <h2 className="label">Studio page</h2>
         <input
           className="statement title-input"
           value={row.title}
           aria-label="Page title"
           onChange={(e) => setTop({ title: e.target.value })}
+        />
+        <textarea
+          className="statement title-input lead-input"
+          rows={2}
+          value={row.intro}
+          aria-label="Studio introduction"
+          placeholder="A short introduction to your projects and experiments"
+          onChange={(e) => setTop({ intro: e.target.value })}
         />
         <div className="facts">
           <Field label="Search summary" hint="What search results and link previews show">
@@ -758,7 +776,7 @@ function PlaygroundEditor() {
               onChange={(e) => setAspect({ cardTitle: e.target.value })}
             />
           </Field>
-          <Field label="Card text" hint="Shown on the Playground page">
+          <Field label="Card text" hint="Shown on the Studio page">
             <input
               value={row.aspect.cardBlurb}
               onChange={(e) => setAspect({ cardBlurb: e.target.value })}
@@ -824,7 +842,7 @@ function PlaygroundEditor() {
           placeholder="What this experiment is about."
         />
       </section>
-      <SaveBar row={row} note={note} busy={busy} onSave={save} viewPath="/playground/" />
+      <SaveBar row={row} note={note} busy={busy} onSave={save} viewPath="/studio/" />
       <button type="button" className="button" onClick={reset} disabled={busy}>
         Reset to original text
       </button>
@@ -964,15 +982,20 @@ function Insights() {
     ]).then(([projects, articles]) => {
       const map: Record<string, string> = {
         "/": "Home",
-        "/work/": "Work",
+        "/studio/": "Studio",
+        "/work/": "Studio",
         "/journal/": "Journal",
         "/about/": "About",
         "/contact/": "Contact",
         "/privacy/": "Privacy",
-        "/playground/": "Playground",
+        "/playground/": "Studio",
+        "/studio/aspect-ratio/": "Aspect ratio",
         "/playground/aspect-ratio/": "Aspect ratio",
       };
-      for (const p of projects.data || []) map[`/work/${p.slug}/`] = p.title;
+      for (const p of projects.data || []) {
+        map[`/studio/${p.slug}/`] = p.title;
+        map[`/work/${p.slug}/`] = p.title;
+      }
       for (const a of articles.data || []) map[`/journal/${a.slug}/`] = a.title;
       setTitles(map);
     });
@@ -1174,19 +1197,36 @@ export default function Admin() {
 
   let page: ReactNode;
   if (view === "insights") page = <Insights />;
-  else if (view === "work")
-    page = id ? (
+  else if (view === "studio")
+    page = id === "experiments" ? (
+      <StudioEditor />
+    ) : id ? (
       <ProjectEditor key={id} id={id} />
     ) : (
-      <EntryList
-        table="projects"
-        view="work"
-        title="Work"
-        noun="project"
-        order="sort"
-        lead="Case studies, in the order they appear on the site."
-        note={(r) => r.subtitle}
-      />
+      <>
+        <EntryList
+          table="projects"
+          view="studio"
+          title="Studio"
+          listLabel="Projects"
+          noun="project"
+          order="sort"
+          lead="Case studies, in the order they appear on the site."
+          note={(r) => r.subtitle}
+        />
+        <section className="admin-section">
+          <h2 className="label">Experiments</h2>
+          <ul className="lines">
+            <li>
+              <a className="line" href="#/studio/experiments">
+                <span className="line-title">{initial.playground.aspect.cardTitle}</span>
+                <span className="line-note">Studio page and experiment text</span>
+                <span className="line-end">Edit</span>
+              </a>
+            </li>
+          </ul>
+        </section>
+      </>
     );
   else if (view === "journal")
     page = id ? (
@@ -1202,7 +1242,6 @@ export default function Admin() {
         note={(r) => prettyDate(r.date)}
       />
     );
-  else if (view === "playground") page = <PlaygroundEditor />;
   else if (view === "about") page = <AboutEditor />;
   else page = <Inbox onCount={setUnread} />;
 

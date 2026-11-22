@@ -3,5 +3,17 @@
   "framework": null,
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install --frozen-lockfile"
+  "installCommand": "pnpm install --frozen-lockfile",
+  "redirects": [
+    {
+      "source": "/work/:path*",
+      "destination": "/studio/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/playground/:path*",
+      "destination": "/studio/:path*",
+      "permanent": true
+    }
+  ]
 }

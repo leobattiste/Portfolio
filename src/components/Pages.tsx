@@ -22,8 +22,8 @@ function follow(event: PointerEvent<HTMLElement>) {
   event.currentTarget.style.setProperty("--y", `${event.clientY - box.top}px`);
 }
 
-function Breadcrumbs({ section, title }: { section: "Work" | "Journal"; title: string }) {
-  const sectionPath = section === "Work" ? "/work/" : "/journal/";
+function Breadcrumbs({ section, title }: { section: "Studio" | "Journal"; title: string }) {
+  const sectionPath = section === "Studio" ? "/studio/" : "/journal/";
   return (
     <nav className="breadcrumbs" aria-label="Breadcrumb">
       <ol>
@@ -35,9 +35,9 @@ function Breadcrumbs({ section, title }: { section: "Work" | "Journal"; title: s
   );
 }
 
-function ProjectLink({ project: p }: { project: Project }) {
+export function ProjectLink({ project: p }: { project: Project }) {
   return (
-    <a className="project" href={href(`/work/${p.slug}/`)}>
+    <a className="project" href={href(`/studio/${p.slug}/`)}>
       {p.cover ? (
         <span className="cover" style={shared(p)} onPointerMove={follow}>
           <img src={media(p.cover)} width="1200" height="630" alt={p.coverAlt} />
@@ -196,8 +196,8 @@ export function Home() {
           </p>
           <p className="statement">
             Explore my{" "}
-            <a className="peek-link" href={href("/work/")}>
-              work
+            <a className="peek-link" href={href("/studio/")}>
+              studio
               {lead?.cover ? (
                 <span className="peek" aria-hidden="true">
                   <img src={media(lead.cover)} width="1200" height="630" alt="" />
@@ -215,37 +215,10 @@ export function Home() {
                   </span>
                 </span>
               ) : null}
-            </a>
-            , or visit the{" "}
-            <a className="peek-link" href={href("/playground/")}>
-              playground
-              <span className="peek" aria-hidden="true">
-                <span className="peek-text">
-                  <strong>Aspect ratio</strong>
-                  A guide to how films are framed
-                </span>
-              </span>
-            </a>{" "}
-            for personal projects and creative explorations.
+            </a>.
           </p>
         </Intro>
       </div>
-    </>
-  );
-}
-
-export function Work() {
-  const { projects } = useContent();
-  return (
-    <>
-      <Intro>
-        <h1 className="statement">Work</h1>
-      </Intro>
-      <Section>
-        {projects.map((p) => (
-          <ProjectLink key={p.slug} project={p} />
-        ))}
-      </Section>
     </>
   );
 }
@@ -260,7 +233,7 @@ export function ProjectPage({ project: p }: { project: Project }) {
   return (
     <article>
       <Intro>
-        <Breadcrumbs section="Work" title={p.title} />
+        <Breadcrumbs section="Studio" title={p.title} />
         <h1 className="statement">{p.title}</h1>
         <p className="project-description">{p.description}</p>
       </Intro>
@@ -397,7 +370,7 @@ export function NotFound() {
       <p className="statement">
         It may have moved. Start again from the{" "}
         <a href={href("/")}>home page</a>, or look through the{" "}
-        <a href={href("/work/")}>work</a>.
+        <a href={href("/studio/")}>studio</a>.
       </p>
     </Intro>
   );

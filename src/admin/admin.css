@@ -54,6 +54,9 @@
 .admin-head .cats {
   margin-top: 1.5rem;
 }
+.admin-list-label {
+  margin-top: 2rem;
+}
 .admin-section {
   padding-block: 2rem;
   border-top: 1px solid var(--mist);

@@ -15,12 +15,13 @@ Only confirmed accounts whose email is listed in `private.admin_emails` can read
 
 | Section | Edits | Stored in |
 | --- | --- | --- |
-| Work | Case studies: name, description, cover, details, rich text body | `projects` |
+| Studio | Case studies: name, description, cover, details, rich text body; Studio page title, introduction and search summary; experiment text | `projects` and `site_content` (`playground`) |
 | Journal | Entries: title, summary, date, topic, rich text body | `articles` |
-| Playground | The page title and intro, the Aspect ratio card, opening lines and notes, and each ratio's name, movie, fun fact and essay | `site_content` (`playground`) |
 | About | Opening statement, portrait, rich text body, "What I do" | `site_content` (`about`) |
 | Inbox | Messages from the contact form | `messages` |
 | Insights | Page views, visits, top pages, journal reads, sources | `page_views` via `insights()` |
+
+In Studio, choose a project to edit its case study or choose Aspect ratio under Experiments to edit the Studio page title, introduction and search summary, the experiment card, opening lines and notes, and each ratio’s name, movie, fun fact and essay. Project and experiment links use `/studio/`. Existing `#/work` and `#/playground` admin bookmarks still open the corresponding Studio editor. The existing `playground` storage key keeps saved experiment content available without a database migration.
 
 Images and video upload to the public `media` storage bucket (50 MB per file).
 

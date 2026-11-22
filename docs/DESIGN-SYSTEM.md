@@ -25,11 +25,13 @@ One family, Schibsted Grotesk Variable, served with the site.
 
 ## Layout
 
+The page fills the viewport width with 20px of space on each side at every screen size. Long-form prose keeps its readable measure.
+
 Every block is a `.row`: an 11rem rail on the left for the label, and a content column beside it. The header, each section and the footer all sit on the same two columns. Below 48rem the rail stacks above the content. Use `<Section label="…">` and `<Intro>` from `src/components/Layout.tsx` rather than new wrappers.
 
 ## Interaction
 
-- **Page transitions.** `@view-transition { navigation: auto }` cross-fades between pages. A project cover carries the same `view-transition-name` on the home page, Work and its case study, so it moves into place.
+- **Page transitions.** `@view-transition { navigation: auto }` cross-fades between pages. A project cover carries the same `view-transition-name` on the home page, Studio and its case study, so it moves into place.
 - **Theme.** The toggle opens the new theme as a circle from the button. The choice is stored under `leo-appearance`; first visits follow the system setting.
 - **Peeks.** Links inside the home statement show a small preview on hover or keyboard focus.
 - **Cover chip.** A label follows the pointer over a project cover.

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Intro, Section } from "./Layout";
 import { href, useContent } from "@/lib/site";
 import "./playground.css";
+import { ProjectLink } from "./Pages";
 import { AspectRatioArt } from "./Experiments";
 
 function ExperimentCard({
@@ -35,18 +36,24 @@ function ExperimentCard({
   );
 }
 
-export function Playground() {
-  const { playground } = useContent();
+export function Studio() {
+  const { projects, playground } = useContent();
   const { aspect } = playground;
   return (
     <>
       <Intro>
         <h1 className="statement">{playground.title}</h1>
+        <p className="project-description">{playground.intro}</p>
       </Intro>
-      <Section>
+      <Section label="Projects" count={projects.length}>
+        {projects.map((project) => (
+          <ProjectLink key={project.slug} project={project} />
+        ))}
+      </Section>
+      <Section label="Experiments" count={1}>
         <div className="experiments">
           <ExperimentCard
-            path="/playground/aspect-ratio/"
+            path="/studio/aspect-ratio/"
             title={aspect.cardTitle}
             blurb={aspect.cardBlurb}
             label="001 · Film"
