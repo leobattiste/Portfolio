@@ -8,7 +8,7 @@ Edit `content/site.json` for your name, introduction, bio, email, Instagram URL,
 
 ## Projects
 
-Copy `content/projects/_template.json` to a new filename. Set a unique lowercase `slug`, title, description, order, and `published: true` when ready. Add a cover to `src/assets` with descriptive `coverAlt`. Add sections with unique IDs, titles, and body text. Only published projects appear in Studio alongside experiments; every published project gets `/studio/slug/`. The slug `aspect-ratio` is reserved for the experiment. Old `/work/slug/` addresses redirect to Studio. Each section's `id` is shown as its label in the left rail, so keep it to one plain word.
+Copy `content/projects/_template.json` to a new filename. Set a unique lowercase `slug`, title, description, order, and `published: true` when ready. Add a cover to `src/assets` with descriptive `coverAlt`. Add sections with unique IDs, titles, and body text. Published entries share one Studio collection, including interactive projects; every published project gets `/studio/slug/`. The slug `aspect-ratio` is reserved for the experiment. Old `/work/slug/` addresses redirect to Studio. Each section's `id` is shown as its label in the left rail, so keep it to one plain word.
 
 Pheelm is the first published project. Its copy is based on Leo's confirmed ownership, the public product, and the repository. Add research, iterations, screenshots, and verified outcomes as they become available. The `sources` field is editorial provenance and is not rendered.
 

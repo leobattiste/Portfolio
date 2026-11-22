@@ -28,7 +28,7 @@ The output is `dist/`, including all project and article URLs, metadata, sitemap
 - `content/site.json`: profile and optional contact details.
 - `content/projects/*.json`: projects, with unpublished template support.
 - `content/journal/*.md`: stories with draft control.
-- `src/components/Studio.tsx`: the Studio index, combining projects and experiments.
+- `src/components/Studio.tsx`: the unified Studio collection.
 - `src/components/Experiments.tsx`: the Aspect ratio experiment at `/studio/aspect-ratio/`. Its springs come from `src/lib/spring.ts`.
 - `src/styles.css`: design tokens and every style on the site.
 - `src/components`: layout and pages.

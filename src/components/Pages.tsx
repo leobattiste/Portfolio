@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type FormEvent, type PointerEvent } from "react";
+import { useState, type CSSProperties, type FormEvent } from "react";
 import {
   site,
   useContent,
@@ -16,12 +16,6 @@ const external = { target: "_blank", rel: "noopener noreferrer" };
 const shared = (p: Project) =>
   ({ viewTransitionName: `cover-${p.slug}` }) as CSSProperties;
 
-function follow(event: PointerEvent<HTMLElement>) {
-  const box = event.currentTarget.getBoundingClientRect();
-  event.currentTarget.style.setProperty("--x", `${event.clientX - box.left}px`);
-  event.currentTarget.style.setProperty("--y", `${event.clientY - box.top}px`);
-}
-
 function Breadcrumbs({ section, title }: { section: "Studio" | "Journal"; title: string }) {
   const sectionPath = section === "Studio" ? "/studio/" : "/journal/";
   return (
@@ -32,25 +26,6 @@ function Breadcrumbs({ section, title }: { section: "Studio" | "Journal"; title:
         <li aria-current="page">{title}</li>
       </ol>
     </nav>
-  );
-}
-
-export function ProjectLink({ project: p }: { project: Project }) {
-  return (
-    <a className="project" href={href(`/studio/${p.slug}/`)}>
-      {p.cover ? (
-        <span className="cover" style={shared(p)} onPointerMove={follow}>
-          <img src={media(p.cover)} width="1200" height="630" alt={p.coverAlt} />
-          <span className="cover-chip" aria-hidden="true">
-            Read the case study
-          </span>
-        </span>
-      ) : null}
-      <span className="line">
-        <span className="line-title">{p.title}</span>
-        <span className="line-note">{p.subtitle}</span>
-      </span>
-    </a>
   );
 }
 

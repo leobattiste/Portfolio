@@ -15,13 +15,15 @@ Only confirmed accounts whose email is listed in `private.admin_emails` can read
 
 | Section | Edits | Stored in |
 | --- | --- | --- |
-| Studio | Case studies: name, description, cover, details, rich text body; Studio page title, introduction and search summary; experiment text | `projects` and `site_content` (`playground`) |
+| Studio | All Studio items, their text and media, plus the Studio page title, introduction and search summary | `projects` and `site_content` (`playground`) |
 | Journal | Entries: title, summary, date, topic, rich text body | `articles` |
 | About | Opening statement, portrait, rich text body, "What I do" | `site_content` (`about`) |
 | Inbox | Messages from the contact form | `messages` |
 | Insights | Page views, visits, top pages, journal reads, sources | `page_views` via `insights()` |
 
-In Studio, choose a project to edit its case study or choose Aspect ratio under Experiments to edit the Studio page title, introduction and search summary, the experiment card, opening lines and notes, and each ratio’s name, movie, fun fact and essay. Project and experiment links use `/studio/`. Existing `#/work` and `#/playground` admin bookmarks still open the corresponding Studio editor. The existing `playground` storage key keeps saved experiment content available without a database migration.
+Studio has one list of items, with the same published or draft status for every entry. Choose an item to edit it, or use **New item** to add an entry with a cover, details and rich text content. Aspect ratio appears in that same list and opens the editor for its interactive page, including the card text, opening lines and notes, and each ratio’s name, movie, fun fact and essay. Use **Page settings** to edit the Studio page title, introduction and search summary separately.
+
+All public item links use `/studio/`. Existing `#/work` and `#/playground` admin bookmarks still open the corresponding Studio editor; the former `#/studio/experiments` link also opens Aspect ratio. The existing `projects` table and `playground` storage key keep saved content available without a database migration. Saving or resetting page settings preserves item text, and saving or resetting Aspect ratio preserves page settings.
 
 Images and video upload to the public `media` storage bucket (50 MB per file).
 

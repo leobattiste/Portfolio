@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { readFile,readdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -94,7 +95,7 @@ test('saved Playground text replaces the defaults field by field',()=>{
  assert.equal(scope.film,'Dune');assert.deepEqual(scope.essay,['One','Two']);assert.equal(scope.name,'Scope');
 });
 
-test('Studio combines projects and experiments under one navigation item',async()=>{
+test('Studio presents all items as one collection under one navigation item',async()=>{
  const html=await readFile(new URL('studio/index.html',out),'utf8');
  const info=JSON.parse(await readFile(new URL('build-info.json',out),'utf8'));
  assert.ok(/<h1[^>]*>Studio<\/h1>/.test(html));
@@ -102,6 +103,15 @@ test('Studio combines projects and experiments under one navigation item',async(
  assert.ok(html.includes('Aspect ratio'));
  assert.ok(html.includes('href="'+info.basePath+'/studio/pheelm/"'));
  assert.ok(html.includes('href="'+info.basePath+'/studio/aspect-ratio/"'));
+ const dom=new JSDOM(html);
+ const document=dom.window.document;
+ const collection=document.querySelector('main ul[aria-label="Studio"]');
+ assert.ok(collection,'one collection contains all Studio items');
+ assert.equal(document.querySelectorAll('main section').length,1,'no separate project and experiment sections');
+ assert.deepEqual([...collection.querySelectorAll('h2')].map(heading=>heading.textContent),['Pheelm','Aspect ratio']);
+ assert.equal(collection.querySelectorAll(':scope > li > a').length,2,'both entries use the same list');
+ assert.ok(![...document.querySelectorAll('main h2')].some(heading=>['Projects','Experiments'].includes(heading.textContent)));
+ dom.window.close();
  const nav=html.match(/<nav[^>]*aria-label="Main"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
  assert.ok(nav,'main navigation exists');
  assert.ok(nav.includes('>Studio</a>'));

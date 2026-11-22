@@ -54,8 +54,15 @@
 .admin-head .cats {
   margin-top: 1.5rem;
 }
-.admin-list-label {
-  margin-top: 2rem;
+.studio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-top: 1.5rem;
+}
+.admin-head .studio-actions .button {
+  margin-top: 0;
 }
 .admin-section {
   padding-block: 2rem;

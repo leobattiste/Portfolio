@@ -1,36 +1,39 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, PointerEvent, ReactNode } from "react";
 import { Intro, Section } from "./Layout";
-import { href, useContent } from "@/lib/site";
-import "./playground.css";
-import { ProjectLink } from "./Pages";
+import { href, media, useContent } from "@/lib/site";
 import { AspectRatioArt } from "./Experiments";
+import "./studio.css";
 
-function ExperimentCard({
+function follow(event: PointerEvent<HTMLElement>) {
+  const box = event.currentTarget.getBoundingClientRect();
+  event.currentTarget.style.setProperty("--x", `${event.clientX - box.left}px`);
+  event.currentTarget.style.setProperty("--y", `${event.clientY - box.top}px`);
+}
+
+function StudioCard({
   path,
   title,
-  blurb,
-  label,
-  art,
+  summary,
+  coverStyle,
+  children,
 }: {
   path: string;
   title: string;
-  blurb: string;
-  label: string;
-  art: ReactNode;
+  summary: string;
+  coverStyle?: CSSProperties;
+  children?: ReactNode;
 }) {
   return (
-    <a className="experiment" href={href(path)}>
-      <div className="experiment-art" aria-hidden="true">
-        {art}
-      </div>
-      <div className="experiment-caption">
-        <div>
-          <h2>
-            {title} <span aria-hidden="true">↗</span>
-          </h2>
-          <p>{blurb}</p>
+    <a className="project studio-card" href={href(path)}>
+      {children ? (
+        <div className="cover studio-visual" style={coverStyle} onPointerMove={follow}>
+          {children}
+          <span className="cover-chip" aria-hidden="true">View project</span>
         </div>
-        <span className="label">{label}</span>
+      ) : null}
+      <div className="line">
+        <h2 className="studio-card-title">{title}</h2>
+        <span className="line-note">{summary}</span>
       </div>
     </a>
   );
@@ -45,21 +48,32 @@ export function Studio() {
         <h1 className="statement">{playground.title}</h1>
         <p className="project-description">{playground.intro}</p>
       </Intro>
-      <Section label="Projects" count={projects.length}>
-        {projects.map((project) => (
-          <ProjectLink key={project.slug} project={project} />
-        ))}
-      </Section>
-      <Section label="Experiments" count={1}>
-        <div className="experiments">
-          <ExperimentCard
-            path="/studio/aspect-ratio/"
-            title={aspect.cardTitle}
-            blurb={aspect.cardBlurb}
-            label="001 · Film"
-            art={<AspectRatioArt />}
-          />
-        </div>
+      <Section>
+        <ul className="studio-items" aria-label="Studio">
+          {projects.map((project) => (
+            <li key={project.slug}>
+              <StudioCard
+                path={`/studio/${project.slug}/`}
+                title={project.title}
+                summary={project.subtitle}
+                coverStyle={{ viewTransitionName: `cover-${project.slug}` }}
+              >
+                {project.cover ? (
+                  <img src={media(project.cover)} width="1200" height="630" alt={project.coverAlt} />
+                ) : null}
+              </StudioCard>
+            </li>
+          ))}
+          <li>
+            <StudioCard
+              path="/studio/aspect-ratio/"
+              title={aspect.cardTitle}
+              summary={aspect.cardBlurb}
+            >
+              <div className="studio-art" aria-hidden="true"><AspectRatioArt /></div>
+            </StudioCard>
+          </li>
+        </ul>
       </Section>
     </>
   );

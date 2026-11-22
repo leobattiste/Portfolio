@@ -328,8 +328,8 @@ body {
   overflow: hidden;
   box-shadow: 0 24px 40px -24px #0008;
 }
-.experiment:hover .art-frame,
-.experiment:focus-visible .art-frame {
+.studio-card:hover .art-frame,
+.studio-card:focus-visible .art-frame {
   --letter: 0% !important;
   --pillar: 12.5% !important;
 }
