@@ -271,7 +271,7 @@ body {
 }
 .ratio-frame {
   position: relative;
-  width: min(100%, 720px);
+  width: 100%;
   aspect-ratio: 16 / 9;
   background: #000;
   border-radius: 3px;
@@ -361,7 +361,7 @@ body {
 .ratio-guide {
   display: grid;
   gap: 64px;
-  max-width: 40rem;
+  max-width: none;
 }
 .ratio-guide article {
   display: grid;
