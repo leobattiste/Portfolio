@@ -137,7 +137,7 @@ kbd {
   text-decoration-color: currentColor;
 }
 
-/* Layout: a label rail and a content column, on every page ---------- */
+/* Layout: full-width page content with 20px outer gutters ----------- */
 .page {
   width: 100%;
   padding-inline: 20px;
@@ -150,7 +150,8 @@ main {
 }
 .row {
   display: grid;
-  grid-template-columns: var(--rail) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 1rem;
   column-gap: var(--gap);
 }
 .section {
@@ -170,6 +171,18 @@ main {
   font-variant-numeric: tabular-nums;
   opacity: 0.7;
 }
+
+main .row > .rail-empty,
+main .row > [aria-hidden="true"]:empty {
+  display: none;
+}
+main .row > * { min-width: 0; }
+main .label { position: static; }
+.site-header.row,
+.site-footer.row {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+.site-footer nav { flex-wrap: wrap; justify-content: flex-end; }
 
 /* Header ------------------------------------------------------------ */
 .site-header {
@@ -232,7 +245,7 @@ main {
   line-height: 1.22;
   font-weight: 500;
   letter-spacing: -0.022em;
-  max-width: 27em;
+  max-width: none;
   text-wrap: pretty;
 }
 .statement + .statement {
@@ -244,7 +257,7 @@ main {
 }
 .project-description {
   margin-top: 1rem;
-  max-width: 38rem;
+  max-width: none;
   font-size: 1.0625rem;
   line-height: 1.6;
   font-weight: 400;
@@ -357,8 +370,8 @@ main {
   display: flex;
   align-items: baseline;
   gap: 1rem;
-  margin-inline: -0.75rem;
-  padding: 0.5rem 0.75rem;
+  margin-inline: 0;
+  padding: 0.5rem 0;
   border-radius: 8px;
   transition: background 0.12s;
 }
@@ -472,7 +485,7 @@ a.line:hover {
 .facts {
   display: grid;
   gap: 0.6rem;
-  max-width: 38rem;
+  max-width: none;
 }
 .facts > div {
   display: grid;
@@ -491,7 +504,7 @@ a.line:hover {
 
 /* Prose ------------------------------------------------------------- */
 .prose {
-  max-width: 38rem;
+  max-width: none;
   font-size: 1.0625rem;
   line-height: 1.6;
 }
@@ -577,7 +590,7 @@ a.line:hover {
 .form {
   display: grid;
   gap: 1.1rem;
-  max-width: 34rem;
+  max-width: none;
 }
 .form label {
   display: grid;
@@ -620,7 +633,7 @@ a.line:hover {
 }
 .form-note {
   color: var(--graphite);
-  max-width: 34rem;
+  max-width: none;
 }
 .button {
   padding: 0.6rem 1.1rem;
@@ -656,10 +669,12 @@ a.line:hover {
 
 /* Small screens ----------------------------------------------------- */
 @media (max-width: 47.99rem) {
-  .row {
+  .row,
+  .site-footer.row {
     grid-template-columns: minmax(0, 1fr);
     row-gap: 1rem;
   }
+  .site-footer nav { justify-content: flex-start; }
   .site-header {
     display: flex;
     align-items: center;
@@ -684,7 +699,7 @@ a.line:hover {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    margin-right: -0.6rem;
+    margin-right: 0;
     padding: 0.4rem 0.6rem;
     border-radius: 99px;
     position: relative;
